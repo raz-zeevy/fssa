@@ -1,6 +1,14 @@
 # app.py
-from lib.controler import Controller
+from lib.controller import Controller
 
 
-class App(Controller):
-    pass
+class App():
+    def __init__(self):
+        self.controller = Controller()
+
+    def run(self):
+        self.controller.run_process()
+
+if __name__ == '__main__':
+    app = App()
+    app.run()

@@ -4,11 +4,13 @@ from lib.utils import *
 
 ENTRIES_PADX = 20
 
+
 class FacetPage(ttk.Frame):
     def __init__(self, parent):
         ttk.Frame.__init__(self, parent.root)
         self.create_entries()
         self.create_navigation()
+        self.create_facet_table()
 
     def create_entries(self):
         ####
@@ -31,6 +33,9 @@ class FacetPage(ttk.Frame):
         self.correlation_combo.pack(side=ttk.RIGHT)
         self.correlation_combo.current(0)
 
+    def create_facet_table(self):
+        pass
+
     def create_navigation(self):
         # Navigation Buttons Frame
         frame_navigation = ttk.Frame(self)
@@ -44,26 +49,8 @@ class FacetPage(ttk.Frame):
                                           text="Previous")
         self.button_previous.pack(side=ttk.LEFT, padx=5)
         self.button_next = ttk.Button(center_frame,
-                                          text="Next",
-                                          state=ttk.DISABLED)
+                                      text="Next",
+                                      state=ttk.DISABLED)
         self.button_next.pack(side=ttk.LEFT, padx=5)
         self.button_run = ttk.Button(center_frame, text="Run")
         self.button_run.pack(side=ttk.LEFT, padx=5)
-
-    def set_delimiter(self, delimiter, readonly=True):
-        self.entry_delimiter.delete(0, ttk.END)
-        self.entry_delimiter.insert(0, delimiter)
-        if readonly:
-            self.entry_delimiter.state(['readonly'])
-            self.entry_lines.state(['readonly'])
-
-    def save_file(self):
-        file_name = filedialog.asksaveasfilename(filetypes=[('csv', '*.csv')],
-                                                 defaultextension=".csv")
-        return file_name
-    def browse_file(self):
-        filename = filedialog.askopenfilename()
-        self.entry_data_file.delete(0, ttk.END)
-        self.entry_data_file.insert(0, filename)
-        self.entry_lines.delete(0, ttk.END)
-        self.entry_lines.insert(0, "1")

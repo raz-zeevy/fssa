@@ -87,5 +87,13 @@ class StartPage(ttk.Frame):
         filename = filedialog.askopenfilename()
         self.entry_data_file.delete(0, ttk.END)
         self.entry_data_file.insert(0, filename)
+
+    def set_entry_lines(self, lines : int):
         self.entry_lines.delete(0, ttk.END)
-        self.entry_lines.insert(0, "1")
+        self.entry_lines.insert(0, f"{lines}")
+
+    def default_entry_lines(self):
+        self.set_entry_lines(1)
+
+    def get_lines_per_var(self):
+        return int(self.entry_lines.get())

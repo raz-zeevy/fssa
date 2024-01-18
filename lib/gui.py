@@ -10,22 +10,22 @@ from lib.pages.start_page import StartPage
 from lib.pages.data_page import DataPage
 from lib.pages.dimensions_page import DimensionsPage
 from lib.pages.facet_page import FacetPage
+from lib.pages.manual_format_page import ManualFormatPage
 from lib.utils import *
 from ttkbootstrap.dialogs.dialogs import Messagebox
 
-THEMENAME = 'flatly'
-
+THEME_NAME = 'flatly'
 
 # Get the directory of the current script file
 script_dir = os.path.dirname(os.path.realpath(__file__))
 
 # Construct the path to the image relative to the script's directory
-p_ICON = 'assets/placeholder_icon.gif'
+p_ICON = '../assets/placeholder_icon.gif'
 
 class GUI():
     def __init__(self):
         # Main window
-        self.root = ttk.Window(themename=THEMENAME)
+        self.root = ttk.Window(themename=THEME_NAME)
         self.root.title("Fssawin Windows Application - Fssa")
 
         # Initialize an attribute to store images
@@ -38,7 +38,7 @@ class GUI():
         self.current_page = None
         self.pages = {}
         for Page in (StartPage, DataPage, DimensionsPage,
-                     FacetPage):
+                     FacetPage, ManualFormatPage):
             page_name = Page.__name__
             self.pages[page_name] = Page(self)
 
@@ -78,15 +78,34 @@ class GUI():
         #
         input_data_menu = Menu(menu_bar, tearoff=0)
         menu_bar.add_cascade(label="Input Data", menu=input_data_menu)
+        # SSA Menu
         SSA_menu = Menu(menu_bar, tearoff=0)
+        SSA_menu.add_command(label="Dimensions & Coeffs")
+        SSA_menu.add_command(label="Technical Options")
         menu_bar.add_cascade(label="SSA", menu=SSA_menu)
         facet_menu = Menu(menu_bar, tearoff=0)
         menu_bar.add_cascade(label="Facet", menu=facet_menu)
         # View Menu
         view_menu = Menu(menu_bar, tearoff=0)
+        view_menu.add_command(label="Next")
+        view_menu.add_command(label="Previous")
+        view_menu.add_separator()
+        view_menu.add_command(label="Toolbar")
+        view_menu.add_command(label="Status Bar")
+        view_menu.add_separator()
+        view_menu.add_command(label="Input File")
+        view_menu.add_separator()
+        view_menu.add_command(label="Output File")
         menu_bar.add_cascade(label="View", menu=view_menu)
+        #
         help_menu = Menu(menu_bar, tearoff=0)
+        help_menu.add_command(label="Contents")
+        help_menu.add_command(label="Help on current screen")
+        help_menu.add_command(label="Open Readme.txt")
+        help_menu.add_separator()
+        help_menu.add_command(label="About")
         menu_bar.add_cascade(label="Help", menu=help_menu)
+        #
         self.root.config(menu=menu_bar)
 
     def show_page(self, page):
@@ -96,6 +115,7 @@ class GUI():
     def switch_page(self, page_name):
         if self.current_page: self.current_page.pack_forget()
         self.show_page(self.pages[page_name])
+        self.current_page = self.pages[page_name]
 
     def run_process(self):
         self.root.mainloop()

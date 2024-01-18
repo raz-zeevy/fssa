@@ -30,8 +30,8 @@ class DimensionsPage(ttk.Frame):
         #
         self.correlation_combo = ttk.Combobox(frame_correlation_combo,
                                               state="readonly",
-                                              values=["Monotonicity",
-                                                      "Pearson"], )
+                                              values=[MONO,
+                                                      PEARSON], )
         self.correlation_combo.pack(side=ttk.RIGHT)
         self.correlation_combo.bind("<<ComboboxSelected>>",
                                     self.dimension_combo_selected)

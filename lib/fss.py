@@ -2,26 +2,106 @@
 
 import subprocess
 import os
-from typing import List, Tuple, Dict
-
+from typing import List, Dict
 import numpy as np
 import pandas as pd
 from lib.utils import *
 
-INPUT_MATRIX_FORMAT = "(8F10.7)"
-OUTPUT_DIR = "output"
+ENTRY_WIDTH = 2
+
+# Output Paths
+SCRIPT_NESTING_PREFIX = "..\\..\\..\\"
+p_OUTPUT_DIR = "output"
+OUTPUT_MAT_FILE = "MONOASC.MAT"
+OUTPUT_FILE_NAME = "DJK21.FSS"
+p_OUTPUT_FILE = os.path.join(p_OUTPUT_DIR, OUTPUT_FILE_NAME)
+p_OUTPUT_MAT_FILE = os.path.join(p_OUTPUT_DIR, OUTPUT_MAT_FILE)
+
+# Input paths
 RUN_FILES_DIR = "..\\run_files"
+PEAR_FILE_NAME = "PEARINP.DRV"
+MONO_FILE_NAME = "MONOINP.DRV"
+file_name = "FSSAINP.DRV"
+DATA_FILE_NAME = "FSSADATA.DAT"
+p_FSS_DRV = os.path.join(RUN_FILES_DIR, file_name)
+p_DATA_FILE = os.path.join(RUN_FILES_DIR, DATA_FILE_NAME)
+INPUT_MATRIX_FORMAT = "(8F10.7)"
+
+# Script paths
+p_FSS_DIR = 'scripts/fssa-21'
+SCRIPT_PEARSON = "PEARSON"
+SCRIPT_MONO = "MONO"
 
 
-def load_data_file(path, delimiter):
-    if delimiter == DELIMITER_1_D:
-        data = np.loadtxt(path, dtype="int")
-        split_data = [list(map(int, str(row))) for row in data]
-        data = split_data
-    else:
-        data = np.loadtxt(path, delimiter=delimiter, dtype="int",
-                          )
-    df = pd.DataFrame(data)
+def load_data_file(path, delimiter=None, lines_per_var=1, manual_format: List[
+    dict] =
+None):
+    """
+    Load data file from path and return a pandas dataframe
+    :param lines_per_var:
+    :param path:
+    :param delimiter:
+    :param manual_format: [{line (1..n), col(1..n) , width(1..n), label} for
+    each variable]
+    :return:
+    """
+    if "line" not in manual_format[0] or \
+            "col" not in manual_format[0] or \
+            "width" not in manual_format[0]:
+        raise Exception("Invalid manual format:\n Each variable must have "
+                        "line, col and width")
+    if not delimiter and not manual_format:
+        raise Exception("Either delimiter or manual format must be specified")
+    data = []
+    with open(path, "r") as f:
+        lines = f.readlines()
+        if len(lines) % lines_per_var != 0:
+            raise Exception("Invalid number of lines:\n It seems the number "
+                            "of lines is not a multiple of the number of "
+                            "lines per row")
+        for i in range(0, len(lines), lines_per_var):
+            row = []
+            if manual_format:
+                for var in manual_format:
+                    if i + var["line"] - 1 > len(lines):
+                        raise Exception(
+                            f"Invalid line number {var['line'] + 1}:"
+                            f"\n The line "
+                            "number is greater than the number of "
+                            "lines in the file")
+                    if var["col"] - 1 > len(lines[i + var["line"] - 1]):
+                        raise Exception(f"Invalid column number "
+                                        f"{var['col']} in line"
+                                        f" {i + var['line']}:\n"
+                                        "The column "
+                                        "number is greater than the number of "
+                                        "columns in the file")
+                    if var["col"] - 1 + var["width"] > len(
+                            lines[var["line"] - 1]):
+                        raise Exception(f"Invalid width "
+                                        f"line: "
+                                        f"{i + var['line']} column"
+                                        f":{var['col']}, "
+                                        f"width:{var['width']}:\n "
+                                        f"The width is greater "
+                                        "than the number of columns in the "
+                                        "file")
+                    row.append(lines[i + var["line"] - 1][
+                               var["col"] - 1:var["col"] - 1 + var["width"]])
+            elif delimiter == DELIMITER_1_D:
+                rrow = "".join(lines[i:i + lines_per_var]).strip().replace(
+                    "\n", "")
+                row = list(map(int, str(rrow)))
+            elif delimiter == DELIMITER_2_D:
+                rrow = "".join(lines[i:i + lines_per_var]).strip().replace(
+                    "\n", "")
+                row = [int(rrow[i:i + 2]) for i in range(0, len(rrow), 2)]
+            else:
+                rrow = "".join(lines[i:i + lines_per_var]).strip().replace(
+                    "\n", "")
+                row = rrow.split(delimiter)
+            data.append(row)
+    df = pd.DataFrame(data, columns=[i + 1 for i in range(len(data[0]))])
     return df
 
 
@@ -30,22 +110,32 @@ def get_random_data() -> pd.DataFrame:
     This function generates random data matrix for the purpose of testing the
     :return:
     """
-    n = np.random.randint(4, 5)
-    m = np.random.randint(4, 5)
+    n = np.random.randint(20, 31)
+    m = np.random.randint(30, 31)
     data = np.random.randint(1, 10, (n, m))
-    df = pd.DataFrame(data)
+    df = pd.DataFrame(data, columns=[i + 1 for i in range(len(data[0]))])
     return df
 
 
-def run_fortran():
-    script_nesting_prefix = "..\\..\\..\\"
+def run_fortran(corr_type,
+                create_simplified_matrix_file="NUL"):
+    def get_path(path: str):
+        if os.path.exists(path):
+            return os.path.abspath(path)
+        else:
+            return SCRIPT_NESTING_PREFIX + path
 
-    def script_path(path: str): return script_nesting_prefix + path
-
-    p_FSS_DIR = 'scripts/fssa-21'
-
-    p_output = script_path(OUTPUT_DIR)
-
+    # get the path's
+    corr_input_drv_file = get_corr_input_file_path(corr_type)
+    data_file = p_DATA_FILE
+    fssa_input_drv_file = p_FSS_DRV
+    output_matrix_file = p_OUTPUT_MAT_FILE
+    output_results_file = p_OUTPUT_FILE
+    script_corr_type = SCRIPT_MONO if corr_type == MONO else SCRIPT_PEARSON
+    # script_nesting_prefix = SCRIPT_NESTING_PREFIX
+    # def script_path(path: str): return script_nesting_prefix + path
+    # p_FSS_DIR = 'scripts/fssa-21'
+    # p_output = script_path(OUTPUT_DIR)
     # corr_type = "MONO"
     # corr_input_drv_file = "MONOINP.DRV"
     # data_file = "C:\\Users\\Raz_Z\\Desktop\\shmuel-project\\fssa-21\\GRAND.PRN"
@@ -53,28 +143,28 @@ def run_fortran():
     # output_matrix_file = os.path.join(p_output,"MONOASC.MAT")
     # fssa_input_drv_file = "FSSAINP.DRV"
     # output_results_file = os.path.join(p_output, "DJK21.FSS")
-
-    # corr_type = "PEARSON"
-    corr_type = "MONO"
-    corr_input_drv_file = r"C:\Users\Raz_Z\Projects\Shmuel\FSS\MONOINP.DRV"
-    data_file = r"C:\Users\Raz_Z\Desktop\shmuel-project\shared" \
-                r"\simaple_example\diamond6.txt"
-    create_simplified_matrix_file = 'NUL'
-    output_matrix_file = os.path.join(p_output, "MONOASC.MAT")
-    fssa_input_drv_file = r"C:\Users\Raz_Z\Projects\Shmuel\FSS\FSSAINP.DRV"
-    output_results_file = os.path.join(p_output, "DJK21.FSS")
+    # corr_input_drv_file = r"C:\Users\Raz_Z\Desktop\shmuel-project\shared\simaple_example\MONOINP.DRV"
+    # data_file = r"C:\Users\Raz_Z\Desktop\shmuel-project\shared" \
+    #             r"\simaple_example\diamond6.txt"
+    # create_simplified_matrix_file = 'NUL'
+    # fssa_input_drv_file = r"C:\Users\Raz_Z\Desktop\shmuel-project\shared\simaple_example\FSSAINP.DRV"
+    # output_matrix_file = r'C:\Users\Raz_Z\Desktop\shmuel-project\shared' \
+    #                       r'\simaple_example\MONOASC.MAT'
+    # output_results_file = r'C:\Users\Raz_Z\Desktop\shmuel-project\shared' \
+    #                       r'\simaple_example\DJK21.FSS'
 
     # Define the command and arguments
-    command = "FASSA.BAT"
     arguments = [
-        corr_type,  # Tells Fortran to run monotonicity coefficients on the
+        script_corr_type,
+        # Tells Fortran to run monotonicity coefficients on the
         # data. Replace by PEARSON if you want SSA to use Pearson
         # correlation coefficients instead.
-        corr_input_drv_file,  # A file in a specific format (see monoinp.drv
+        get_path(corr_input_drv_file),  # A file in a specific format (see
+        # monoinp.drv
         # instructions file) that tells the program how to read data file
         # for computing the monotonicity coefficients. Replace by
         # PEARINP.DRV if you want SSA to use Pearson correlation coefficients.
-        data_file,
+        get_path(data_file),
         # Path and filename of the input data file in ASCII (simple txt
         # file). You can change it to fit with your own directory, and you
         # can simplify
@@ -83,34 +173,41 @@ def run_fortran():
         # program to produce a file with a simplified version of the
         # coefficient matrix. IF you do want such a file replace NUL by a
         # filename of your choice.
-        output_matrix_file,  # is the name of the coefficient-matrix-file
+        get_path(output_matrix_file),  # is the name of the
+        # coefficient-matrix-file
         # produce by the program
-        fssa_input_drv_file,  # A file in a specific format (see fssainp.drv
+        get_path(fssa_input_drv_file),  # A file in a specific format (see
+        # fssainp.drv
         # instructions file) that tells the program how to read data file and
         # what you want done.
-        output_matrix_file,  # is the name of the coefficient-matrix-file
+        get_path(output_matrix_file),  # is the name of the
+        # coefficient-matrix-file
         # produced by the program to be used by FSSA. It must be re-written
         # here; I don't know why.
-        output_results_file  # Path and filename of the output
+        get_path(output_results_file)  # Path and filename of the output
         # data file. You can change it to your own directory, and simplify
         # filename. For example  c:\tstfssa\tstdata.fss
     ]
+    # command = r"C:\Users\Raz_Z\Desktop\shmuel-project\fssa-21\FASSA.BAT"
+    command = "FASSA.BAT"
 
     # Combine the command and arguments into a single list
     full_command = [command] + arguments
 
     # Run the command
-    os.chdir(p_FSS_DIR)
+    try:
+        os.chdir(p_FSS_DIR)
+    except FileNotFoundError:
+        pass
     result = subprocess.run(full_command, shell=True, stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE, text=True)
-
     # Print the output and error, if any
     print("Output:", result.stdout)
     print("Error:", result.stderr)
 
 
 def create_running_files(
-        variables_details: List[Dict],
+        variables_labels: List[dict],
         correlation_type: str,
         data_matrix: List[List],
         min_dim: int = 2, max_dim: int = 2,
@@ -128,7 +225,7 @@ def create_running_files(
     """
     # Create the FSSA input file
     create_fssa_input_file(
-        variables_details,
+        variables_labels,
         min_dim,
         max_dim,
         is_similarity_data,
@@ -144,7 +241,7 @@ def create_running_files(
     # Create the FSSA matrix file
     create_corr_input_file(
         correlation_type,
-        variables_details,
+        variables_labels,
         nmising,
         nlabel,
         iprfreq,
@@ -162,19 +259,21 @@ def create_fssa_data_file(data_matrix: List[List[int]]):
     :param data_matrix: the data matrix
     :return:
     """
+
     # Create the data file
     def parse_item_2d(item):
         if item < 10:
-            return "0" + str(item)
+            return str(item) + " "
         return str(item)
 
-    file_path = os.path.join(RUN_FILES_DIR, "FSSADATA.DAT")
-    with open(file_path, 'w', encoding="ascii") as f:
+    with open(p_DATA_FILE, 'w', encoding="ascii") as f:
         for row in data_matrix:
             f.write("".join(map(parse_item_2d, row)) + "\n")
 
+
 def create_fssa_input_file(
-        variables_details,
+        # variables_details,
+        variables_labels: List[Dict],
         min_dim: int = 2,
         max_dim: int = 2,
         is_similarity_data: bool = True,
@@ -188,8 +287,7 @@ def create_fssa_input_file(
         default_form_feed=0):
     """
 This function creates the FSSA input file (FSSAINP.DRV) for the FSSA program
-    :param variables_details: a list of tuples, each tuple contains the
-    variable name and the variable type (either "N" or "O")
+    :param variables_labels:
     :param min_dim: the minimum dimension of the data matrix
     :param max_dim: the maximum dimension of the data matrix
     :param is_similarity_data: a boolean variable indicating whether the data
@@ -209,16 +307,15 @@ This function creates the FSSA input file (FSSAINP.DRV) for the FSSA program
     """
     # checks if the directory RUN_FILES_DIR exists, if not creates it in the
     # root directory
-    file_name = "FSSAINP.DRV"
     if not os.path.exists(RUN_FILES_DIR):
         os.makedirs(RUN_FILES_DIR)
-    file_path = os.path.join(RUN_FILES_DIR, file_name)
-    with open(file_path, "w") as f:
+    nvar = len(variables_labels)
+    with open(p_FSS_DRV, "w") as f:
         f.write("FSSA-24 INPUT FILE\n")
-        f.write(f"   {len(variables_details)}   {min_dim}   {max_dim}")
+        f.write(f"   {nvar}   {min_dim}   {max_dim}")
         f.write(f"   {int(is_similarity_data)}   {eps}   "
                 f"{len(missing_cells)}")
-        f.write(f"   {iweigh}   {len(variables_details)}   {nfacet}  "
+        f.write(f"   {iweigh}   {nvar}   {nfacet}  "
                 f" {ntface}   1")
         f.write(f"   {int(store_coordinates_on_file)}   {iboxstring}")
         f.write(f"   {default_form_feed}\n   {len(missing_cells)}")
@@ -227,12 +324,21 @@ This function creates the FSSA input file (FSSAINP.DRV) for the FSSA program
                 f" {missing_cell_range[0]:.7f} {missing_cell_range[1]:.7f}")
         f.write("\n")
         f.write(INPUT_MATRIX_FORMAT + "\n")
-        for variable in variables_details:
+        for variable in variables_labels:
             f.write(f"   {variable['index']}  {variable['label']}\n")
 
 
+def get_corr_input_file_path(correlation_type: str):
+    file_name = MONO_FILE_NAME if correlation_type == MONO else PEAR_FILE_NAME
+    # checks if the directory RUN_FILES_DIR exists, if not creates it in the
+    # root directory
+    if not os.path.exists(RUN_FILES_DIR):
+        os.makedirs(RUN_FILES_DIR)
+    return os.path.join(RUN_FILES_DIR, file_name)
+
+
 def create_corr_input_file(correlation_type: str,
-                           variables_details: List[Dict],
+                           variables_labels: List[Dict],
                            nmising: int = 0,
                            nlabel: int = 0,
                            iprfreq: bool = False,
@@ -244,25 +350,23 @@ def create_corr_input_file(correlation_type: str,
     :param nlabel:
     :param iprfreq:
     :param iintera:
-    :param variables_details: start column, width
+    :param variables_labels: start column, width
     :param missing_values:
     :param variables_labels:
     :return:
     """
-    file_name = "MONOINP.DRV" if correlation_type == "MONO" else "PEARINP.DRV"
     # checks if the directory RUN_FILES_DIR exists, if not creates it in the
-    # root directory
     if not os.path.exists(RUN_FILES_DIR):
         os.makedirs(RUN_FILES_DIR)
-    file_path = os.path.join(RUN_FILES_DIR, file_name)
+    file_path = get_corr_input_file_path(correlation_type)
     with open(file_path, "w") as f:
         f.write("FSSA\n")
-        f.write(f"   {len(variables_details)}   {nmising}   {nlabel}   "
+        f.write(f"   {len(variables_labels)}   {nmising}   {nlabel}   "
                 f"{int(iprfreq)}   {int(iintera)}\n")
         f.write("(")
-        for i, var in enumerate(variables_details):
+        for i, var in enumerate(variables_labels):
             if i > 0: f.write(",")
-            f.write(f"T{2*i+1}I{2}")
+            f.write(f"T{ENTRY_WIDTH * i + 1}I{ENTRY_WIDTH}")
         f.write(")\n")
         if nmising:
             f.write(f"{missing_values}\n")
@@ -288,6 +392,12 @@ if __name__ == '__main__':
     # ]
     # create_fssa_input_file(variables_details)
     # create_corr_input_file("MONO", variables_details)
-    np.random.seed(0)
-    data = get_random_data().values
-    create_fssa_data_file(data)
+    # np.random.seed(0)
+    # data = get_random_data().values
+    # create_fssa_data_file(data)
+    # corr_type = "Monotonicity"
+    # run_fortran(corr_type=corr_type)
+    # path = r"C:\\Users\\Raz_Z\\Desktop\\shmuel-project\\fssa-21\\GRAND.PRN"
+    # path = r"C:\Users\Raz_Z\Desktop\shmuel-project\shared\example_3\babystu4.prn"
+    path = r"C:\Users\Raz_Z\Desktop\shmuel-project\shared\simaple_example\diamond6.txt"
+    load_data_file(path, delimiter=",", lines_per_var=2)

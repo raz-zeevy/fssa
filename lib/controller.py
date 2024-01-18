@@ -1,19 +1,17 @@
-#controler.py
+# controller.py
 import os
-
 import pandas as pd
-
 from lib.gui import GUI
-from lib.gui import StartPage, DataPage, DimensionsPage, FacetPage
+from lib.gui import StartPage, DataPage, DimensionsPage, FacetPage, ManualFormatPage
 from lib.fss import get_random_data, load_data_file
-from lib.fss import create_running_files
+from lib.fss import create_running_files, run_fortran
 from lib.utils import *
 
 START_PAGE_NAME = StartPage.__name__
 DATA_PAGE_NAME = DataPage.__name__
 DIMENSIONS_PAGE_NAME = DimensionsPage.__name__
 FACET_PAGE_NAME = FacetPage.__name__
-
+MANUAL_FORMAT_PAGE_NAME = ManualFormatPage.__name__
 
 class Controller:
     def __init__(self):
@@ -21,6 +19,7 @@ class Controller:
         self.bind_events()
         self.gui.switch_page(FACET_PAGE_NAME)
         self.data_file_path = None
+        self.lines_per_var = None
 
     def bind_events(self):
         self.gui.pages[START_PAGE_NAME]. \
@@ -29,6 +28,9 @@ class Controller:
         self.gui.pages[START_PAGE_NAME]. \
             button_next.bind("<Button-1>",
                              lambda x: self.switch_to_data_page())
+        self.gui.pages[MANUAL_FORMAT_PAGE_NAME]. \
+            button_next.bind("<Button-1>",
+                                lambda x: self.switch_to_data_page())
         self.gui.pages[DATA_PAGE_NAME]. \
             button_previous.bind("<Button-1>",
                                  lambda x: self.gui.switch_page(
@@ -42,7 +44,7 @@ class Controller:
                              lambda x: self.save_data())
         self.gui.pages[DATA_PAGE_NAME]. \
             button_reload.bind("<Button-1>",
-                               lambda x: self.switch_to_data_page())
+                                     lambda x: self.switch_to_data_page())
         self.gui.pages[DIMENSIONS_PAGE_NAME]. \
             button_previous.bind("<Button-1>",
                                  lambda x: self.gui.switch_page(
@@ -67,31 +69,60 @@ class Controller:
             DIMENSIONS_PAGE_NAME].get_dimensions()[0]
         max_dim = self.gui.pages[
             DIMENSIONS_PAGE_NAME].get_dimensions()[-1]
-        data = [row.values for row in self.gui.pages[
-                DATA_PAGE_NAME].data_table.tablerows_visible]
-        variables_details = [
-            {"index": 1, "label": "A", "start_col": 1, "width": 1},
-            {"index": 2, "label": "B", "start_col": 2, "width": 1},
-            {"index": 3, "label": "C", "start_col": 3, "width": 1},
-            {"index": 4, "label": "D", "start_col": 4, "width": 1},
-            {"index": 5, "label": "E", "start_col": 5, "width": 1},
-            {"index": 6, "label": "F", "start_col": 6, "width": 1}
-        ]
+        data = self.gui.pages[DATA_PAGE_NAME].get_all_visible_data()
+        labels = []
+        # remove the labels that are default
+        for i, label in enumerate(self.gui.pages[
+                                    DATA_PAGE_NAME].get_visible_labels()):
+            if label == f"var{i}":
+                labels.append("")
+            else:
+                labels.append(label)
+        variables_labels = [{'index': i+1, 'label': label} for i, label in
+                            enumerate(labels)]
         create_running_files(
-            variables_details=variables_details,
-            correlation_type= corr_type,
+            variables_labels=variables_labels,
+            correlation_type=corr_type,
             data_matrix=data,
             min_dim=min_dim, max_dim=max_dim,
         )
+        run_fortran(corr_type)
         print("running")
 
     def switch_to_data_page(self):
-        if not self.data_file_path:
-            data = get_random_data()
-        else:
+        # load data
+        self.lines_per_var = self.gui.pages[
+            START_PAGE_NAME].get_lines_per_var()
+        called_page = self.gui.current_page.__class__.__name__
+        if called_page == START_PAGE_NAME:
+            if not self.data_file_path:
+                data = get_random_data()
+            else:
+                data = load_data_file(self.data_file_path,
+                                      lines_per_var=self.lines_per_var,
+                                      delimiter = self.gui.pages[
+                                          'StartPage'].entry_delimiter.get())
+                # add a labels row
+                data.loc[-1] = [f"var{i}" for i in
+                                range(len(data.columns))]  # adding a
+        elif called_page == MANUAL_FORMAT_PAGE_NAME:
+            data_format = self.gui.pages[
+                MANUAL_FORMAT_PAGE_NAME].get_data_format()
             data = load_data_file(self.data_file_path,
-                                  self.gui.pages[
-                                      'StartPage'].entry_delimiter.get())
+                                  lines_per_var=self.lines_per_var,
+                                  manual_format=data_format)
+            # add a labels row
+            data.loc[-1] = [f"var{i}" for i in
+                            range(len(data.columns))]  # adding a
+        else:
+            raise Exception("Usage Error:\n Unknown page called to switch to"
+                            " data page")
+        # row
+        data.index = data.index + 1  # shifting index
+        data.sort_index(inplace=True)
+        index_col = list(range(len(data.index)))
+        index_col[0] = "labels"
+        data.insert(loc=0, column="", value=index_col)
         self.gui.switch_page(DATA_PAGE_NAME)
         self.gui.pages[DATA_PAGE_NAME].show_data(data)
 
@@ -107,19 +138,20 @@ class Controller:
             elif file_extension == '.tsv':
                 self.gui.pages['StartPage'].set_delimiter('\t')
             else:
-                print("unknown del")
                 self.gui.pages['StartPage'].set_delimiter(DELIMITER_1_D,
                                                           readonly=False)
 
         self.gui.pages['StartPage'].browse_file()
         self.data_file_path = self.gui.pages['StartPage'].entry_data_file.get()
-        suggest_delimiter(self.data_file_path)
+        if self.data_file_path:
+            self.gui.pages['StartPage'].default_entry_lines()
+            suggest_delimiter(self.data_file_path)
 
     def save_data(self):
         file_name = self.gui.save_file(file_types=[('csv', '*.csv')],
                                        default_extension=".csv")
         data = pd.DataFrame(self.gui.pages[
-                                DATA_PAGE_NAME].get_all_data_from_treeview())
+                                DATA_PAGE_NAME].get_all_visible_data())
         if file_name:
             try:
                 with open(file_name, 'w', newline='',
@@ -136,6 +168,7 @@ class Controller:
         if self.gui:
             # Assuming your GUI class has a root Tkinter window
             self.gui.root.destroy()  # This will close the Tkinter window without exiting Python
+
 
 if __name__ == '__main__':
     controller = Controller()
