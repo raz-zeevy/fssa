@@ -6,6 +6,7 @@ from typing import List, Dict
 import numpy as np
 import pandas as pd
 from lib.utils import *
+from lib.fss_parsers import *
 
 ENTRY_WIDTH = 2
 
@@ -29,13 +30,38 @@ INPUT_MATRIX_FORMAT = "(8F10.7)"
 
 # Script paths
 p_FSS_DIR = 'scripts/fssa-21'
+test_p_FSS_DIR = '../lib/scripts/fssa-21'
 SCRIPT_PEARSON = "PEARSON"
 SCRIPT_MONO = "MONO"
 
 
+def validate_input(i, var, lines):
+    if i + var["line"] - 1 > len(lines):
+        raise Exception(
+            f"Invalid line number {var['line'] + 1}:"
+            f"\n The line "
+            "number is greater than the number of "
+            "lines in the file")
+    if var["col"] - 1 > len(lines[i + var["line"] - 1]):
+        raise Exception(f"Invalid column number "
+                        f"{var['col']} in line"
+                        f" {i + var['line']}:\n"
+                        "The column "
+                        "number is greater than the number of "
+                        "columns in the file")
+    if var["col"] - 1 + var["width"] > len(
+            lines[var["line"] - 1]):
+        raise Exception(f"Invalid width "
+                        f"line: "
+                        f"{i + var['line']} column"
+                        f":{var['col']}, "
+                        f"width:{var['width']}:\n "
+                        f"The width is greater "
+                        "than the number of columns in the "
+                        "file")
+
 def load_data_file(path, delimiter=None, lines_per_var=1, manual_format: List[
-    dict] =
-None):
+    dict] = None, safe_mode=False):
     """
     Load data file from path and return a pandas dataframe
     :param lines_per_var:
@@ -45,11 +71,12 @@ None):
     each variable]
     :return:
     """
-    if "line" not in manual_format[0] or \
-            "col" not in manual_format[0] or \
-            "width" not in manual_format[0]:
-        raise Exception("Invalid manual format:\n Each variable must have "
-                        "line, col and width")
+    if manual_format:
+        if "line" not in manual_format[0] or \
+                "col" not in manual_format[0] or \
+                "width" not in manual_format[0]:
+            raise Exception("Invalid manual format:\n Each variable must have "
+                            "line, col and width")
     if not delimiter and not manual_format:
         raise Exception("Either delimiter or manual format must be specified")
     data = []
@@ -63,29 +90,8 @@ None):
             row = []
             if manual_format:
                 for var in manual_format:
-                    if i + var["line"] - 1 > len(lines):
-                        raise Exception(
-                            f"Invalid line number {var['line'] + 1}:"
-                            f"\n The line "
-                            "number is greater than the number of "
-                            "lines in the file")
-                    if var["col"] - 1 > len(lines[i + var["line"] - 1]):
-                        raise Exception(f"Invalid column number "
-                                        f"{var['col']} in line"
-                                        f" {i + var['line']}:\n"
-                                        "The column "
-                                        "number is greater than the number of "
-                                        "columns in the file")
-                    if var["col"] - 1 + var["width"] > len(
-                            lines[var["line"] - 1]):
-                        raise Exception(f"Invalid width "
-                                        f"line: "
-                                        f"{i + var['line']} column"
-                                        f":{var['col']}, "
-                                        f"width:{var['width']}:\n "
-                                        f"The width is greater "
-                                        "than the number of columns in the "
-                                        "file")
+                    if safe_mode:
+                        validate_input(i, var, lines)
                     row.append(lines[i + var["line"] - 1][
                                var["col"] - 1:var["col"] - 1 + var["width"]])
             elif delimiter == DELIMITER_1_D:
@@ -196,9 +202,12 @@ def run_fortran(corr_type,
 
     # Run the command
     try:
-        os.chdir(p_FSS_DIR)
+        os.chdir(os.path.abspath(p_FSS_DIR))
     except FileNotFoundError:
-        pass
+        try:
+            os.chdir(os.path.abspath(test_p_FSS_DIR))
+        except FileNotFoundError:
+            raise FileNotFoundError("FSSA script directory not found")
     result = subprocess.run(full_command, shell=True, stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE, text=True)
     # Print the output and error, if any
@@ -217,7 +226,11 @@ def create_running_files(
         store_coordinates_on_file: bool = False, iboxstring=0,
         default_form_feed=0, nmising: int = 0, nlabel: int = 0,
         iprfreq: bool = False, iintera: bool = False,
-        missing_values: str = 0,
+        facet_details = None,
+        facet_var_details = None,
+        hypotheses_details = None,
+        facet_dim_details = None,
+        valid_values_range = None
 ):
     """
     This function creates the running files for FSSA program
@@ -236,17 +249,20 @@ def create_running_files(
         ntface,
         store_coordinates_on_file,
         iboxstring,
-        default_form_feed)
+        default_form_feed,
+        facet_details,
+        facet_var_details,
+        hypotheses_details,
+        facet_dim_details)
 
     # Create the FSSA matrix file
     create_corr_input_file(
         correlation_type,
         variables_labels,
-        nmising,
         nlabel,
         iprfreq,
         iintera,
-        missing_values,
+        valid_values_range,
     )
     # Create the FSSA data file
     create_fssa_data_file(data_matrix)
@@ -262,9 +278,12 @@ def create_fssa_data_file(data_matrix: List[List[int]]):
 
     # Create the data file
     def parse_item_2d(item):
-        if item < 10:
-            return str(item) + " "
-        return str(item)
+        try:
+            if len(str(item)) < 2:
+                return str(item) + " "
+            return str(item)
+        except ValueError:
+            return " "
 
     with open(p_DATA_FILE, 'w', encoding="ascii") as f:
         for row in data_matrix:
@@ -284,7 +303,11 @@ def create_fssa_input_file(
         ntface=0,
         store_coordinates_on_file: bool = False,
         iboxstring=0,
-        default_form_feed=0):
+        default_form_feed=0,
+        facet_details=None,
+        facet_var_details=None,
+        hypotheses_details=None,
+        facet_dim_details=None,):
     """
 This function creates the FSSA input file (FSSAINP.DRV) for the FSSA program
     :param variables_labels:
@@ -312,10 +335,10 @@ This function creates the FSSA input file (FSSAINP.DRV) for the FSSA program
     nvar = len(variables_labels)
     with open(p_FSS_DRV, "w") as f:
         f.write("FSSA-24 INPUT FILE\n")
-        f.write(f"   {nvar}   {min_dim}   {max_dim}")
+        f.write(f"  {nvar}   {min_dim}   {max_dim}")
         f.write(f"   {int(is_similarity_data)}   {eps}   "
                 f"{len(missing_cells)}")
-        f.write(f"   {iweigh}   {nvar}   {nfacet}  "
+        f.write(f"   {iweigh}  {nvar}   {nfacet}  "
                 f" {ntface}   1")
         f.write(f"   {int(store_coordinates_on_file)}   {iboxstring}")
         f.write(f"   {default_form_feed}\n   {len(missing_cells)}")
@@ -325,7 +348,41 @@ This function creates the FSSA input file (FSSAINP.DRV) for the FSSA program
         f.write("\n")
         f.write(INPUT_MATRIX_FORMAT + "\n")
         for variable in variables_labels:
-            f.write(f"   {variable['index']}  {variable['label']}\n")
+            f.write(f" {' ' if variable['index'] < 10 else ''}"
+                    f" {variable['index']} "
+                    f" {variable['label']}\n")
+        # facet variable details
+        for variable in facet_var_details:
+            for var_facet in variable:
+                f.write(f" {var_facet}")
+            f.write("\n")
+        # facet details
+        for facet_labels in facet_details:
+            f.write(f"   {len(facet_labels)}")
+        f.write("\n")
+        for facet_labels in facet_details:
+            [f.write(f"{label}\n") for label in facet_labels]
+        # hypotheses details
+        write_hypotheses(f, facet_dim_details, hypotheses_details)
+
+def write_hypotheses(f, facet_dim_details, hypotheses_details):
+    """
+    This function writes the hypotheses details to the FSSA input file
+    :param facet_dim_details:
+    :param hypotheses_details:
+    :return:
+    """
+    for dim, facets in facet_dim_details.items():
+        dim_axes = list(range(1, dim + 1))
+        axes_pairs = [(a, b) for idx, a in enumerate(dim_axes) for b in
+                      dim_axes[idx + 1:]]
+        for facet_i, facet in enumerate(facets):
+            for a, b in axes_pairs:
+                if dim == 2:
+                    for model in hypotheses_details[facet_i]:
+                        f.write(f"   {dim}   {facet}   {a}   {b}   {model}\n")
+                else:
+                    f.write(f"   {dim}   {facet}   {a}   {b}   0\n")
 
 
 def get_corr_input_file_path(correlation_type: str):
@@ -338,20 +395,19 @@ def get_corr_input_file_path(correlation_type: str):
 
 
 def create_corr_input_file(correlation_type: str,
-                           variables_labels: List[Dict],
-                           nmising: int = 0,
+                           variables_details: List[Dict],
                            nlabel: int = 0,
                            iprfreq: bool = False,
                            iintera: bool = False,
-                           missing_values: str = 0, ):
+                           valid_values_range = [] ):
     """
     :param correlation_type:
     :param nmising:
     :param nlabel:
     :param iprfreq:
     :param iintera:
-    :param variables_labels: start column, width
-    :param missing_values:
+    :param variables_details: start column, width
+    :param valid_values_range:
     :param variables_labels:
     :return:
     """
@@ -361,15 +417,28 @@ def create_corr_input_file(correlation_type: str,
     file_path = get_corr_input_file_path(correlation_type)
     with open(file_path, "w") as f:
         f.write("FSSA\n")
-        f.write(f"   {len(variables_labels)}   {nmising}   {nlabel}   "
+        f.write(f"   {len(variables_details)}   {len(valid_values_range)}   {nlabel}   "
                 f"{int(iprfreq)}   {int(iintera)}\n")
-        f.write("(")
-        for i, var in enumerate(variables_labels):
-            if i > 0: f.write(",")
-            f.write(f"T{ENTRY_WIDTH * i + 1}I{ENTRY_WIDTH}")
+        # variables details
+        var_txt = "("
+        for i, var in enumerate(variables_details):
+            if i > 0: var_txt += ","
+            var_txt += f"T{ENTRY_WIDTH * i + 1}I{ENTRY_WIDTH}"
+        # add "\n"
+        for i in range(80, len(var_txt), 81):
+            var_txt = var_txt[:i] + "\n" + var_txt[i:]
+        f.write(var_txt)
         f.write(")\n")
-        if nmising:
-            f.write(f"{missing_values}\n")
+        #
+        if valid_values_range:
+            missing_values = parse_missing_values(valid_values_range)
+            for i, missing_value in enumerate(missing_values):
+                f.write(f"  {' ' if i+1 < 10 else ''}{i+1}"
+                        f"   {len(missing_value)}")
+                for value in missing_value:
+                    f.write(f"   {value[0]}   {value[1]}")
+                f.write("\n")
+        # Looks like it is not implemented in the fortran code
         if nlabel:
             f.write(f"VARIABLE LABELS PLACEHOLDER\n")
 

@@ -23,7 +23,7 @@ def app():
     app.controller.shutdown()
 
 def test_add_variable(app):
-    app.controller.gui.switch_page(MANUAL_FORMAT_PAGE_NAME)
+    app.controller.gui.navigate_page(MANUAL_FORMAT_PAGE_NAME)
     manual_page = app.controller.gui.pages[MANUAL_FORMAT_PAGE_NAME]
     manual_page.add_variable("test", "test", "test", "test")
     assert len(manual_page.data_table.iidmap) == 1

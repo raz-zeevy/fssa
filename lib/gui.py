@@ -6,11 +6,17 @@ from ttkbootstrap.constants import *
 from ttkbootstrap.tableview import Tableview
 from PIL import Image, ImageTk
 import os
-from lib.pages.start_page import StartPage
+
+from lib.components.buttons import NavigationButton
+from lib.pages import *
 from lib.pages.data_page import DataPage
 from lib.pages.dimensions_page import DimensionsPage
+from lib.pages.facet_dim_page import FacetDimPage
 from lib.pages.facet_page import FacetPage
+from lib.pages.facet_var_page import FacetVarPage
+from lib.pages.hypothesis_page import HypothesisPage
 from lib.pages.manual_format_page import ManualFormatPage
+from lib.pages.start_page import StartPage
 from lib.utils import *
 from ttkbootstrap.dialogs.dialogs import Messagebox
 
@@ -32,13 +38,14 @@ class GUI():
         self.image_references = []
 
         # Set the window to be square
-        self.root.geometry(f'{WINDOW_WIDTH}x{WINDOW_HIGHT}')
+        self.root.geometry(f'{WINDOW_WIDTH}x{WINDOW_HEIGHT}')
 
         # init pages
         self.current_page = None
         self.pages = {}
         for Page in (StartPage, DataPage, DimensionsPage,
-                     FacetPage, ManualFormatPage):
+                     FacetPage, ManualFormatPage, FacetVarPage,
+                     HypothesisPage, FacetDimPage):
             page_name = Page.__name__
             self.pages[page_name] = Page(self)
 
@@ -51,6 +58,7 @@ class GUI():
         # init common gui
         self.create_menu()
         self.create_help_bar()
+        self.create_navigation()
 
     def create_help_bar(self):
         # Status Bar
@@ -116,7 +124,6 @@ class GUI():
         if self.current_page: self.current_page.pack_forget()
         self.show_page(self.pages[page_name])
         self.current_page = self.pages[page_name]
-
     def run_process(self):
         self.root.mainloop()
 
@@ -130,6 +137,23 @@ class GUI():
         file_name = filedialog.asksaveasfilename(filetypes=file_types,
                                                  defaultextension=default_extension,)
         return file_name
+
+    def create_navigation(self):
+        # Navigation Buttons Frame
+        frame_navigation = ttk.Frame(self.root)
+        # pack the navigation at the bottom of the screen but above the help
+        # bar
+        frame_navigation.pack(side=ttk.BOTTOM, fill='x', padx=10,
+                              pady=(0, 50))
+        center_frame = ttk.Frame(frame_navigation)
+        center_frame.pack(pady=5, expand=True)
+        self.button_previous = NavigationButton(center_frame, text="Previous",)
+        self.button_previous.pack(side=ttk.LEFT, padx=20)
+        self.button_next = NavigationButton(center_frame, text="Next",)
+        self.button_next.pack(side=ttk.LEFT, padx=20, )
+        self.button_run = NavigationButton(center_frame, text="Run",)
+        self.button_run.pack(side=ttk.LEFT, padx=20)
+
 
 class FFSAPage(ttk.Frame):
     pass

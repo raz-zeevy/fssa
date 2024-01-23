@@ -9,10 +9,12 @@ from ttkbootstrap.tableview import Tableview
 from PIL import Image, ImageTk
 import os
 
+from lib.components.buttons import DataButton
+
+
 class DataPage(ttk.Frame):
     def __init__(self, parent):
         ttk.Frame.__init__(self, parent.root)
-        self.create_navigation()
         self.colors = parent.root.style.colors
         self.create_data_buttons()
         self.data = None
@@ -95,30 +97,11 @@ class DataPage(ttk.Frame):
         # Pack the frame for data buttons at the bottom of the screen
         frame_data_buttons.pack(side=tk.BOTTOM, fill='x', padx=10, pady=10)
         # Data Buttons
-        self.button_reload = ttk.Button(frame_data_buttons, text="Reload")
+        self.button_reload = DataButton(frame_data_buttons, text="Reload",)
         self.button_reload.pack(side=tk.LEFT, padx=5)
-        self.button_save = ttk.Button(frame_data_buttons, text="Save",)
+        self.button_save = DataButton(frame_data_buttons, text="Save",)
         self.button_save.pack(side=tk.LEFT, padx=5)
 
-
-    def create_navigation(self):
-        # Navigation Buttons Frame
-        frame_navigation = ttk.Frame(self)
-        # pack the navigation at the bottom of the screen but above the help
-        # bar
-        frame_navigation.pack(side=ttk.BOTTOM, fill='x', padx=10,
-                              pady=5)
-        center_frame = ttk.Frame(frame_navigation)
-        center_frame.pack(pady=5, expand=True)
-        self.button_previous = ttk.Button(center_frame,
-                                          text="Previous")
-        self.button_previous.pack(side=ttk.LEFT, padx=5)
-        self.button_next = ttk.Button(center_frame, text="Next")
-        self.button_next.pack(side=ttk.LEFT, padx=5)
-        # self.button_run = ttk.Button(center_frame, text="Run")
-        # self.button_run.pack(side=ttk.LEFT, padx=5)
-
-        # Additional method to get selected rows
 
     def get_selected_rows(self):
         selected_items = self.data_table.selection()
@@ -143,3 +126,11 @@ class DataPage(ttk.Frame):
             labels.append(all_labels[int(col.cid)])
         return labels
 
+    def pack(self, kwargs=None, **kw):
+        if self.data_table:
+            self.data_table.bind_all("<Double-1>", self.on_double_click)
+        super().pack(kwargs, **kw)
+
+    def pack_forget(self) -> None:
+        self.data_table.bind_all("<Double-1>", lambda x : None)
+        super().pack_forget()

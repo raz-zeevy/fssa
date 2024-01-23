@@ -4,6 +4,8 @@ import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from ttkbootstrap.tableview import Tableview
 
+from lib.components.buttons import DataButton
+
 PAGE_SIZE = 12
 
 
@@ -31,13 +33,13 @@ class ManualFormatPage(ttk.Frame):
     def __init__(self, parent):
         self.data_table = None
         ttk.Frame.__init__(self, parent.root)
-        self.create_navigation()
         self.colors = parent.root.style.colors
         self.create_data_buttons()
         self.create_data_table()
 
     def create_data_table(self):
         self.coldata = ["#", "Line No.", "Start Col.", "Field Width",
+                        "Valid Lo.", "Valid Hi.",
                         "Label"]
         rowdata = []
         self.data_table = IndexedTableVIew(
@@ -60,17 +62,37 @@ class ManualFormatPage(ttk.Frame):
             self.data_table.align_column_center(cid=i)
 
     def add_variable(self, line_num="", start_col="", field_width="",
-                     label=""):
+                     valid_low="", valid_high="", label=""):
         index = len(self.data_table.iidmap)+1
-        if self.data_table.tablerows:
+        def new_row_from_last(line_num_="", start_col_="", field_width_="",
+                     valid_low_="", valid_high_="", label_=""):
+            line_num = line_num_ if line_num_ else last_row[1]
+            start_col = start_col_ if start_col_ else int(last_row[2]) + \
+                                                     int(last_row[3])
+            field_width = field_width_ if field_width_ else last_row[3]
+            valid_low = valid_low_ if valid_low_ else last_row[4]
+            valid_high = valid_high_ if valid_high_ else last_row[5]
+            return [index, line_num, start_col, field_width, valid_low,
+                    valid_high, label]
+
+        def new_row_from_default(line_num_="", start_col_="", field_width_="",
+                                 valid_low_="", valid_high_="", label_=""):
+            line_num = line_num_ if line_num_ else '1'
+            start_col = start_col_ if start_col_ else '1'
+            field_width = field_width_ if field_width_ else '1'
+            valid_low = valid_low_ if valid_low_ else '1'
+            valid_high = valid_high_ if valid_high_ else '9'
+            return [index, line_num, start_col, field_width, valid_low,
+                    valid_high, label]
+
+        if self.data_table.tablerows and self.data_table.tablerows[-1].values:
             last_row = self.data_table.tablerows[-1].values
-            if not line_num:
-                line_num = last_row[1]
-            if not start_col:
-                start_col = int(last_row[2]) + 1
-            if not field_width:
-                field_width = last_row[3]
-        new_row = [index, line_num, start_col, field_width, label]
+            new_row = new_row_from_last(line_num, start_col, field_width,
+                                        valid_low, valid_high, label)
+        else:
+            new_row = new_row_from_default(line_num, start_col,
+                                           field_width,
+                                           valid_low, valid_high, label)
         self.data_table.insert_row(index='end', values=new_row)
         self.data_table.load_table_data()
         if len(self.data_table.tablerows) > PAGE_SIZE:
@@ -95,34 +117,25 @@ class ManualFormatPage(ttk.Frame):
         # Pack the frame for data buttons at the bottom of the screen
         frame_data_buttons.pack(side=tk.BOTTOM, fill='x', padx=10, pady=10)
         # Data Buttons
-        self.button_add_variable = ttk.Button(frame_data_buttons, text="Add "
+        self.button_add_variable = DataButton(frame_data_buttons, text="Add "
                                                                  "Variable",
                                               command=self.add_variable)
         self.button_add_variable.pack(side=tk.LEFT, padx=5)
-        self.button_save = ttk.Button(frame_data_buttons, text="Save", )
+        self.button_save = DataButton(frame_data_buttons, text="Save", )
         self.button_save.pack(side=tk.LEFT, padx=5)
-    def create_navigation(self):
-        # Navigation Buttons Frame
-        frame_navigation = ttk.Frame(self)
-        # pack the navigation at the bottom of the screen but above the help
-        # bar
-        frame_navigation.pack(side=ttk.BOTTOM, fill='x', padx=10,
-                              pady=5)
-        center_frame = ttk.Frame(frame_navigation)
-        center_frame.pack(pady=5, expand=True)
-        self.button_previous = ttk.Button(center_frame,
-                                          text="Previous")
-        self.button_previous.pack(side=ttk.LEFT, padx=5)
-        self.button_next = ttk.Button(center_frame, text="Next")
-        self.button_next.pack(side=ttk.LEFT, padx=5)
-
     def get_data_format(self):
+        """
+        Get the data format from the table
+        :return: in format of [{line: 1, col: 1, width: 10, label: "Name"}, ...}]
+        """
         data_format = []
         for i, row in enumerate(self.data_table.tablerows):
             data_format.append(dict(line = int(row.values[1]),
                                     col = row.values[2],
                                     width = row.values[3],
-                                    label = row.values[4]))
+                                    valid_low = row.values[4],
+                                    valid_high = row.values[5],
+                                    label = row.values[6]))
         return data_format
 
     def get_selected_rows(self):

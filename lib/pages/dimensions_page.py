@@ -9,7 +9,6 @@ class DimensionsPage(ttk.Frame):
         ttk.Frame.__init__(self, parent.root)
         self.frame_dimensions_band = None
         self.dimension_scales = None
-        self.create_navigation()
         self.create_entries()
 
     def create_entries(self):
@@ -60,7 +59,6 @@ class DimensionsPage(ttk.Frame):
         self.dimension_combo.current(0)
         self.dimension_combo_selected(None)
 
-
     def dimension_combo_selected(self, event):
         for widget in self.frame_dimensions_band.winfo_children():
             widget.destroy()
@@ -79,12 +77,15 @@ class DimensionsPage(ttk.Frame):
     def get_dimensions(self):
         return [int(scale.get()) for scale in self.dimension_scales]
 
+    def set_dims(self, min, max=None):
+        self.dimension_scales[0].set(min)
+        if max:
+            self.dimension_scales[1].set(max)
     def get_correlation_type(self):
         return self.correlation_combo.get()
 
     def create_band(self, master, text):
         """Create and pack an equalizer band"""
-        from random import randint
         value = 2
         # set the text_variable
         self.setvar(text, 2)
@@ -114,31 +115,6 @@ class DimensionsPage(ttk.Frame):
 
     def update_value(self, value, name):
         self.setvar(name, f"{float(value):.0f}")
-
-        # cbo = ttk.Combobox(
-        #     frame_scale,
-        #     values=['Any 2 finger', 'Other 1', 'Other 2']
-        # )
-        # cbo.current(0)
-        # cbo.pack(side=ttk.RIGHT)
-
-
-
-
-    def create_navigation(self):
-        # Navigation Buttons Frame
-        frame_navigation = ttk.Frame(self)
-        # pack the navigation at the bottom of the screen but above the help
-        # bar
-        frame_navigation.pack(side=ttk.BOTTOM, fill='x', padx=10,
-                              pady=5)
-        center_frame = ttk.Frame(frame_navigation)
-        center_frame.pack(pady=5, expand=True)
-        self.button_previous = ttk.Button(center_frame,
-                                          text="Previous")
-        self.button_previous.pack(side=ttk.LEFT, padx=5)
-        self.button_next = ttk.Button(center_frame, text="Next")
-        self.button_next.pack(side=ttk.LEFT, padx=5)
 
     def set_delimiter(self, delimiter, readonly=True):
         self.entry_delimiter.delete(0, ttk.END)
