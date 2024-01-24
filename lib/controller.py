@@ -26,7 +26,7 @@ class Controller:
         self.data_file_path = None
         self.lines_per_var = None
         self.manual_input = False
-        self.navigate_page(MANUAL_FORMAT_PAGE_NAME)
+        self.navigate_page(START_PAGE_NAME)
         # self.navigate_page(FACET_PAGE_NAME)
         # self.switch_to_facet_dim_page()
 

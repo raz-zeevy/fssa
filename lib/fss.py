@@ -211,9 +211,10 @@ def run_fortran(corr_type,
     result = subprocess.run(full_command, shell=True, stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE, text=True)
     # Print the output and error, if any
+    if result.returncode != 0:
+        raise Exception(f"FSSA script failed : {result.stderr}")
     print("Output:", result.stdout)
     print("Error:", result.stderr)
-
 
 def create_running_files(
         variables_labels: List[dict],

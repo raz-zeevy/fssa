@@ -321,9 +321,9 @@ test_facets = [
 class example_3_controller(Controller):
     def __init__(self):
         super().__init__()
-        self.test_3()
+        self.test_example_3()
 
-    def test_3(self):
+    def test_example_3(self):
         # get the absoult path of the data file
         self.dir_path = os.path.dirname(os.path.abspath(__file__))
         data_file_path = os.path.join(self.dir_path,
@@ -367,12 +367,15 @@ class example_3_controller(Controller):
                            self.gui.pages[FACET_DIM_PAGE_NAME].facets_dim_check_buttons)
         assert self.gui.pages[FACET_DIM_PAGE_NAME].get_facets_dim() == \
                 hypo_data.facets_dim
-        self.gui.button_run.invoke()
+        try:
+            self.gui.button_run.invoke()
+        except Exception as e:
+            raise Exception(e)
         run_file_path = r"C:\Users\Raz_Z\Projects\Shmuel\fssa\run_files" \
                         r"\FSSAINP.DRV"
         true_file_path = os.path.join(self.dir_path, "FSSAINP.DRV")
         assert diff_lines_num(run_file_path, true_file_path) == 1
-        print("done")
+        quit()
 
 if __name__ == '__main__':
     test = example_3_controller()
