@@ -17,14 +17,26 @@ Faceted Smallest Space Analysis (FSSA) is a Multidimensional Scaling (MDS) proce
 To install the `fssa` application, follow these steps:
 
 1. Ensure you have Python version 3.7 or higher installed on your system. You can download it from [python.org](https://www.python.org/).
-2. Clone the repository:
-`
+   
+2. Download the latest version of the code:
+
+   | Version | Date       | Download |
+   |---------|------------|----------|
+   | alpha 0.1 | 2024-01-25 | [![Download](https://img.shields.io/badge/download-zip-blue.svg)](https://github.com/raz-zeevy/fssa/archive/refs/heads/main.zip) |
+
+Alternatively you can clone the repository:
+```batch
 git clone https://github.com/raz-zeevy/fssa.git
-`
-3. Navigate to the cloned directory and install the required dependencies:
-`
+```
+
+3. Unzip the program to a local directory and navigate there.
+ 
+4. Copy the following code and execute it in the folder's terminal:
+```batch
+python -m venv venv
+venv\Scripts\activate
 pip install -r requirements.txt
-`
+```
 ## Usage
 
 Here's how to get started with `fssa`:
