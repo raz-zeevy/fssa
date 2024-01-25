@@ -1,0 +1,1 @@
+start "FSS" venv\Scripts\pythonw.exe app.pyw
