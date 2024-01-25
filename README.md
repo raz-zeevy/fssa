@@ -25,7 +25,7 @@ git clone https://github.com/raz-zeevy/fssa.git
 `
 pip install -r requirements.txt
 `
-# Usage
+## Usage
 
 Here's how to get started with `fssa`:
 
