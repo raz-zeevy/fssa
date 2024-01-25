@@ -1,6 +1,6 @@
 # controller.py
 import os
-
+from config import *
 import pandas as pd
 from lib.gui import GUI
 from lib.gui import StartPage, DataPage, DimensionsPage, FacetPage, \
@@ -32,6 +32,8 @@ class Controller:
         self.navigate_page(START_PAGE_NAME)
         # self.navigate_page(FACET_PAGE_NAME)
         # self.switch_to_facet_dim_page()
+        self.gui.show_msg("Welcome to FSSAwin", "Please load a data file to "
+                                                 "start")
 
     def error_handler(func):
         def wrapper(self, *args, **kwargs):
@@ -74,11 +76,12 @@ class Controller:
         self.gui.file_menu.entryconfig("Run", state="disabled")
         self.gui.button_run.config(state="disabled")
 
+    def open_results(self):
+        os.startfile(self.output_path)
     def enable_view_results(self):
-        def view_results():
-            os.startfile(self.output_path)
         self.gui.view_menu.entryconfig("Output File", state="normal")
-        self.gui.view_menu.entryconfig("Output File", command=view_results)
+        self.gui.view_menu.entryconfig("Output File",
+                                       command=self.open_results)
 
 
     def enable_view_input(self):
@@ -219,7 +222,16 @@ class Controller:
             facet_dim_details = facet_dim_details,
             valid_values_range=valid_values_range
         )
-        run_fortran(corr_type, self.output_path)
+        try:
+            run_fortran(corr_type, self.output_path)
+        except Exception as e:
+            raise e
+        else:
+            self.gui.show_msg("Finished running FSS Successfully.\n"
+                              'Click on "Open" to view results',
+                              title="Job Finished Successfully",
+                              buttons=["Open:primary","Close:secondary"],
+                              yes_commend=self.open_results)
         print("running")
 
     @error_handler

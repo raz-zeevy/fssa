@@ -1,5 +1,7 @@
 import os
 
+import config
+
 WINDOW_HEIGHT = 600
 WINDOW_WIDTH = 750
 
@@ -18,6 +20,15 @@ p_FSS_DIR = './scripts/fssa-21'
 SCRIPT_PEARSON = "PEARSON"
 SCRIPT_MONO = "MONO"
 
+def GET_MODE():
+    return os.environ.get('MODE')
+
+def SET_MODE_TEST():
+    import os
+    os.environ['MODE'] = config.MODE_DEBUG
+def IS_PRODUCTION():
+    import config
+    return GET_MODE() == config.MODE_PRODUCTION
 
 def get_script_dir_path():
     try:

@@ -1,9 +1,11 @@
 from lib.controller import *
 from lib.controller import Controller
 from lib.fss.fss_parsers import *
-from tests.tests_utils import *
+from lib.tests_utils import *
 import unittest
 from const import *
+
+SET_MODE_TEST()
 
 ###
 test_facets = [

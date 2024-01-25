@@ -28,6 +28,13 @@ script_dir = os.path.dirname(os.path.realpath(__file__))
 # Construct the path to the image relative to the script's directory
 p_ICON = '../assets/icon.ico'
 
+
+def gui_only(func, *args, **kwargs):
+    def wrapper(self, *args, **kwargs):
+        if IS_PRODUCTION():
+            func(self, *args, **kwargs)
+    return wrapper
+
 class GUI():
     def __init__(self):
         # Main window
@@ -165,6 +172,18 @@ class GUI():
         # You might want to inform the user with a message box
         # messagebox.showerror("Save Error", "The file contains non-ASCII characters.")
 
+    @gui_only
+    def show_msg(self,msg, title=None, yes_commend = None,
+                 buttons = ['Yes:primary', 'No:secondary']):
+        # Handle the error if your data contains non-ASCII characters
+        if yes_commend:
+            clicked_yes = Messagebox.show_question(msg, title, buttons=[
+                buttons[0], buttons[1]])
+            if clicked_yes == buttons[0].split(":")[0]:
+                yes_commend()
+        else:
+            Messagebox.show_info(msg, title)
+
     def save_file(self, file_types=None, default_extension=None,
                   initial_file_name=None, title=None):
         file_name = filedialog.asksaveasfilename(filetypes=file_types,
@@ -204,6 +223,9 @@ class GUI():
                                               initial_file_name="output.fss",
                                               title="Save Output File To...")
         return output_file_path
+
+
+
 
 class FFSAPage(ttk.Frame):
     pass

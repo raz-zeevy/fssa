@@ -1,8 +1,11 @@
 from lib.controller import *
 from lib.controller import Controller
 from lib.fss.fss_parsers import *
-from tests.tests_utils import *
+from lib.tests_utils import *
 from const import *
+
+SET_MODE_TEST()
+
 ###
 test_facets = [
                 ["figural", "verbal", "numeral", "social"],
@@ -76,6 +79,7 @@ class example_3_gui(Controller):
                 r"C:\Users\Raz_Z\Projects\Shmuel\fssa\output" \
                 r"\test_3_gui.fss"
             self.run_fss()
+            self.enable_view_results()
         except Exception as e:
             print(e)
             assert False
