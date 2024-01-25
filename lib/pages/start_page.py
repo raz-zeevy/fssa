@@ -98,10 +98,6 @@ class StartPage(ttk.Frame):
             self.entry_delimiter.state(['readonly'])
             self.entry_lines.state(['readonly'])
 
-    def save_file(self):
-        file_name = filedialog.asksaveasfilename(filetypes=[('csv', '*.csv')],
-                                                 defaultextension=".csv")
-        return file_name
     def browse_file(self):
         filename = filedialog.askopenfilename()
         self.entry_data_file.delete(0, ttk.END)

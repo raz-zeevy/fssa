@@ -9,23 +9,29 @@ class HypothesisPage(ttk.Frame):
     def __init__(self, parent):
         ttk.Frame.__init__(self, parent.root)
         self.models = []
-        self.create_entries()
-    def create_entries(self):
-        num_facets = 4
+        self.main_frame = None
+
+    def create_entries(self, facets_num):
         # Main Frame
-        main_frame = ttk.Frame(self)
-        main_frame.pack(fill='x', padx=ENTRIES_PADX, pady=(40, 0))
+        if self.main_frame:
+            for widget in self.main_frame.winfo_children():
+                widget.destroy()
+            self.main_frame.destroy()
+            self.models = []
+
+        self.main_frame = ttk.Frame(self)
+        self.main_frame.pack(fill='x', padx=ENTRIES_PADX, pady=(40, 0))
         # Label for the text
-        label_text = ttk.Label(main_frame,
+        label_text = ttk.Label(self.main_frame,
                                text="REGIONAL HYPOTHESES TO BE TESTED",)
         label_text.pack(side=ttk.TOP, fill='x',
                         expand=True, padx=ENTRIES_PADX+20)
         # boxes frame
-        hypo_boxes_frame = ttk.Frame(main_frame)
+        hypo_boxes_frame = ttk.Frame(self.main_frame)
         hypo_boxes_frame.pack(fill='x', padx=ENTRIES_PADX, pady=10)
 
         # Checkbox, without text, aligned to the right
-        for facet in range(num_facets):
+        for facet in range(facets_num):
             facet_models = []
             facet_txt = f"Facet {chr(65 + facet)}"
             facet_frame = ttk.LabelFrame(hypo_boxes_frame, text=facet_txt)

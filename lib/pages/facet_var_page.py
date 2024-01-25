@@ -7,7 +7,7 @@ from ttkbootstrap import Canvas, Frame, Scrollbar, Label
 # Constants for the layout
 TABLE_PADX = 20
 ENTRIES_PADX = 40
-WIDTH_FACET_COMBO = 10
+WIDTH_FACET_COMBO = 40
 
 class FacetVarPage(ttk.Frame):
     def __init__(self, parent):
@@ -16,7 +16,6 @@ class FacetVarPage(ttk.Frame):
         self.main_table_frame = None
         self.parent = parent
         self.create_entries()
-        self.width_facet_combo = WIDTH_FACET_COMBO
     def create_entries(self):
         frame_correlation_combo = ttk.Frame(self)
         frame_correlation_combo.pack(fill='x', padx=ENTRIES_PADX, pady=(20,
@@ -36,6 +35,7 @@ class FacetVarPage(ttk.Frame):
         """
         var_num = len(var_labels)
         num_facets = len(facet_details)
+        self.width_facet_combo = int(WIDTH_FACET_COMBO / num_facets)
 
         def on_frame_configure(canvas):
             '''Reset the scroll region to encompass the inner frame'''
@@ -47,6 +47,7 @@ class FacetVarPage(ttk.Frame):
         if self.main_table_frame:
             for widget in self.main_table_frame.winfo_children():
                 widget.destroy()
+            self.main_table_frame.destroy()
             self.combo_by_var = []
 
         # Create a frame for the table and self.scrollbar
@@ -104,7 +105,7 @@ class FacetVarPage(ttk.Frame):
             if var_label == "":
                 var_label = f"Variable {row:02d}"
             else:
-                var_label = f"{row:02d} {var_label}"+ " "*(12-len(var_label))
+                var_label = f"{row:02d} {var_label}"+ " "*(7-len(var_label))
             Label(self.table_frame, text=var_label,
                   borderwidth=0.5, relief="solid",
                   bootstyle='primary').grid(row=row - 1, column=0, sticky='ew', ipady=7)
@@ -120,12 +121,12 @@ class FacetVarPage(ttk.Frame):
                 combobox.unbind_class("TCombobox", "<MouseWheel>")
             self.combo_by_var.append(var_combos)
         # Adjust column configuration for equal width
-        col_weights = (1,16,16,16,16)
+        col_weights = [1] + [16] * num_facets
         self.table_frame.grid_columnconfigure(0, weight=1)
         for col in range(num_facets + 1):
             self.header_frame.grid_columnconfigure(col, weight=col_weights[
                 col])
-            self.table_frame.grid_columnconfigure(col, weight=3)
+            self.table_frame.grid_columnconfigure(col, weight=1)
 
     def get_all_var_facets_indices(self):
         data = []
