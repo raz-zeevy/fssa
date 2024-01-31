@@ -25,8 +25,9 @@ class FacetDimPage(ttk.Frame):
                                                                         20))
 
         correlation_label = ttk.Label(frame_correlation_combo,
-                                      text="Mark the dimensionality you "
-                                           "wish diagrammed for the facets:")
+                                      text="Mark the dimensionalities for "
+                                           "which facet diagrams will be "
+                                           "created”")
         correlation_label.pack(side="left")
 
     def create_facet_dimension_table(self, num_facets, max_dim, min_dim):
@@ -51,7 +52,7 @@ class FacetDimPage(ttk.Frame):
         # Table of check buttons
         for dim in range(min_dim, max_dim+1):
             dim_buttons = []
-            dim_facet_label = ttk.Checkbutton(self.table_frame, text=dim + 2,
+            dim_facet_label = ttk.Checkbutton(self.table_frame, text=dim,
                                               bootstyle="toolbutton", )
             dim_facet_label.state(['selected'])
             dim_facet_label.bind("<Button-1>", lambda e: None)

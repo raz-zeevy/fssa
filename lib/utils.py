@@ -64,3 +64,5 @@ RESULTS_SUCCESS_STDERR = """STOP NEWMON terminated successfully
 Note: The following floating-point exceptions are signalling: IEEE_DENORMAL
 STOP SSA terminated successfully.
 """
+
+### Gui

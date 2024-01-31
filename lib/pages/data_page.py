@@ -9,7 +9,7 @@ from ttkbootstrap.tableview import Tableview
 from PIL import Image, ImageTk
 import os
 
-from lib.components.buttons import DataButton
+from lib.components.form import DataButton
 
 
 class DataPage(ttk.Frame):
@@ -33,7 +33,7 @@ class DataPage(ttk.Frame):
             master=self,
             coldata=coldata,
             rowdata=rowdata,
-            paginated=True,
+            paginated=False,
             searchable=False,
             autofit=True,
             autoalign=True,
@@ -74,23 +74,27 @@ class DataPage(ttk.Frame):
         #     self.data_table.insert('', 'end', values=list(row[1]))
         #
         # # Bind double-click event
-        self.data_table.bind_all("<Double-1>", self.on_double_click)
-        self.data_table.align_column_center(cid=0)
+        self.data_table.view.unbind('<Button-1>')
+        self.data_table.view.bind_all("<Double-1>", self.on_double_click)
+        for col in self.data_table.view['columns']:
+            self.data_table.view.heading(col, command=lambda: None)
         for i in range(len(self.data.columns)):
             self.data_table.align_heading_center(cid=i)
+            self.data_table.align_column_center(cid=i)
         # # Pack the Treeview last so it fills the remaining space
         # self.data_table.pack(side=ttk.LEFT, fill='both', expand=True)
 
     def on_double_click(self, event):
-        item = self.data_table.view.identify('item', event.x, event.y)
+        region = self.data_table.view.identify("region", event.x, event.y)
         column = self.data_table.view.identify_column(event.x)
-        value = self.data_table.view.item(item, 'values')[int(column[1:]) - 1]
-        new_value = askstring("Edit Value", "Edit the value:",
-                              initialvalue=value)
-        if new_value is not None:
-            self.data_table.view.set(item, column=column, value=new_value)
-            self.data_table.iidmap[item].values[int(column[1:]) - 1] = \
-                new_value
+        if region == "heading":
+            # Editing a column name
+            old_col_name = self.data_table.view.heading(column)['text']
+            new_col_name = askstring("Edit Variable Label",
+                                     "Edit the variable label:",
+                                     initialvalue=old_col_name)
+            if new_col_name is not None:
+                self.data_table.view.heading(column, text=new_col_name)
     def create_data_buttons(self):
         # Data Buttons Frame
         frame_data_buttons = ttk.Frame(self)
@@ -112,25 +116,24 @@ class DataPage(ttk.Frame):
     def get_all_visible_data(self):
         data = []
         for i,row in enumerate(self.data_table.tablerows):
-            if i == 0: continue
             cols = self.data_table.tablecolumns_visible
-            cols = list(map(lambda x: x.cid, cols))[1:]
+            cols = list(map(lambda x: x.cid, cols))
             data.append([row.values[int(x)] for x in cols])
         return data
 
     def get_visible_labels(self):
+        """ get the labels from the columns of the datatable"""
         labels = []
-        all_labels = self.data_table.tablerows[0].values
-        for i,col in enumerate(self.data_table.tablecolumns_visible):
-            if i == 0: continue
-            labels.append(all_labels[int(col.cid)])
+        for i, col in enumerate(self.data_table.tablecolumns_visible):
+            labels.append(self.data_table.view.heading(i)['text'])
         return labels
 
     def pack(self, kwargs=None, **kw):
         if self.data_table:
-            self.data_table.bind_all("<Double-1>", self.on_double_click)
+            self.data_table.view.bind_all("<Double-1>", self.on_double_click)
         super().pack(kwargs, **kw)
 
     def pack_forget(self) -> None:
-        self.data_table.bind_all("<Double-1>", lambda x : None)
+        if self.data_table:
+            self.data_table.bind_all("<Double-1>", lambda x : None)
         super().pack_forget()

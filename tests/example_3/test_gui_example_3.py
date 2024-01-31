@@ -26,10 +26,9 @@ class example_3_gui(Controller):
                                       EX_3_DATA_PATH)
         self.gui.pages[START_PAGE_NAME].set_data_file_path(
             data_file_path)
+        self.gui.pages[START_PAGE_NAME].checkbox_missing_value.invoke()
         self.gui.pages[START_PAGE_NAME].set_entry_lines(4)
-        self.gui.pages[START_PAGE_NAME].button_manual_input.state([
-            "!disabled"])
-        self.gui.pages[START_PAGE_NAME].button_manual_input.invoke()
+        self.gui.button_next.invoke()
         manual_page = self.gui.pages[MANUAL_FORMAT_PAGE_NAME]
         simulate_manual_format(EX_3_FORMAT_TXT, manual_page.add_variable,
                                labels=EX_3_LABELS_TXT,

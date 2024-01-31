@@ -4,7 +4,7 @@ import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from ttkbootstrap.tableview import Tableview
 
-from lib.components.buttons import DataButton
+from lib.components.form import DataButton
 
 PAGE_SIZE = 12
 
@@ -33,6 +33,8 @@ class ManualFormatPage(ttk.Frame):
     def __init__(self, parent):
         self.data_table = None
         ttk.Frame.__init__(self, parent.root)
+        self.coldata = None
+        self.are_missing_values = True
         self.colors = parent.root.style.colors
         self.create_data_buttons()
         self.create_data_table()
@@ -61,9 +63,19 @@ class ManualFormatPage(ttk.Frame):
             self.data_table.align_heading_center(cid=i)
             self.data_table.align_column_center(cid=i)
 
+    def load_missing_values(self, are_missing_values):
+        self.are_missing_values = are_missing_values
+        if self.are_missing_values:
+            self.data_table.tablecolumns[-2].show()
+            self.data_table.tablecolumns[-3].show()
+        else:
+            self.data_table.tablecolumns[-2].hide()
+            self.data_table.tablecolumns[-3].hide()
+
     def add_variable(self, line_num="", start_col="", field_width="",
                      valid_low="", valid_high="", label=""):
         index = len(self.data_table.iidmap)+1
+        label = f"var{index}" if not label else label
         def new_row_from_last(line_num_="", start_col_="", field_width_="",
                      valid_low_="", valid_high_="", label_=""):
             line_num = line_num_ if line_num_ else last_row[1]
@@ -100,17 +112,19 @@ class ManualFormatPage(ttk.Frame):
 
     def on_double_click(self, event):
         item = self.data_table.view.identify('item', event.x, event.y)
-        column = self.data_table.view.identify_column(event.x)
+        column_key = self.data_table.view.identify_column(event.x)
+        column_i = int(column_key[1:])
+        if not self.are_missing_values:
+            column_i += 2
         try:
-            value = self.data_table.view.item(item, 'values')[int(column[1:]) - 1]
+            value = self.data_table.view.item(item, 'values')[column_i - 1]
         except IndexError:
             return
         new_value = askstring("Edit Value", "Edit the value:",
                               initialvalue=value)
         if new_value is not None:
-            self.data_table.view.set(item, column=column, value=new_value)
-            self.data_table.iidmap[item].values[int(column[1:]) - 1] = \
-                new_value
+            self.data_table.view.set(item, column=column_key, value=new_value)
+            self.data_table.iidmap[item].values[column_i - 1] = new_value
     def create_data_buttons(self):
         # Data Buttons Frame
         frame_data_buttons = ttk.Frame(self)
@@ -123,6 +137,7 @@ class ManualFormatPage(ttk.Frame):
         self.button_add_variable.pack(side=tk.LEFT, padx=5)
         self.button_save = DataButton(frame_data_buttons, text="Save", )
         self.button_save.pack(side=tk.LEFT, padx=5)
+
     def get_data_format(self):
         """
         Get the data format from the table
@@ -130,11 +145,28 @@ class ManualFormatPage(ttk.Frame):
         """
         data_format = []
         for i, row in enumerate(self.data_table.tablerows):
+            width = int(row.values[3])
+            valid_low = int(row.values[4])
+            valid_high = int(row.values[5])
+            label = row.values[6]
+            if not self.are_missing_values and width == 2:
+                valid_high = 99
+            if width not in [1, 2]:
+                raise ValueError(f"Field width of {width} is not valid. "
+                                 f"Field width must be 1 or 2.")
+            if valid_low > valid_high:
+                raise ValueError(f"Valid low of {valid_low} is greater than "
+                                 f"valid high of {valid_high}.")
+            if valid_low < 0 or valid_high > 99:
+                raise ValueError(f"Valid low of {valid_low} or valid high of "
+                                 f"{valid_high} is not between 0 and 99.")
+            if not label.isascii():
+                raise ValueError(f'Label: "{label}" is not in ASCII.')
             data_format.append(dict(line = int(row.values[1]),
-                                    col = row.values[2],
-                                    width = row.values[3],
-                                    valid_low = row.values[4],
-                                    valid_high = row.values[5],
+                                    col = int(row.values[2]),
+                                    width = width,
+                                    valid_low = valid_low,
+                                    valid_high = valid_high,
                                     label = row.values[6]))
         return data_format
 

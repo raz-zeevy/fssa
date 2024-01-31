@@ -18,37 +18,50 @@ MANUAL_FORMAT_PAGE_NAME = ManualFormatPage.__name__
 HYPOTHESIS_PAGE_NAME = HypothesisPage.__name__
 FACET_DIM_PAGE_NAME = FacetDimPage.__name__
 
-
 class Controller:
     def __init__(self):
         self.gui = GUI()
         self.bind_events()
         self.bind_menu()
+        self.navigator = self.init_navigator()
         self.facets_num = 0
+        self.max_dim = None
+        self.min_dim = None
         self.data_file_path = None
         self.lines_per_var = None
+        self.are_missing_values = None
         self.manual_input = False
         self.output_path = None
         self.navigate_page(START_PAGE_NAME)
+        # self.load_data_page()
+        # self.navigate_page(DATA_PAGE_NAME)
         # self.navigate_page(FACET_PAGE_NAME)
         # self.switch_to_facet_dim_page()
-        self.gui.show_msg("Welcome to FSSAwin", "Please load a data file to "
-                                                 "start")
+
+    def init_navigator(self):
+        navigator = Navigator(self.gui.pages)
+        navigator.hide_page(MANUAL_FORMAT_PAGE_NAME)
+        navigator.add_block(FACET_PAGE_NAME)
+        return navigator
 
     def error_handler(func):
         def wrapper(self, *args, **kwargs):
             try:
                 return func(self, *args, **kwargs)
             except Exception as e:
-                self.gui.show_error("Error Occurred", str(e))
-            except Exception as e:
-                self.show_error("An error occurred", str(e))
+                if IS_PRODUCTION():
+                    self.gui.show_error("Error Occurred", str(e))
+                else:
+                    raise e
         return wrapper
 
     def bind_events(self):
         self.gui.pages[START_PAGE_NAME]. \
             button_browse.bind("<Button-1>",
                                lambda x: self.load_file())
+        self.gui.pages[START_PAGE_NAME].check_box_manual_input.config(
+            command=self.on_manual_input_change
+        )
         self.gui.pages[DATA_PAGE_NAME]. \
             button_save.bind("<Button-1>",
                              lambda x: self.save_data())
@@ -58,13 +71,17 @@ class Controller:
         self.gui.pages[FACET_PAGE_NAME]. \
             facets_combo.bind("<<ComboboxSelected>>",
                               self.on_facet_num_change)
-        self.gui.pages[START_PAGE_NAME]. \
-            button_manual_input.config(
-            command=self.switch_to_manual_format_page)
+        # bind the buttons
+        self.gui.button_run.config(command=lambda: self.run_button_click())
+        self.gui.button_next.config(command=self.next_page)
+        self.gui.button_previous.config(command=self.previous_page)
+        # bind gui getters
+        self.gui.get_input_file_name = lambda : os.path.basename(self.data_file_path)
 
     def bind_menu(self):
         self.gui.file_menu.entryconfig("Run", command=self.run_button_click)
-        self.gui.input_data_menu.entryconfig("Data", command=self.load_data_page)
+        self.gui.input_data_menu.entryconfig("Data",
+                                             command=self.load_data_page)
         self.gui.input_data_menu.entryconfig("Variables",
                                              command=self.switch_to_manual_format_page)
 
@@ -78,17 +95,19 @@ class Controller:
 
     def open_results(self):
         os.startfile(self.output_path)
+
     def enable_view_results(self):
         self.gui.view_menu.entryconfig("Output File", state="normal")
         self.gui.view_menu.entryconfig("Output File",
                                        command=self.open_results)
 
-
     def enable_view_input(self):
         def view_input():
             os.startfile(self.data_file_path)
+
         self.gui.view_menu.entryconfig("Input File", state="normal")
         self.gui.view_menu.entryconfig("Input File", command=view_input)
+
     def on_facet_num_change(self, event):
         facet_page = self.gui.pages[FACET_PAGE_NAME]
         facet_page.update_facet_count()
@@ -97,75 +116,92 @@ class Controller:
         if self.facets_num > 0:
             self.load_facet_dim_page()
             self.load_hypothesis_page()
-        if self.facets_num > 0:
+            self.navigator.remove_block(FACET_PAGE_NAME)
+        else:
+            self.navigator.add_block(FACET_PAGE_NAME)
+            self.gui.button_run.update()
+        self.update_navigation_buttons()
+
+    def on_manual_input_change(self):
+        self.gui.pages[
+            START_PAGE_NAME].on_manual_input_change()
+        self.manual_input = self.gui.pages[
+            START_PAGE_NAME].manual_input_var.get()
+        if self.manual_input:
+            self.navigator.show_page(MANUAL_FORMAT_PAGE_NAME)
+        else:
+            self.navigator.hide_page(MANUAL_FORMAT_PAGE_NAME)
+
+    @error_handler
+    def next_page(self):
+        cur_page = self.navigator.get_current()
+        next_page = self.navigator.get_next()
+        # Start Page
+        if cur_page == START_PAGE_NAME:
+            self.manual_input = self.gui.pages[
+                START_PAGE_NAME].manual_input_var.get()
+            self.are_missing_values = self.gui.pages[
+                START_PAGE_NAME].missing_value_var.get()
+            if self.manual_input:
+                self.gui.pages[MANUAL_FORMAT_PAGE_NAME].load_missing_values(
+                    self.are_missing_values)
+                self.navigator.show_page(MANUAL_FORMAT_PAGE_NAME)
+            else:
+                self.navigator.hide_page(MANUAL_FORMAT_PAGE_NAME)
+        # Dimension Page
+        if cur_page == DIMENSIONS_PAGE_NAME:
+            self.min_dim = self.gui.pages[
+                DIMENSIONS_PAGE_NAME].get_dimensions()[0]
+            self.max_dim = self.gui.pages[
+                DIMENSIONS_PAGE_NAME].get_dimensions()[-1]
+            if self.facets_num > 0:
+                self.load_facet_dim_page()
+                if self.min_dim > 2:
+                    self.navigator.hide_page(HYPOTHESIS_PAGE_NAME)
+                else:
+                    self.navigator.show_page(HYPOTHESIS_PAGE_NAME)
+        if cur_page == MANUAL_FORMAT_PAGE_NAME:
+            if not self.gui.pages[MANUAL_FORMAT_PAGE_NAME].get_data_format():
+                raise Exception(
+                    "Usage Error:\n At least one variable must be"
+                    " inserted")
+                return
+            self.manual_input = True
+        if cur_page == FACET_PAGE_NAME:
+            self.load_facet_var_page()
+        if next_page == DATA_PAGE_NAME:
+            self.load_data_page()
+        self.navigate_page(next_page)
+
+    def previous_page(self):
+        previous_page = self.navigator.get_prev()
+        self.navigate_page(previous_page)
+
+    def update_navigation_buttons(self):
+        # change the state of previous and next buttons
+        if self.navigator.get_prev():
+            self.gui.button_previous_config(state="normal")
+        else:
+            self.gui.button_previous_config(state="disabled")
+        if self.navigator.get_next():
             self.gui.button_next_config(state="normal")
         else:
             self.gui.button_next_config(state="disabled")
-            self.gui.button_run.update()
 
     def navigate_page(self, page_name: str):
         # switch page on gui
         self.gui.switch_page(page_name)
-        current_page = self.gui.current_page
-        # bind the run button
-        self.gui.button_run.config(command=lambda: self.run_button_click())
-        # change the binding of the navigation
-        if current_page == self.gui.pages['StartPage']:
-            self.gui.button_next_config(command=lambda: self.load_data_page())
-            self.gui.button_previous_config(state="disabled")
+        self.navigator.set_page(page_name)
+
+        # change the state of previous and next buttons
+        self.update_navigation_buttons()
+
+        # change the state of the run button
+        if page_name in [START_PAGE_NAME, MANUAL_FORMAT_PAGE_NAME,
+                         DATA_PAGE_NAME, DIMENSIONS_PAGE_NAME]:
             self.disable_run()
-        if current_page == self.gui.pages['ManualFormatPage']:
-            self.gui.button_next_config(command=lambda: self.load_data_page())
-            self.gui.button_previous_config(command=lambda: self.navigate_page(
-                START_PAGE_NAME))
-            self.disable_run()
-            self.gui.button_previous_config(state="normal")
-        elif current_page == self.gui.pages['DataPage']:
-            self.gui.button_next_config(command=lambda: self.navigate_page(
-                DIMENSIONS_PAGE_NAME))
-            if not self.manual_input:
-                self.gui.button_previous_config(
-                    command=lambda: self.navigate_page(
-                        START_PAGE_NAME))
-            else:
-                self.gui.button_previous_config(
-                    command=lambda: self.navigate_page(
-                        MANUAL_FORMAT_PAGE_NAME))
-            self.gui.button_previous_config(command=lambda: self.navigate_page(
-                START_PAGE_NAME))
-            self.gui.button_previous_config(state="normal")
-            self.disable_run()
-        elif current_page == self.gui.pages['DimensionsPage']:
-            self.gui.button_next_config(command=lambda: self.navigate_page(
-                FACET_PAGE_NAME))
-            self.gui.button_next_config(state="normal")
-            self.gui.button_previous_config(command=lambda: self.navigate_page(
-                DATA_PAGE_NAME))
-        elif current_page == self.gui.pages['FacetPage']:
-            self.gui.button_next_config(
-                command=lambda: self.load_facet_var_page())
-            self.gui.button_previous_config(command=lambda: self.navigate_page(
-                DIMENSIONS_PAGE_NAME))
+        else:
             self.enable_run()
-            if self.facets_num > 0:
-                self.gui.button_next_config(state="normal")
-            else:
-                self.gui.button_next_config(state="disabled")
-        elif current_page == self.gui.pages['FacetVarPage']:
-            self.gui.button_next_config(
-                command=lambda: self.navigate_page(HYPOTHESIS_PAGE_NAME))
-            self.gui.button_previous_config(command=lambda: self.navigate_page(
-                FACET_PAGE_NAME))
-        elif current_page == self.gui.pages['HypothesisPage']:
-            self.gui.button_next_config(
-                command=lambda: self.navigate_page(FACET_DIM_PAGE_NAME))
-            self.gui.button_previous_config(command=lambda: self.navigate_page(
-                FACET_VAR_PAGE_NAME))
-            self.gui.button_next_config(state="normal")
-        elif current_page == self.gui.pages['FacetDimPage']:
-            self.gui.button_next_config(state="disabled")
-            self.gui.button_previous_config(command=lambda: self.navigate_page(
-                HYPOTHESIS_PAGE_NAME))
 
     def get_valid_values(self):
         all_format = self.gui.pages[
@@ -185,16 +221,12 @@ class Controller:
         # get parameters for fss
         corr_type = self.gui.pages[
             DIMENSIONS_PAGE_NAME].get_correlation_type()
-        min_dim = self.gui.pages[
-            DIMENSIONS_PAGE_NAME].get_dimensions()[0]
-        max_dim = self.gui.pages[
-            DIMENSIONS_PAGE_NAME].get_dimensions()[-1]
         data = self.gui.pages[DATA_PAGE_NAME].get_all_visible_data()
         labels = []
         # remove the labels that are default
         for i, label in enumerate(self.gui.pages[
                                       DATA_PAGE_NAME].get_visible_labels()):
-            if label == f"var{i+1}":
+            if label == f"var{i + 1}":
                 labels.append("")
             else:
                 labels.append(label)
@@ -215,11 +247,11 @@ class Controller:
             variables_labels=variables_labels,
             correlation_type=corr_type,
             data_matrix=data,
-            min_dim=min_dim, max_dim=max_dim,
-            facet_details = facet_details,
-            facet_var_details = facet_var_details,
-            hypotheses_details = hypotheses_details,
-            facet_dim_details = facet_dim_details,
+            min_dim=self.min_dim, max_dim=self.max_dim,
+            facet_details=facet_details,
+            facet_var_details=facet_var_details,
+            hypotheses_details=hypotheses_details,
+            facet_dim_details=facet_dim_details,
             valid_values_range=valid_values_range
         )
         try:
@@ -230,7 +262,7 @@ class Controller:
             self.gui.show_msg("Finished running FSS Successfully.\n"
                               'Click on "Open" to view results',
                               title="Job Finished Successfully",
-                              buttons=["Open:primary","Close:secondary"],
+                              buttons=["Open:primary", "Close:secondary"],
                               yes_commend=self.open_results)
         print("running")
 
@@ -239,48 +271,32 @@ class Controller:
         # load data
         self.data_file_path = self.gui.pages[
             START_PAGE_NAME].get_data_file_path()
-        if self.data_file_path:
-            self.enable_view_input()
         self.lines_per_var = self.gui.pages[
             START_PAGE_NAME].get_lines_per_var()
-        called_page = self.gui.current_page.__class__.__name__
-        if called_page == START_PAGE_NAME:
+        if self.data_file_path:
+            self.enable_view_input()
+        #
+        if self.manual_input:
+            data_format = self.gui.pages[
+                MANUAL_FORMAT_PAGE_NAME].get_data_format()
+            data = load_data_file(self.data_file_path,
+                                  lines_per_var=self.lines_per_var,
+                                  manual_format=data_format)
+            data.columns = [row["label"] for row in data_format]
+        else:
             if not self.data_file_path:
                 data = get_random_data()
             else:
                 data = load_data_file(self.data_file_path,
                                       lines_per_var=self.lines_per_var,
                                       delimiter=self.gui.pages[
-                                          'StartPage'].entry_delimiter.get())
-        elif called_page == MANUAL_FORMAT_PAGE_NAME:
-            data_format = self.gui.pages[
-                MANUAL_FORMAT_PAGE_NAME].get_data_format()
-            if not data_format:
-                raise Exception("Usage Error:\n At least one variable must be"
-                                " inserted")
-            data = load_data_file(self.data_file_path,
-                                  lines_per_var=self.lines_per_var,
-                                  manual_format=data_format)
-        else:
-            raise Exception("Usage Error:\n Unknown page called to switch to"
-                            " data page")
-        # row
-        # add a labels row
-        if called_page == MANUAL_FORMAT_PAGE_NAME:
-            data.loc[-1] = [row["label"] for row in data_format]
-        else:
-            data.loc[-1] = [f"var{i + 1}" for i in
+                                          'StartPage'].get_delimiter())
+            data.columns = [f"var{i + 1}" for i in
                             range(len(data.columns))]
-        data.index = data.index + 1  # shifting index
-        data.sort_index(inplace=True)
-        index_col = list(range(len(data.index)))
-        index_col[0] = "labels"
-        data.insert(loc=0, column="", value=index_col)
-        self.navigate_page(DATA_PAGE_NAME)
+        ##########
         self.gui.pages[DATA_PAGE_NAME].show_data(data)
 
     def load_facet_var_page(self):
-        self.navigate_page(FACET_VAR_PAGE_NAME)
         facets_details = self.gui.pages[FACET_PAGE_NAME].get_facets_details()
         var_labels = self.gui.pages[DATA_PAGE_NAME].get_visible_labels()
         self.gui.pages[FACET_VAR_PAGE_NAME].create_facet_variable_table(
@@ -318,13 +334,11 @@ class Controller:
         if self.data_file_path:
             self.gui.pages['StartPage'].default_entry_lines()
             suggest_delimiter(self.data_file_path)
-            self.gui.pages['StartPage'].button_manual_input.config(
-                state='normal')
 
     @error_handler
     def save_data(self):
         file_name = self.gui.save_file(file_types=[('csv', '*.csv')],
-                                       default_extension=".csv",)
+                                       default_extension=".csv", )
         data = pd.DataFrame(self.gui.pages[
                                 DATA_PAGE_NAME].get_all_visible_data())
         if file_name:
@@ -346,11 +360,90 @@ class Controller:
 
     def switch_to_manual_format_page(self):
         self.manual_input = True
+        self.navigator.show_page(MANUAL_FORMAT_PAGE_NAME)
         self.navigate_page(MANUAL_FORMAT_PAGE_NAME)
 
     def load_hypothesis_page(self):
         self.gui.pages[HYPOTHESIS_PAGE_NAME].create_entries(self.facets_num)
 
+
+class Navigator():
+    class Page():
+        def __init__(self, name, show=True):
+            self.name : str = name
+            self.show : bool = show
+
+    def __init__(self, pages_list=None):
+        self.pages_list = [Navigator.Page(page_name) for page_name in
+                           pages_list]
+        self.index : int = 0
+
+    def append_page(self, page_name):
+        self.pages_list.append(page_name)
+
+    def pop_page(self, index=None):
+        return self.pages_list.pop(index)
+
+    ######
+    def set_page(self, page_name : str):
+        self.index = self.get_index(page_name)
+
+    ######
+
+    def get_next(self) -> str:
+        if self.index == len(self.pages_list):
+            return None
+        for i in range(self.index+1, len(self.pages_list)):
+            if self.pages_list[i].show:
+                return self.pages_list[i].name
+
+    def get_current(self) -> str:
+        return self.pages_list[self.index].name
+
+    def get_prev(self) -> str:
+        if self.index == 0:
+            return None
+        for i in range(self.index-1, -1, -1):
+            if self.pages_list[i].show:
+                return self.pages_list[i].name
+
+    ######
+
+    def hide_page(self, name : str):
+        index = self.find(name)
+        if index is None:
+            raise Exception(
+                "Usage Error:\n Can't hide page that doesn't exist")
+        self.pages_list[index].show = False
+
+    def show_page(self, name : str):
+        index = self.find(name)
+        if index is None:
+            raise Exception(
+                "Usage Error:\n Can't show page that doesn't exist")
+        self.pages_list[index].show = True
+
+    def add_block(self, name: str):
+        index = self.get_index(name)
+        for i in range(index + 1, len(self.pages_list)):
+            self.pages_list[i].show = False
+
+    def remove_block(self, name: str):
+        index = self.get_index(name)
+        for i in range(index + 1, len(self.pages_list)):
+            self.pages_list[i].show = True
+
+    ######
+    def get_index(self, name):
+        for i, page in enumerate(self.pages_list):
+            if page.name == name:
+                return i
+        raise Exception("Usage Error:\n Can't get index of page that doesn't exist")
+
+    def find(self, name):
+        for i, page in enumerate(self.pages_list):
+            if page.name == name:
+                return i
 
 if __name__ == '__main__':
     controller = Controller()

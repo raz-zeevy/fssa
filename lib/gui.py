@@ -1,13 +1,8 @@
 import tkinter as tk
 from tkinter import filedialog, Menu
-from tkinter.simpledialog import askstring
 import ttkbootstrap as ttk
-from ttkbootstrap.constants import *
-from ttkbootstrap.tableview import Tableview
 from PIL import Image, ImageTk
-import os
-
-from lib.components.buttons import NavigationButton
+from lib.components.form import NavigationButton
 from lib.pages import *
 from lib.pages.data_page import DataPage
 from lib.pages.dimensions_page import DimensionsPage
@@ -27,7 +22,6 @@ script_dir = os.path.dirname(os.path.realpath(__file__))
 
 # Construct the path to the image relative to the script's directory
 p_ICON = '../assets/icon.ico'
-
 
 def gui_only(func, *args, **kwargs):
     def wrapper(self, *args, **kwargs):
@@ -53,8 +47,8 @@ class GUI():
         # init pages
         self.current_page = None
         self.pages = {}
-        for Page in (StartPage, DataPage, DimensionsPage,
-                     FacetPage, ManualFormatPage, FacetVarPage,
+        for Page in (StartPage, ManualFormatPage, DataPage,
+                     DimensionsPage,FacetPage, FacetVarPage,
                      HypothesisPage,
                      FacetDimPage):
             page_name = Page.__name__
@@ -217,10 +211,13 @@ class GUI():
         self.button_previous.config(**kwargs)
         self.view_menu.entryconfig("Previous", **kwargs)
 
+    def get_input_file_name(self):
+        pass
     def run_button_click(self):
+        default_output_file_name = self.get_input_file_name().split(".")[0] + ".fss"
         output_file_path = self.save_file(file_types=[('fss', '*.fss')],
                                               default_extension='.fss',
-                                              initial_file_name="output.fss",
+                                              initial_file_name=default_output_file_name,
                                               title="Save Output File To...")
         return output_file_path
 

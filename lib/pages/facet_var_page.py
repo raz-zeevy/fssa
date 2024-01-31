@@ -22,7 +22,7 @@ class FacetVarPage(ttk.Frame):
                                                                         20))
 
         correlation_label = ttk.Label(frame_correlation_combo,
-                                      text="For each variable below, specifu "
+                                      text="For each variable below, specify "
                                            "its facet element in each facet")
         correlation_label.pack(side="left")
 
@@ -63,7 +63,6 @@ class FacetVarPage(ttk.Frame):
         headers = ["Variable"] + [f"Facet {chr(65 + i)}" for i in range(
             num_facets)]
         # Define a dictionary to keep track of the width of each column based on the header
-        column_widths = {}
         header_widgets = []
         header_colspan = (1, 3, 3, 3, 3)
         for col, text in enumerate(headers):

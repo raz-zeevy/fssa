@@ -1,14 +1,18 @@
 from tkinter import filedialog, Menu
 import ttkbootstrap as ttk
 from lib.utils import *
+from lib.components.form import *
 
 ENTRIES_PADX = 20
-
+DIMENSION_OPTIONS = [
+    "Single Dimensionality",
+    "Dimensions Range",
+]
 class DimensionsPage(ttk.Frame):
     def __init__(self, parent):
         ttk.Frame.__init__(self, parent.root)
         self.frame_dimensions_band = None
-        self.dimension_scales = None
+        self.dimension_boxes = None
         self.create_entries()
 
     def create_entries(self):
@@ -46,15 +50,14 @@ class DimensionsPage(ttk.Frame):
         #
         self.dimension_combo = ttk.Combobox(frame_dimension_combo,
                                             state="readonly",
-                                       values=["Single Dimension",
-                                               "Dimensions Range"],)
+                                       values=DIMENSION_OPTIONS,)
         self.dimension_combo.pack(side=ttk.RIGHT)
         self.dimension_combo.bind("<<ComboboxSelected>>",
                                   self.dimension_combo_selected)
         ###
         self.frame_dimensions_band = ttk.Frame(self)
         self.frame_dimensions_band.pack(fill='x', padx=ENTRIES_PADX,
-                                        pady=(20, 0))
+                                        pady=(0, 0))
         ###
         self.dimension_combo.current(0)
         self.dimension_combo_selected(None)
@@ -62,74 +65,52 @@ class DimensionsPage(ttk.Frame):
     def dimension_combo_selected(self, event):
         for widget in self.frame_dimensions_band.winfo_children():
             widget.destroy()
-        if self.dimension_combo.get() == 'Single Dimension':
-            self.dimension_scales = [self.create_band(
+        if self.dimension_combo.get() == DIMENSION_OPTIONS[0]:
+            self.dimension_boxes = [self.create_dim_selection_box(
                 self.frame_dimensions_band,
                                   "Dimension:")]
         else:
-            self.dimension_scales = [
-                self.create_band(
+            self.dimension_boxes = [
+                self.create_dim_selection_box(
                     self.frame_dimensions_band, "Lowest Dimensionality:"),
-                self.create_band(
+                self.create_dim_selection_box(
                     self.frame_dimensions_band, "Highest Dimensionality:")
             ]
+            # set the default to 3
+            self.dimension_boxes[-1].current(1)
+            self.dimension_boxes[-1].bind("<<ComboboxSelected>>",
+                                          self.on_dim_range_selected)
+            self.dimension_boxes[0].bind("<<ComboboxSelected>>",
+                                          self.on_dim_range_selected)
+
+    def on_dim_range_selected(self, event):
+        high = self.dimension_boxes[-1]
+        low = self.dimension_boxes[0]
+        if int(high.get()) < int(low.get()):
+            high.set(low.get())
 
     def get_dimensions(self):
-        return [int(scale.get()) for scale in self.dimension_scales]
+        return [int(box.get()) for box in self.dimension_boxes]
 
     def set_dims(self, min, max=None):
-        self.dimension_scales[0].set(min)
+        self.dimension_boxes[0].set(min)
         if max:
-            self.dimension_scales[1].set(max)
+            self.dimension_boxes[1].set(max)
     def get_correlation_type(self):
         return self.correlation_combo.get()
 
-    def create_band(self, master, text):
+    def create_dim_selection_box(self, master, text):
         """Create and pack an equalizer band"""
-        value = 2
-        # set the text_variable
-        self.setvar(text, 2)
-
         frame_band = ttk.Frame(master)
         frame_band.pack(fill='x',pady=(20,0))
         # # header label
         hdr = ttk.Label(frame_band, text=text)
         hdr.pack(side=ttk.LEFT, fill='x', pady=5, padx=(0,40))
         # value label
-        val = ttk.Label(master=frame_band, textvariable=text)
-        val.pack(side=ttk.RIGHT, pady=0, padx=(0,25))
-        scale = ttk.Scale(
-            master=frame_band,
-            orient="horizontal",
-            from_=2,
-            to=8,
-            length=400,
-            value=value,
-            command=lambda x=value, y=text: self.update_value(x, y),
+        box = SelectionBox(frame_band,
+                            width=4,
+            values=[str(i) for i in range(2,9)],
+                           default='2'
         )
-        scale.pack(side=ttk.RIGHT, padx=(0,40))
-        return scale
-
-    def update_value(self, value, name):
-        self.setvar(name, f"{float(value):.0f}")
-
-    def update_value(self, value, name):
-        self.setvar(name, f"{float(value):.0f}")
-
-    def set_delimiter(self, delimiter, readonly=True):
-        self.entry_delimiter.delete(0, ttk.END)
-        self.entry_delimiter.insert(0, delimiter)
-        if readonly:
-            self.entry_delimiter.state(['readonly'])
-            self.entry_lines.state(['readonly'])
-
-    def save_file(self):
-        file_name = filedialog.asksaveasfilename(filetypes=[('csv', '*.csv')],
-                                                 defaultextension=".csv")
-        return file_name
-    def browse_file(self):
-        filename = filedialog.askopenfilename()
-        self.entry_data_file.delete(0, ttk.END)
-        self.entry_data_file.insert(0, filename)
-        self.entry_lines.delete(0, ttk.END)
-        self.entry_lines.insert(0, "1")
+        box.pack(side=ttk.RIGHT)
+        return box

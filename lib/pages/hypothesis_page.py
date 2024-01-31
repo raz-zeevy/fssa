@@ -23,7 +23,7 @@ class HypothesisPage(ttk.Frame):
         self.main_frame.pack(fill='x', padx=ENTRIES_PADX, pady=(40, 0))
         # Label for the text
         label_text = ttk.Label(self.main_frame,
-                               text="REGIONAL HYPOTHESES TO BE TESTED",)
+                               text="Regional Hypotheses To Be Tested",)
         label_text.pack(side=ttk.TOP, fill='x',
                         expand=True, padx=ENTRIES_PADX+20)
         # boxes frame

@@ -27,9 +27,9 @@ class example_3_controller(unittest.TestCase):
         self.controller.gui.pages[START_PAGE_NAME].set_data_file_path(
             data_file_path)
         self.controller.gui.pages[START_PAGE_NAME].set_entry_lines(4)
-        self.controller.gui.pages[START_PAGE_NAME].button_manual_input.state([
-            "!disabled"])
-        self.controller.gui.pages[START_PAGE_NAME].button_manual_input.invoke()
+        self.controller.gui.pages[
+            START_PAGE_NAME].checkbox_missing_value.invoke()
+        self.controller.gui.button_next.invoke()
         manual_page = self.controller.gui.pages[MANUAL_FORMAT_PAGE_NAME]
         simulate_manual_format(EX_3_FORMAT_TXT, manual_page.add_variable,
                                labels=EX_3_LABELS_TXT,
@@ -40,6 +40,7 @@ class example_3_controller(unittest.TestCase):
         dims_page.dimension_combo.current(1)
         dims_page.dimension_combo_selected(None)
         dims_page.set_dims(2,3)
+        self.controller.gui.button_next.invoke()
         self.controller.gui.button_next.invoke()
         facet_page = self.controller.gui.pages[FACET_PAGE_NAME]
         facet_page.set_facets_num(4)
@@ -86,8 +87,8 @@ class example_3_controller(unittest.TestCase):
         assert diff_lines_num(run_file_path, true_file_path) == 1
         assert os.path.isfile(self.controller.output_path)
         # remove files
-        os.remove(self.controller.output_path)
-        os.remove(run_file_path)
+        # os.remove(self.controller.output_path)
+        # os.remove(run_file_path)
 
 if __name__ == '__main__':
     unittest.main()

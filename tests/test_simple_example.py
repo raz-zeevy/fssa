@@ -31,7 +31,7 @@ class TestFSSAProcess(unittest.TestCase):
     def test_run_simple_example(self):
         # Access and set the dimensions in the GUI
         for scale in self.controller.gui.pages['DimensionsPage']. \
-                dimension_scales: scale.set('2')
+                dimension_boxes: scale.set('2')
         assert self.controller.gui.pages[
                    'DimensionsPage'].get_dimensions() == [2]
 
