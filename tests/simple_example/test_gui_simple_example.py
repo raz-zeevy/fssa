@@ -1,6 +1,6 @@
 from lib.controller import *
 from lib.controller import Controller
-from lib.fss.fss_parsers import *
+from lib.fss.fss_input_parser import *
 from lib.tests_utils import *
 from const import *
 
@@ -37,7 +37,7 @@ class example_3_gui(Controller):
         dims_page = self.gui.pages[DIMENSIONS_PAGE_NAME]
         dims_page.dimension_combo.current(1)
         dims_page.dimension_combo_selected(None)
-        dims_page.set_dims(2,3)
+        dims_page.set_dims(2,5)
         self.next_page()
         try:
             self.output_path = \

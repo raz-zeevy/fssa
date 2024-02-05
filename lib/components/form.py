@@ -16,8 +16,9 @@ class NavigationButton(ttk.Button):
     def __init__(self, parent, **kwargs):
         if 'width' not in kwargs:
             kwargs['width'] = 10
-        super().__init__(parent, **kwargs,
-                         bootstyle="primary", )
+        if 'bootstyle' not in kwargs:
+            kwargs['bootstyle'] = 'primary'
+        super().__init__(parent, **kwargs)
 
 
 class SelectionBox(ttk.Combobox):
@@ -33,3 +34,4 @@ class SelectionBox(ttk.Combobox):
         self.values = kwargs['values']
         if default_index is not None:
             self.current(default_index)
+

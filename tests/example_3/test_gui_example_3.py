@@ -1,6 +1,6 @@
 from lib.controller import *
 from lib.controller import Controller
-from lib.fss.fss_parsers import *
+from lib.fss.fss_input_parser import *
 from lib.tests_utils import *
 from const import *
 
@@ -86,6 +86,7 @@ class example_3_gui(Controller):
         true_file_path = os.path.join(test_dir_path, "FSSAINP.DRV")
         assert diff_lines_num(run_file_path, true_file_path) == 1
         assert os.path.isfile(self.output_path)
+
 
 if __name__ == '__main__':
     a = example_3_gui()

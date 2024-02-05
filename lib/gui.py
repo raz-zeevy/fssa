@@ -5,6 +5,7 @@ from PIL import Image, ImageTk
 from lib.components.form import NavigationButton
 from lib.pages import *
 from lib.pages.data_page import DataPage
+from lib.pages.diagram_window import DiagramWindow
 from lib.pages.dimensions_page import DimensionsPage
 from lib.pages.facet_dim_page import FacetDimPage
 from lib.pages.facet_page import FacetPage
@@ -137,6 +138,32 @@ class GUI():
         self.view_menu.add_separator()
         self.view_menu.add_command(label="Output File",
                                    state="disabled")
+        self.diagram_2d_menu = Menu(self.view_menu, tearoff=0)
+        self.diagram_2d_menu.add_command(label="No Facet")
+        self.diagram_2d_menu.add_command(label="Facet A",
+                                         state="disabled")
+        self.diagram_2d_menu.add_command(label="Facet B",
+                                         state="disabled")
+        self.diagram_2d_menu.add_command(label="Facet C",
+                                         state="disabled")
+        self.diagram_2d_menu.add_command(label="Facet D",
+                                         state="disabled")
+        self.view_menu.add_cascade(label="2D Diagram ",
+                                      menu=self.diagram_2d_menu,
+                                      state="disabled")
+        self.diagram_3d_menu = Menu(self.view_menu, tearoff=0)
+        self.diagram_3d_menu.add_command(label="No Facet")
+        self.diagram_3d_menu.add_command(label="Facet A",
+                                         state="disabled")
+        self.diagram_3d_menu.add_command(label="Facet B",
+                                         state="disabled")
+        self.diagram_3d_menu.add_command(label="Facet C",
+                                         state="disabled")
+        self.diagram_3d_menu.add_command(label="Facet D"
+                                         , state="disabled")
+        self.view_menu.add_cascade(label="3D Diagram ",
+                                        menu=self.diagram_3d_menu,
+                                   state="disabled")
         self.menu_bar.add_cascade(label="View", menu=self.view_menu)
         #
         self.help_menu = Menu(self.menu_bar, tearoff=0)
@@ -157,6 +184,10 @@ class GUI():
         if self.current_page: self.current_page.pack_forget()
         self.show_page(self.pages[page_name])
         self.current_page = self.pages[page_name]
+
+    def show_diagram_window(self, graph_data_lst):
+        newWindow = DiagramWindow(self, graph_data_lst)
+
     def run_process(self):
         self.root.mainloop()
 
@@ -229,4 +260,58 @@ class FFSAPage(ttk.Frame):
 
 if __name__ == '__main__':
     gui = GUI()
+    from lib.components.shapes import Line, Circle, DivideAxis
+    line = Line(intercept=0, slope=1)
+    circle1 = Circle((49.8782, 42), 8)
+    circle2 = Circle((5, 5), 30)
+    axis1 = DivideAxis((30,30),  0.7854)
+    axis2 = DivideAxis((25,25),  0.3)
+    geoms1 = [axis1, axis2,
+              circle1, line,
+              ]
+    geoms2 = [circle1, circle2, axis2]
+    geoms3 = [axis2, axis1, line]
+    legend = [dict(index = 0, value = "Test Legend"),
+            dict(index = 1, value = "Test Legend 2"),
+            dict(index = 2, value = "Test Legend 3"),
+            dict(index = 3, value = "Test Legend 4"),
+            dict(index = 4, value = "Test Legend 5")]
+    graph_data_1 = dict(
+        x = [10, 20, 30, 40, 50],
+        y = [10, 20, 30, 40, 50],
+        annotations = ["A", "B", "C", "D", "E"],
+        title = "Facet A:  d=2, 1*2",
+        legend = legend*2,
+    )
+    graph_data_2 = dict(
+        x = [10, 20, 30, 40, 50],
+        y = [13, 23, 23, 34, 45],
+        annotations = ["A1", "B2", "C3", "4D", "E5"],
+        title = "SSA Solution d=2 1*2",
+        legend = legend*3,
+        caption = "This is a test caption",
+        geoms = geoms2
+    )
+    graph_data_3 = dict(
+        x = [1, 2, 3, 4, 5],
+        y = [1, 2, 3, 4, 5],
+        annotations = ["A1", "B2", "C3", "4D", "E5"],
+        title = "Facet C:  d=2, 1X2",
+        legend = legend*15,
+        geoms = geoms3
+    )
+    graph_data_4 = dict(
+        x = [100, 200, 300, 400, 500],
+        y = [160, 240, 330, 420, 510],
+        annotations = ["A1", "B2", "C3", "4D", "E5"],
+        title = "Facet C:  d=2, 1*2",
+        legend = legend*2,
+        geoms = geoms3
+    )
+    gui.show_diagram_window([
+        graph_data_2,
+        graph_data_1,
+        graph_data_3,
+        graph_data_4,
+    ])
     gui.run_process()

@@ -1,6 +1,6 @@
 from lib.controller import *
 from lib.controller import Controller
-from lib.fss.fss_parsers import *
+from lib.fss.fss_input_parser import *
 from lib.tests_utils import *
 import unittest
 from const import *

@@ -2,6 +2,8 @@
 import os
 from config import *
 import pandas as pd
+
+from lib.components.shapes import ShapeFactory
 from lib.gui import GUI
 from lib.gui import StartPage, DataPage, DimensionsPage, FacetPage, \
     ManualFormatPage, FacetVarPage, HypothesisPage, FacetDimPage
@@ -32,7 +34,10 @@ class Controller:
         self.are_missing_values = None
         self.manual_input = False
         self.output_path = None
-        self.navigate_page(START_PAGE_NAME)
+        self.var_labels = None
+        self.facet_var_details = None
+        self.facet_details = None
+        self.facet_dim_details = None
         # self.load_data_page()
         # self.navigate_page(DATA_PAGE_NAME)
         # self.navigate_page(FACET_PAGE_NAME)
@@ -84,6 +89,26 @@ class Controller:
                                              command=self.load_data_page)
         self.gui.input_data_menu.entryconfig("Variables",
                                              command=self.switch_to_manual_format_page)
+        self.gui.diagram_2d_menu.entryconfig("No Facet", command=lambda:
+        self.show_diagram_window(2, None))
+        self.gui.diagram_2d_menu.entryconfig("Facet A", command=lambda:
+        self.show_diagram_window(2, 1))
+        self.gui.diagram_2d_menu.entryconfig("Facet B", command=lambda:
+        self.show_diagram_window(2, 2))
+        self.gui.diagram_2d_menu.entryconfig("Facet C", command=lambda:
+        self.show_diagram_window(2, 3))
+        self.gui.diagram_2d_menu.entryconfig("Facet D", command=lambda:
+        self.show_diagram_window(2, 4))
+        self.gui.diagram_3d_menu.entryconfig("No Facet", command=lambda:
+        self.show_diagram_window(3, None))
+        self.gui.diagram_3d_menu.entryconfig("Facet A", command=lambda:
+        self.show_diagram_window(3, 1))
+        self.gui.diagram_3d_menu.entryconfig("Facet B", command=lambda:
+        self.show_diagram_window(3, 2))
+        self.gui.diagram_3d_menu.entryconfig("Facet C", command=lambda:
+        self.show_diagram_window(3, 3))
+        self.gui.diagram_3d_menu.entryconfig("Facet D", command=lambda:
+        self.show_diagram_window(3, 3))
 
     def enable_run(self):
         self.gui.file_menu.entryconfig("Run", state="normal")
@@ -100,6 +125,60 @@ class Controller:
         self.gui.view_menu.entryconfig("Output File", state="normal")
         self.gui.view_menu.entryconfig("Output File",
                                        command=self.open_results)
+        if self.min_dim <= 2:
+            self.gui.view_menu.entryconfig("2D Diagram ", state="normal")
+        if self.max_dim >= 3:
+            self.gui.view_menu.entryconfig("3D Diagram ", state="normal")
+        for menu in [self.gui.diagram_2d_menu, self.gui.diagram_3d_menu]:
+            for i in range(self.facets_num):
+                menu.entryconfig("Facet " + chr(65 + i), state="normal")
+
+    def show_diagram_window(self, dim, facet):
+        from lib.fss.fss_output_parser import parse_output
+        output = parse_output(self.output_path)
+        graph_data_list = []
+        axes = list(range(dim))
+        axes_pairs = [(a, b) for idx, a in enumerate(axes) for b in
+                      axes[idx + 1:]]
+        for a, b in axes_pairs:
+            coors = output["dimensions"][dim]["coordinates"]
+            x = [point['coordinates'][a] for point in coors]
+            y = [point['coordinates'][b] for point in coors]
+            index = [point['serial_number'] for point in coors]
+            labels = [self.var_labels[i-1] for i in index]
+            legend = [dict(index=index[i],value=labels[i]) for i in range(len(
+                index))]
+            graph = dict(
+                x=x,
+                y=y,
+                annotations=index,
+                title=f"FSS Solution d={dim} {a+1}X{b+1}",
+                legend=legend
+            )
+            graph_data_list.append(graph)
+            if facet is not None:
+                index = [point['serial_number'] for point in coors]
+                annotations = [self.facet_var_details[i-1][
+                    facet-1] for i in index]
+                legend = [dict(index=i+1,value=self.facet_details[facet-1][i])
+                          for i in range(len(self.facet_details[facet-1]))]
+                for model in output["models"]:
+                    if model["facet"] != facet: continue
+                    geoms = ShapeFactory.shapes_from_list(model[
+                                                              "divide_geoms"])
+                    graph = dict(
+                        x=x,
+                        y=y,
+                        annotations=annotations,
+                        title=f"Facet {chr(64+facet)}: d={dim} {a+1}X{b+1}",
+                        legend= legend,
+                        geoms = geoms,
+                        caption = f"Seperation index for "
+                                  f"{model['deviant_points_num']} Deviant Points "
+                                  f"Is  {model['seperation_index']}"
+                    )
+                    graph_data_list.append(graph)
+        self.gui.show_diagram_window(graph_data_list)
 
     def enable_view_input(self):
         def view_input():
@@ -232,26 +311,27 @@ class Controller:
                 labels.append(label)
         variables_labels = [{'index': i + 1, 'label': label} for i, label in
                             enumerate(labels)]
-        facet_var_details = self.gui.pages[
+        self.facet_var_details = self.gui.pages[
             FACET_VAR_PAGE_NAME].get_all_var_facets_indices()
-        facet_details = self.gui.pages[
+        self.facet_details = self.gui.pages[
             FACET_PAGE_NAME].get_facets_details()
-        facet_dim_details = self.gui.pages[
+        self.facet_dim_details = self.gui.pages[
             FACET_DIM_PAGE_NAME].get_facets_dim()
         hypotheses_details = self.gui.pages[
             HYPOTHESIS_PAGE_NAME].get_hypotheses()
 
         valid_values_range = self.get_valid_values()
         create_running_files(
+            job_name=os.path.basename(self.output_path.split(".")[0]),
             nfacet=self.facets_num,
             variables_labels=variables_labels,
             correlation_type=corr_type,
             data_matrix=data,
             min_dim=self.min_dim, max_dim=self.max_dim,
-            facet_details=facet_details,
-            facet_var_details=facet_var_details,
+            facet_details=self.facet_details,
+            facet_var_details=self.facet_var_details,
             hypotheses_details=hypotheses_details,
-            facet_dim_details=facet_dim_details,
+            facet_dim_details=self.facet_dim_details,
             valid_values_range=valid_values_range
         )
         try:
@@ -298,9 +378,9 @@ class Controller:
 
     def load_facet_var_page(self):
         facets_details = self.gui.pages[FACET_PAGE_NAME].get_facets_details()
-        var_labels = self.gui.pages[DATA_PAGE_NAME].get_visible_labels()
+        self.var_labels = self.gui.pages[DATA_PAGE_NAME].get_visible_labels()
         self.gui.pages[FACET_VAR_PAGE_NAME].create_facet_variable_table(
-            var_labels=var_labels,
+            var_labels=self.var_labels,
             facet_details=facets_details, )
 
     def load_facet_dim_page(self):

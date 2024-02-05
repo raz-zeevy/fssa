@@ -8,7 +8,7 @@ class FssInputWriter():
 
     def create_fssa_input_file(
             self,
-            # variables_details,
+            job_name: str,
             variables_labels: List[Dict],
             min_dim: int = 2,
             max_dim: int = 2,
@@ -51,7 +51,7 @@ class FssInputWriter():
             os.makedirs(RUN_FILES_DIR)
         nvar = len(variables_labels)
         with open(p_FSS_DRV, "w") as f:
-            f.write("FSSA-24 INPUT FILE\n")
+            f.write(f"{job_name.replace('_',' ').title()}\n")
             f.write(f"  {nvar}   {min_dim}   {max_dim}")
             f.write(f"   {int(is_similarity_data)}   {eps}   "
                     f"{len(missing_cells)}")

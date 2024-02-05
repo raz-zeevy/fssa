@@ -3,9 +3,9 @@
 import subprocess
 import pandas as pd
 
-from lib.fss.correlation_input_writer import CorrelationInputWriter
+from lib.fss.fss_corr_input_writer import CorrelationInputWriter
 from lib.fss.fss_input_writer import FssInputWriter
-from lib.fss.fss_parsers import *
+from lib.fss.fss_input_parser import *
 from lib.utils import *
 
 
@@ -192,6 +192,7 @@ def run_fortran(corr_type,
     print("Error:", result.stderr)
 
 def create_running_files(
+        job_name : str,
         variables_labels: List[dict],
         correlation_type: str,
         data_matrix: List[List],
@@ -215,6 +216,7 @@ def create_running_files(
     # Create the FSSA input file
     fssi = FssInputWriter()
     fssi.create_fssa_input_file(
+        job_name,
         variables_labels,
         min_dim,
         max_dim,
