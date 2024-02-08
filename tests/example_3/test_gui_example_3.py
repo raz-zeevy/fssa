@@ -43,6 +43,7 @@ class example_3_gui(Controller):
         facet_page = self.gui.pages[FACET_PAGE_NAME]
         facet_page.set_facets_num(4)
         self.on_facet_num_change(None)
+        # just basic test
         facet_page.set_facets_details(test_facets)
         assert facet_page.get_facets_details() == test_facets
         facet_data = simulate_facets_details(EX_3_FACETS_TXT,

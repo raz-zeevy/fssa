@@ -5,26 +5,16 @@ import pandas as pd
 
 from lib.components.shapes import ShapeFactory
 from lib.gui import GUI
-from lib.gui import StartPage, DataPage, DimensionsPage, FacetPage, \
-    ManualFormatPage, FacetVarPage, HypothesisPage, FacetDimPage
 from lib.fss.fss_module import get_random_data, load_data_file
 from lib.fss.fss_module import create_running_files, run_fortran
 from lib.utils import *
 
-START_PAGE_NAME = StartPage.__name__
-DATA_PAGE_NAME = DataPage.__name__
-DIMENSIONS_PAGE_NAME = DimensionsPage.__name__
-FACET_PAGE_NAME = FacetPage.__name__
-FACET_VAR_PAGE_NAME = FacetVarPage.__name__
-MANUAL_FORMAT_PAGE_NAME = ManualFormatPage.__name__
-HYPOTHESIS_PAGE_NAME = HypothesisPage.__name__
-FACET_DIM_PAGE_NAME = FacetDimPage.__name__
-
 class Controller:
     def __init__(self):
         self.gui = GUI()
-        self.bind_events()
+        self.bind_gui_events()
         self.bind_menu()
+        self.bind_keys()
         self.navigator = self.init_navigator()
         self.facets_num = 0
         self.max_dim = None
@@ -38,7 +28,7 @@ class Controller:
         self.facet_var_details = None
         self.facet_details = None
         self.facet_dim_details = None
-        # self.load_data_page()
+        self.navigate_page(START_PAGE_NAME)
         # self.navigate_page(DATA_PAGE_NAME)
         # self.navigate_page(FACET_PAGE_NAME)
         # self.switch_to_facet_dim_page()
@@ -60,7 +50,9 @@ class Controller:
                     raise e
         return wrapper
 
-    def bind_events(self):
+    def bind_keys(self):
+        self.gui.root.bind("<F1>", lambda x: self.show_help())
+    def bind_gui_events(self):
         self.gui.pages[START_PAGE_NAME]. \
             button_browse.bind("<Button-1>",
                                lambda x: self.load_file())
@@ -446,6 +438,10 @@ class Controller:
     def load_hypothesis_page(self):
         self.gui.pages[HYPOTHESIS_PAGE_NAME].create_entries(self.facets_num)
 
+    def show_help(self, section = None):
+        if not section:
+            section = help_pages_dict[self.navigator.get_current()]
+        self.gui.show_help_windw(section)
 
 class Navigator():
     class Page():

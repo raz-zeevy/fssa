@@ -1,12 +1,11 @@
 import os
-
 import config
 
 WINDOW_HEIGHT = 600
 WINDOW_WIDTH = 750
 
-DELIMITER_1_D = "1d"
-DELIMITER_2_D = "2d"
+DELIMITER_1_D = "1-digit"
+DELIMITER_2_D = "2-digit"
 
 MONO = "Monotonicity"
 PEARSON = "Pearson"
@@ -38,7 +37,6 @@ def get_script_dir_path():
         raise FileNotFoundError("FSSA script directory not found")
     return fss_dir
 
-
 # Output Paths
 SCRIPT_NESTING_PREFIX = "..\\..\\..\\"
 p_OUTPUT_DIR = "output"
@@ -66,3 +64,25 @@ STOP SSA terminated successfully.
 """
 
 ### Gui
+START_PAGE_NAME = "StartPage"
+DATA_PAGE_NAME = "DataPage"
+DIMENSIONS_PAGE_NAME = "DimensionsPage"
+FACET_PAGE_NAME = "FacetPage"
+FACET_VAR_PAGE_NAME = "FacetVarPage"
+MANUAL_FORMAT_PAGE_NAME = "ManualFormatPage"
+HYPOTHESIS_PAGE_NAME = "HypothesisPage"
+FACET_DIM_PAGE_NAME = "FacetDimPage"
+
+########
+# Help #
+########
+help_pages_dict = {
+    START_PAGE_NAME : "recorded_data_screen",
+    DATA_PAGE_NAME : "data_screen",
+    DIMENSIONS_PAGE_NAME : "dimensions_and_coefficients_screen",
+    FACET_PAGE_NAME : "facets_definition_screen",
+    FACET_VAR_PAGE_NAME : "variable_elements_in_facets_screen",
+    MANUAL_FORMAT_PAGE_NAME : "variable_definition",
+    HYPOTHESIS_PAGE_NAME : "hypotheses_screen",
+    FACET_DIM_PAGE_NAME : "contents"
+}

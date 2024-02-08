@@ -1,11 +1,11 @@
 import tkinter as tk
+from lib.windows.help_window import HelpWindow
 from tkinter import filedialog, Menu
 import ttkbootstrap as ttk
 from PIL import Image, ImageTk
 from lib.components.form import NavigationButton
-from lib.pages import *
 from lib.pages.data_page import DataPage
-from lib.pages.diagram_window import DiagramWindow
+from lib.windows.diagram_window import DiagramWindow
 from lib.pages.dimensions_page import DimensionsPage
 from lib.pages.facet_dim_page import FacetDimPage
 from lib.pages.facet_page import FacetPage
@@ -34,8 +34,8 @@ class GUI():
     def __init__(self):
         # Main window
         self.root = ttk.Window(themename=THEME_NAME)
-        self.root.title("Fssawin Windows Application - Fssa")
-
+        self.root.title("FSSAWIN - Faceted Smallest Space Analysis for "
+                        "Windows")
         # set the icon
         self.root.iconbitmap(os.path.join(script_dir, p_ICON))
 
@@ -45,6 +45,7 @@ class GUI():
         # Set the window to be square
         self.root.geometry(f'{WINDOW_WIDTH}x{WINDOW_HEIGHT}')
         self.root.resizable(False, False)
+
         # init pages
         self.current_page = None
         self.pages = {}
@@ -67,6 +68,20 @@ class GUI():
         self.create_menu()
         self.create_help_bar()
         self.create_navigation()
+        self.center_window()
+
+    def center_window(self):
+        self.root.update_idletasks()  # Update "requested size" from geometry
+        # manager
+        # Calculate x and y coordinates for the Tk root window
+        screen_width = self.root.winfo_screenwidth()
+        screen_height = self.root.winfo_screenheight()
+        size = tuple(int(_) for _ in self.root.geometry().split('+')[0].split(
+            'x'))
+        x = (screen_width / 2) - (size[0] / 2)
+        y = (screen_height / 2) - (size[1] / 2) - (screen_height / 10)
+        self.root.geometry("+%d+%d" % (x, y))
+
     def create_help_bar(self):
         # Status Bar
         status_bar = ttk.Label(self.root, text="For Help, press F1",
@@ -188,6 +203,9 @@ class GUI():
     def show_diagram_window(self, graph_data_lst):
         newWindow = DiagramWindow(self, graph_data_lst)
 
+    def show_help_windw(self, section=None):
+        newWindow = HelpWindow(self, section)
+
     def run_process(self):
         self.root.mainloop()
 
@@ -269,13 +287,13 @@ if __name__ == '__main__':
     geoms1 = [axis1, axis2,
               circle1, line,
               ]
-    geoms2 = [circle1, circle2, axis2]
+    geoms2 = [axis2]
     geoms3 = [axis2, axis1, line]
-    legend = [dict(index = 0, value = "Test Legend"),
-            dict(index = 1, value = "Test Legend 2"),
-            dict(index = 2, value = "Test Legend 3"),
-            dict(index = 3, value = "Test Legend 4"),
-            dict(index = 4, value = "Test Legend 5")]
+    legend = [dict(index = 0, value = "var1"),
+            dict(index = 1, value = "var2"),
+            dict(index = 2, value = "var3"),
+            dict(index = 3, value = "var4"),
+            dict(index = 4, value = "var5")]
     graph_data_1 = dict(
         x = [10, 20, 30, 40, 50],
         y = [10, 20, 30, 40, 50],
@@ -286,9 +304,9 @@ if __name__ == '__main__':
     graph_data_2 = dict(
         x = [10, 20, 30, 40, 50],
         y = [13, 23, 23, 34, 45],
-        annotations = ["A1", "B2", "C3", "4D", "E5"],
+        annotations = ["1", "2", "3", "4", "5"],
         title = "SSA Solution d=2 1*2",
-        legend = legend*3,
+        legend = legend,
         caption = "This is a test caption",
         geoms = geoms2
     )
@@ -314,4 +332,5 @@ if __name__ == '__main__':
         graph_data_3,
         graph_data_4,
     ])
+    # gui.show_help_windw()
     gui.run_process()

@@ -4,7 +4,7 @@ import tkinter as tk
 from lib.components.form import NavigationButton
 import matplotlib.pyplot as plt
 import matplotlib
-
+from lib.components.window import Window
 from lib.components.shapes import Line, Circle, DivideAxis
 
 matplotlib.use('TkAgg')
@@ -17,18 +17,16 @@ from matplotlib.backends.backend_tkagg import (
 BORDER_WIDTH = 0
 OC = 0.05
 
-class DiagramWindow(ttk.Toplevel):
+class DiagramWindow(Window):
     def __init__(self, parent, graph_data_lst : list, **kwargs):
         """
         graph_data: list of dictionaries containing the data to be plotted
         should contain "x", "y", "annotations", "title", "legend",
          "captions", "geom" keys
         """
-        ttk.Toplevel.__init__(self, parent.root)
+        super().__init__(**kwargs, geometry="800x700")
         self.title("FSS Solution")
         # sets the geometry of toplevel
-        self.geometry("800x700")
-        self.parent = parent
         self.graph_data_lst = graph_data_lst
         self.index = 0
         # init

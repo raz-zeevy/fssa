@@ -54,10 +54,13 @@ class StartPage(ttk.Frame):
         # Label for the text
         label_text = ttk.Label(frame_fixed_width,
                                  text="Is the data file in fixed width "
-                                      f"format ? ({DELIMITER_1_D}, {DELIMITER_2_D})",
+                                      f"format, such that all the variables "
+                                      f"have the same width? If yes, "
+                                      f"state the width ({DELIMITER_1_D},"
+                                      f" {DELIMITER_2_D})",
                                     anchor='w',  # Aligns text to the west (left)
                                     justify=ttk.LEFT,
-                                    wraplength=WINDOW_WIDTH - 50)
+                                    wraplength=WINDOW_WIDTH - 150)
         label_text.pack(side=ttk.LEFT, fill='x', expand=True)
         self.selection_box_fixed_width = lib.components.form.SelectionBox(
             frame_fixed_width,
