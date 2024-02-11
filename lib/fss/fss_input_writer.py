@@ -55,7 +55,7 @@ class FssInputWriter():
             f.write(f"  {nvar}   {min_dim}   {max_dim}")
             f.write(f"   {int(is_similarity_data)}   {eps}   "
                     f"{len(missing_cells)}")
-            f.write(f"   {iweigh}   {nvar}   {nfacet}  "
+            f.write(f"   {iweigh}  {nvar}   {nfacet}  "
                     f" {ntface}   1")
             f.write(f"   {int(store_coordinates_on_file)}   {iboxstring}")
             f.write(f"   {default_form_feed}\n   {len(missing_cells)}")
@@ -67,7 +67,7 @@ class FssInputWriter():
             for variable in variables_labels:
                 f.write(f" {' ' if variable['index'] < 10 else ''}"
                         f" {variable['index']}"
-                        f"{' '+variable['label'] if variable['label'] else ''}"
+                        f"{'  '+variable['label'] if variable['label'] else ''}"
                         "\n")
             # facet variable details
             for variable in facet_var_details:
