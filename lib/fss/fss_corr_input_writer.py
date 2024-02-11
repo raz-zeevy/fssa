@@ -18,7 +18,7 @@ class CorrelationInputWriter:
         with open(file_path, "w") as f:
             f.write("FSSA\n")
             f.write(
-                f"   {len(variables_details)}   {len(valid_values_range)}   {nlabel}   "
+                f"  {len(variables_details)}  {len(valid_values_range)}   {nlabel}   "
                 f"{int(iprfreq)}   {int(iintera)}\n")
             # variables details
             var_txt = "("

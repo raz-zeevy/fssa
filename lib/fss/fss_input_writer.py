@@ -66,8 +66,9 @@ class FssInputWriter():
             f.write(INPUT_MATRIX_FORMAT + "\n")
             for variable in variables_labels:
                 f.write(f" {' ' if variable['index'] < 10 else ''}"
-                        f" {variable['index']} "
-                        f" {variable['label']}\n")
+                        f" {variable['index']}"
+                        f"{' '+variable['label'] if variable['label'] else ''}"
+                        "\n")
             # facet variable details
             for variable in facet_var_details:
                 for var_facet in variable:
@@ -76,7 +77,8 @@ class FssInputWriter():
             # facet details
             for facet_labels in facet_details:
                 f.write(f"   {len(facet_labels)}")
-            f.write("\n")
+            if facet_details:
+                f.write("\n")
             for facet_labels in facet_details:
                 [f.write(f"{label}\n") for label in facet_labels]
             # hypotheses details

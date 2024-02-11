@@ -127,6 +127,7 @@ class Controller:
 
     def show_diagram_window(self, dim, facet):
         from lib.fss.fss_output_parser import parse_output
+        self.get_labels()
         output = parse_output(self.output_path)
         graph_data_list = []
         axes = list(range(dim))
@@ -370,10 +371,13 @@ class Controller:
 
     def load_facet_var_page(self):
         facets_details = self.gui.pages[FACET_PAGE_NAME].get_facets_details()
-        self.var_labels = self.gui.pages[DATA_PAGE_NAME].get_visible_labels()
+        self.get_labels()
         self.gui.pages[FACET_VAR_PAGE_NAME].create_facet_variable_table(
             var_labels=self.var_labels,
             facet_details=facets_details, )
+
+    def get_labels(self):
+        self.var_labels = self.gui.pages[DATA_PAGE_NAME].get_visible_labels()
 
     def load_facet_dim_page(self):
         max_dim = max(self.gui.pages[DIMENSIONS_PAGE_NAME].get_dimensions())

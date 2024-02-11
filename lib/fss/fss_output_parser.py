@@ -145,7 +145,7 @@ class OutputParser:
             value = float(value)
         except ValueError:
             pass
-        if not value: return
+        if value is None: return
         return {var: value}
 
     def end_block_reached(self):
