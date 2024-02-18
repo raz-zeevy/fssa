@@ -1,5 +1,6 @@
+import itertools
 import tkinter as tk
-from tkinter import filedialog
+from tkinter import filedialog, messagebox
 from tkinter.simpledialog import askstring
 
 import pandas as pd
@@ -105,7 +106,43 @@ class DataPage(ttk.Frame):
         self.button_reload.pack(side=tk.LEFT, padx=5)
         self.button_save = DataButton(frame_data_buttons, text="Save",)
         self.button_save.pack(side=tk.LEFT, padx=5)
+        self.button_select = DataButton(frame_data_buttons, text="Select "
+                                                               "Vars.",
+                                        command=self.select_variables)
+        self.button_select.pack(side=tk.LEFT, padx=5)
 
+    def select_variables(self):
+        # open a string dialog to select variable columns
+        selected_vars = askstring("Select Variables",
+                                  "Enter variable indices:\n"
+                                  "e.g. 1-5, 8, 11-13\n")
+        if selected_vars:
+            # reset table
+            self.button_reload.invoke()
+            # parse the string to get the selected variable indices
+            selected_vars = selected_vars.split(',')
+            selected_vars = [x.strip() for x in selected_vars]
+            selected_vars = [x.split('-') if '-' in x else x for x in
+                             selected_vars]
+            selected_vars = [list(range(int(x[0]), int(x[1]) + 1)) if type(x) is
+                             list else [int(x)] for x in selected_vars]
+            selected_vars = set(itertools.chain(*selected_vars))
+            if len(selected_vars) < 3:
+                messagebox.showinfo("Error", "Please select at least 3 "
+                                             "variables.")
+                return
+            # get the data from the table
+            data = self.get_all_visible_data()
+            labels = self.get_visible_labels()
+            new_data = []
+            for i in range(len(data)):
+                new_data.append([data[i][j-1] for j in selected_vars])
+            selected_labels = [labels[i-1] for i in selected_vars]
+            # create a new dataframe
+            selected_data = pd.DataFrame(new_data)
+            selected_data.columns = selected_labels
+            # show the selected data
+            self.show_data(selected_data)
 
     def get_selected_rows(self):
         selected_items = self.data_table.selection()

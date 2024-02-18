@@ -1,11 +1,17 @@
+import os
+
 import numpy as np
 import ttkbootstrap as ttk
 import tkinter as tk
+from tkinter import filedialog
 from lib.components.form import NavigationButton
 import matplotlib.pyplot as plt
 import matplotlib
 from lib.components.window import Window
 from lib.components.shapes import Line, Circle, DivideAxis
+from lib.utils import get_resource
+
+DPI_SAVE = 300
 
 matplotlib.use('TkAgg')
 
@@ -14,11 +20,13 @@ from matplotlib.backends.backend_tkagg import (
     FigureCanvasTkAgg,
     NavigationToolbar2Tk
 )
+
 BORDER_WIDTH = 0
 OC = 0.05
 
+
 class DiagramWindow(Window):
-    def __init__(self, parent, graph_data_lst : list, **kwargs):
+    def __init__(self, parent, graph_data_lst: list, **kwargs):
         """
         graph_data: list of dictionaries containing the data to be plotted
         should contain "x", "y", "annotations", "title", "legend",
@@ -26,20 +34,55 @@ class DiagramWindow(Window):
         """
         super().__init__(**kwargs, geometry="800x700")
         self.title("FSS Solution")
+        self.iconbitmap(get_resource("icon.ico"))
         # sets the geometry of toplevel
         self.graph_data_lst = graph_data_lst
         self.index = 0
         # init
         self.create_navigation()
+        self.create_menu()
         self.main_frame = ttk.Frame(self)
         self.main_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         self.load_page(self.index)
         # Bind key presses to the respective methods
-        self.bind("<Return>", lambda x : self.next_graph())
-        self.bind("<Right>", lambda x : self.next_graph())
-        self.bind("<BackSpace>", lambda x : self.previous_graph())
-        self.bind("<Left>", lambda x : self.previous_graph())
-        self.bind("<Escape>", lambda x : self.exit())
+        self.bind("<Return>", lambda x: self.next_graph())
+        self.bind("<Right>", lambda x: self.next_graph())
+        self.bind("<BackSpace>", lambda x: self.previous_graph())
+        self.bind("<Left>", lambda x: self.previous_graph())
+        self.bind("<Escape>", lambda x: self.exit())
+
+    def create_menu(self):
+        # create a file menu with save figure command to save the current graph
+        self.menu = tk.Menu(self)
+        self.config(menu=self.menu)
+        self.file_menu = tk.Menu(self.menu, tearoff=0)
+        self.menu.add_cascade(label="File", menu=self.file_menu)
+        self.file_menu.add_command(label="Save figure ",
+                                   command=self.save_figure)
+        # add an option to save all figures
+        self.file_menu.add_command(label="Save all figures",
+                                   command=self.save_all_figures)
+        self.file_menu.add_separator()
+        self.file_menu.add_command(label="Exit", command=self.exit)
+
+    def save_figure(self):
+        file = filedialog.asksaveasfilename(defaultextension=".png",
+                                            filetypes=[("PNG files", "*.png")])
+        if file:
+            self.figure.savefig(file, dpi=DPI_SAVE)
+
+    def save_all_figures(self):
+        dir = filedialog.askdirectory()
+        current_page = self.index
+        self.load_page(0)
+        for i in range (len(self.graph_data_lst)):
+            path = os.path.join(dir, f"figure_{i}.png")
+            # sleep for a while to allow the figure to be saved
+            self.figure.set_size_inches(5, 5)
+            self.figure.savefig(path, dpi=DPI_SAVE)
+            self.next_graph()
+        self.index = current_page
+        self.load_page(current_page)
 
     def init_scrollable_legend(self):
         self.legend_canvas = tk.Canvas(self.main_frame,
@@ -49,7 +92,7 @@ class DiagramWindow(Window):
         self.diagram_labels_frame = ttk.Frame(self.legend_canvas,
                                               borderwidth=BORDER_WIDTH,
                                               relief="solid", )
-         # Adjust the width as needed
+        # Adjust the width as needed
         self.vsb = ttk.Scrollbar(self.main_frame, orient="vertical",
                                  command=self.legend_canvas.yview)
         self.legend_canvas.configure(yscrollcommand=self.vsb.set)
@@ -65,6 +108,7 @@ class DiagramWindow(Window):
         '''Reset the scroll region to encompass the inner frame'''
         self.legend_canvas.configure(
             scrollregion=self.legend_canvas.bbox("all"))
+
     def FrameWidth(self, event):
         '''Reset the canvas window to encompass inner frame when resizing'''
         canvas_width = event.width
@@ -79,6 +123,7 @@ class DiagramWindow(Window):
             self.button_previous.state(["!disabled"])
         else:
             self.button_previous.state(["disabled"])
+
     def next_graph(self):
         if self.index < len(self.graph_data_lst) - 1:
             self.index += 1
@@ -88,6 +133,7 @@ class DiagramWindow(Window):
         if self.index > 0:
             self.index -= 1
             self.load_page(self.index)
+
     def exit(self):
         self.destroy()
 
@@ -97,7 +143,7 @@ class DiagramWindow(Window):
         self.navigate_control()
         #
         self.diagram_frame = ttk.Frame(self.main_frame)
-        self.diagram_frame.pack(side=tk.LEFT, fill=tk.BOTH,expand=True)
+        self.diagram_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.plot_scatter(self.graph_data_lst[i])
         if len(self.graph_data_lst[i]["legend"]) > 20:
             self.init_scrollable_legend()
@@ -110,23 +156,24 @@ class DiagramWindow(Window):
         self.diagram_labels_frame.config(
             width=40)
         self.plot_legend(self.graph_data_lst[i])
+
     def plot_legend(self, graph_data):
         diagram_title_frame = ttk.Frame(self.diagram_labels_frame,
                                         borderwidth=BORDER_WIDTH)
         diagram_title_frame.pack(side=tk.TOP, fill=tk.X, expand=False,
-                                 pady=(10,0))
+                                 pady=(10, 0))
         diagram_label = ttk.Label(diagram_title_frame,
-                                       text=graph_data["title"],
-                                        bootstyle="primary-bold",
+                                  text=graph_data["title"],
+                                  bootstyle="primary-bold",
                                   font='Helvetica 8 bold')
         diagram_label.pack(side=tk.TOP,
                            expand=True,
                            fill='x')
         # now create labels for all the variables and their labels, this will
         # be done in a loop and serve like a legend for the diagram
-        legend_items_frame = ttk.Frame(self.diagram_labels_frame,)
+        legend_items_frame = ttk.Frame(self.diagram_labels_frame, )
         legend_items_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True,
-                                pady=(5,0))
+                                pady=(5, 0))
         for item in graph_data["legend"]:
             space = "     " if item["index"] < 10 else "   "
             label = ttk.Label(legend_items_frame,
@@ -140,13 +187,16 @@ class DiagramWindow(Window):
         def add_geoms(x, axes, graph_data):
             def add_line(x, axes, line: Line):
                 # Create a figure and axis
-                start, end = min(x), max(x)
+                start, end = min(x) * 0.5, max(
+                    x) * 2  # buffers to ensure it is
+                # long enough
                 start, end = start - (end - start) * OC, end + (
-                            end - start) * OC
+                        end - start) * OC
 
                 # Plot each line
                 x_values, y_values = line.get_points(start, end)
                 axes.plot(x_values, y_values)
+
             def add_circle(axes, circle: Circle):
                 # Create a circle patch
                 circle_plot = matplotlib.patches.Circle(circle.center,
@@ -155,9 +205,11 @@ class DiagramWindow(Window):
                                                         facecolor='none')
                 # Add the circle to the plot
                 axes.add_patch(circle_plot)
+
             def add_divide_axis(axes, divide_axis: DivideAxis):
                 x_values, y_values = divide_axis.get_points(1000)
-                axes.plot(x_values, y_values, linestyle='dashed', )
+                axes.plot(x_values, y_values,)
+
             if 'geoms' not in graph_data:
                 return
             for geom in graph_data["geoms"]:
@@ -169,14 +221,15 @@ class DiagramWindow(Window):
                     add_divide_axis(axes, geom)
                 else:
                     raise ValueError(f"Unknown geometry type: {type(geom)}")
+
         x = graph_data["x"]
         y = graph_data["y"]
         z = graph_data["annotations"]
         # create a figure and axis
-        figure = Figure(figsize=(2,4), dpi=100)
-        figure_canvas = FigureCanvasTkAgg(figure,
+        self.figure = Figure(figsize=(2, 4), dpi=100)
+        figure_canvas = FigureCanvasTkAgg(self.figure,
                                           self.diagram_frame)
-        axes = figure.add_subplot()
+        axes = self.figure.add_subplot()
         # plot the data
         axes.scatter(x, y, alpha=0)
         # set the title
@@ -186,24 +239,25 @@ class DiagramWindow(Window):
         # set the title text to be smaller
         axes.text(0, -0.1, caption, ha='left', va='top',
                   transform=axes.transAxes, fontsize=8)
-        figure.subplots_adjust(left=0.1,
-                               right=0.95,
-                               top=0.95,
-                               bottom=0.15)
+        self.figure.subplots_adjust(left=0.1,
+                                    right=0.95,
+                                    top=0.95,
+                                    bottom=0.15)
         # create annotations
         annot_offset = (max(y) - min(y)) / 100
         for i, txt in enumerate(z):
-            axes.annotate(txt, (x[i], y[i]-annot_offset),
+            axes.annotate(txt, (x[i], y[i] - annot_offset),
                           ha='center',
                           fontsize=8)
         # add geom
         add_geoms(x, axes, graph_data)
-        # Adjust the plot limits to make sure all of your circle is shown
-        start_x, end_x = min(x), max(x)
-        start_y, end_y = min(y), max(y)
-        x_offset, y_offset = (end_x - start_x) * OC, (end_y - start_y) * OC
-        axes.set_xlim([min(x)-x_offset, max(x)+x_offset])
-        axes.set_ylim([min(y)-y_offset, max(y)+y_offset])
+        # Adjust the plot limits to make sure it fits
+        start_x, end_x = 0, 100
+        start_y, end_y = 0, 100
+        x_offset, y_offset = (end_x - start_x) * OC * 2, \
+                             (end_y - start_y) * OC * 0.75
+        axes.set_xlim([min(x) - x_offset, max(x) + x_offset])
+        axes.set_ylim([min(y) - y_offset, max(y) + y_offset])
         figure_canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
     def create_navigation(self):
@@ -217,13 +271,12 @@ class DiagramWindow(Window):
         center_frame.pack(pady=5, expand=True)
         self.button_previous = NavigationButton(center_frame,
                                                 text="Previous",
-                                                command=self.previous_graph,)
+                                                command=self.previous_graph, )
         self.button_previous.pack(side=ttk.LEFT, padx=20)
         self.button_next = NavigationButton(center_frame, text="Next",
-                                            command=self.next_graph,)
+                                            command=self.next_graph, )
         self.button_next.pack(side=ttk.LEFT, padx=20, )
         self.button_exit = NavigationButton(center_frame, text="Exit",
                                             bootstyle='secondary',
-                                            command=self.exit,)
+                                            command=self.exit, )
         self.button_exit.pack(side=ttk.LEFT, padx=20)
-

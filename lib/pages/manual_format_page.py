@@ -22,6 +22,7 @@ class IndexedTableVIew(Tableview):
                               visible=visible)
         self.reindex()
 
+
     def reindex(self):
         for i, row in enumerate(self.tablerows):
             item = self.iidmap[row.iid].iid
@@ -64,6 +65,8 @@ class ManualFormatPage(ttk.Frame):
             self.data_table.align_column_center(cid=i)
 
     def load_missing_values(self, are_missing_values):
+        if are_missing_values == self.are_missing_values:
+            return
         self.are_missing_values = are_missing_values
         if self.are_missing_values:
             self.data_table.tablecolumns[-2].show()
@@ -71,6 +74,11 @@ class ManualFormatPage(ttk.Frame):
         else:
             self.data_table.tablecolumns[-2].hide()
             self.data_table.tablecolumns[-3].hide()
+
+    def remove_variable(self):
+        # removes the last row from the table
+        if self.data_table.tablerows:
+            self.data_table.delete_row(index=-1)
 
     def add_variable(self, line_num="", start_col="", field_width="",
                      valid_low="", valid_high="", label=""):
@@ -111,9 +119,11 @@ class ManualFormatPage(ttk.Frame):
             self.data_table.goto_next_page()
 
     def on_double_click(self, event):
+        print("double click")
         item = self.data_table.view.identify('item', event.x, event.y)
         column_key = self.data_table.view.identify_column(event.x)
         column_i = int(column_key[1:])
+        if column_i == 1: return
         if not self.are_missing_values:
             column_i += 2
         try:
@@ -132,10 +142,11 @@ class ManualFormatPage(ttk.Frame):
         frame_data_buttons.pack(side=tk.BOTTOM, fill='x', padx=10, pady=10)
         # Data Buttons
         self.button_add_variable = DataButton(frame_data_buttons, text="Add "
-                                                                 "Variable",
+                                                                 "Var.",
                                               command=self.add_variable)
         self.button_add_variable.pack(side=tk.LEFT, padx=5)
-        self.button_save = DataButton(frame_data_buttons, text="Save", )
+        self.button_save = DataButton(frame_data_buttons, text="Remove Var.",
+                                      command= self.remove_variable)
         self.button_save.pack(side=tk.LEFT, padx=5)
 
     def get_data_format(self):
@@ -184,3 +195,13 @@ class ManualFormatPage(ttk.Frame):
             cols = list(map(lambda x: x.cid, cols))[1:]
             data.append([row.values[int(x)] for x in cols])
         return data
+
+    def pack(self, kwargs=None, **kw):
+        if self.data_table:
+            self.data_table.view.bind_all("<Double-1>", self.on_double_click)
+        super().pack(kwargs, **kw)
+
+    def pack_forget(self) -> None:
+        if self.data_table:
+            self.data_table.bind_all("<Double-1>", lambda x : None)
+        super().pack_forget()

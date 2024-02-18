@@ -4,7 +4,7 @@ from lib.fss.fss_input_parser import *
 from lib.tests_utils import *
 from const import *
 
-SET_MODE_TEST()
+SET_MODE_PRODUCTION()
 
 ###
 test_facets = [
@@ -37,7 +37,7 @@ class simple_example_gui(Controller):
         dims_page = self.gui.pages[DIMENSIONS_PAGE_NAME]
         dims_page.dimension_combo.current(1)
         dims_page.dimension_combo_selected(None)
-        dims_page.set_dims(2,2)
+        dims_page.set_dims(2,5)
         self.next_page()
         try:
             self.output_path = \
@@ -51,7 +51,7 @@ class simple_example_gui(Controller):
         run_file_path = p_FSS_DRV
         true_file_path = os.path.join(test_dir_path, "FSSAINP.DRV")
         # assert diff_lines_num(run_file_path, true_file_path) == 1
-        # assert os.path.isfile(self.output_path)
+        assert os.path.isfile(self.output_path)
 
 if __name__ == '__main__':
     a = simple_example_gui()

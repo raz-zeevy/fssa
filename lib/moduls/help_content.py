@@ -141,3 +141,19 @@ You can use the mouse to open a combo-box of facet elements that you have define
 
 Upon selection, the cursor will automatically move to the next variable; You do not need to move it yourself (by mouse or Tab key, as you usually do)."""
 
+VARIABLE_DEFINITION_SCREEN_p1 = """In this screen you can define variable labels and select variables for a run. If you are working with Recorded Data, you are also required to define the file structure (i.e. where in the file the variables data reside) in this screen.
+
+The main attraction in this screen is a list box with a line for every variable. This list box is actually a table with the following columns:"""
+
+VARIABLE_DEFINITION_SCREEN_p2 = "You can edit all the values of the variable by double clicking on the table entry.  If you press the Add Variable button (enabled only for Recorded Data), a new variable (i.e with serial number one after the last defined so far) will be created and opened for you to edit. When working with Recorded Data, you can also delete the last variable in the list by using the Delete Variable button. or you can delete any variable by selecting it and pressing the Delete selected rows."
+
+DIMENSIONS_AND_COEFFICIENTS_SCREEN_p1 = """
+This screen reports the number of variables you have selected to work on, and offers the following fields:
+
+Type of coefficients:
+
+When working with Recorded Data, you can select between Monotonicity and Pearson. The coefficient of Monotonicity between two variables ranges from -1 to +1 and assesses to what extent an increase in one variable is accompanied by an increase (or no decrease) in the other variable, with no reference to an a priori regression line. Its absolute value is no smaller, and usually larger, than that of Pearson correlation. The coefficient of monotonicity is more appropriate for ordinal data, where no linearity is assumed for the regression line. Pearson correlation is the familiar linear correlation coefficient. Select either Monotonicity or Pearson, to suit your data and assumptions.
+
+When working with a Coefficient Matrix, you can select between Similarity and Dissimilarity.Specify whether the matrix-entries represent similarity between the objects (e.g. correlation coefficients, indices of confusion, judged similarity) or dissimilarity between the objects (e.g., distance or indices of alienation).
+
+Lowest dimensionality and Highest dimensionality specify the range of dimensionalities to be tested. Dimensionalities may be between 2 and 10 with the lower being less than or equal to the higher. If only one dimensionality is desired, for example, two-dimensional, enter that dimensionality in both fields (i.e. 2 and 2 in the example)."""

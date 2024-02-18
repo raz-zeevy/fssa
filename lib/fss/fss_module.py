@@ -2,7 +2,7 @@
 
 import subprocess
 import pandas as pd
-
+from contextlib import contextmanager
 from lib.fss.fss_corr_input_writer import CorrelationInputWriter
 from lib.fss.fss_input_writer import FssInputWriter
 from lib.fss.fss_input_parser import *
@@ -180,16 +180,31 @@ def run_fortran(corr_type,
 
     # Run the command
     fss_dir = get_script_dir_path()
-    os.chdir(fss_dir)
-    result = subprocess.run(full_command, shell=True, stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE, text=True)
-    # Print the output and error, if any
-    if result.returncode != 0:
-        raise Exception(f"FSSA script failed : {result.stderr}")
-    if result.stderr != RESULTS_SUCCESS_STDERR:
-        raise Exception(f"FSSA script failed : {result.stderr}")
-    print("Output:", result.stdout)
-    print("Error:", result.stderr)
+    with cwd(fss_dir):
+        result = subprocess.run(full_command, shell=True, stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE, text=True)
+        # Print the output and error, if any
+        if result.returncode != 0:
+            raise Exception(f"FSSA script failed : {result.stderr}")
+        if result.stderr != RESULTS_SUCCESS_STDERR:
+            if result.stderr.split("\n")[2] == 'Fortran runtime error: ' \
+                                               'Cannot write to file opened for READ':
+                exception = result.stderr.split('\n')[2]
+                raise Exception(exception)
+            else:
+                raise Exception(f"FSSA script failed : {result.stderr}")
+        print("Output:", result.stdout)
+        print("Error:", result.stderr)
+
+
+@contextmanager
+def cwd(path):
+    oldpwd = os.getcwd()
+    os.chdir(path)
+    try:
+        yield
+    finally:
+        os.chdir(oldpwd)
 
 def create_running_files(
         job_name : str,
@@ -271,7 +286,16 @@ def create_fssa_data_file(data_matrix: List[List[int]]):
 
 
 
+
+
+
 if __name__ == '__main__':
+    # Example usage
+    # Example usage
+    from lib.fss.convert_to_doc import output_to_word
+    output_path = r"C:\Users\Raz_Z\Desktop\shmuel-project\shared\example_3" \
+                  r"\BABY3D84.FSS"  # Path to your text file
+    output_to_word(output_path)
     # load_data_file("C:\\Users\\Raz_Z\\Desktop\\shmuel-project\\fssa-21\\GRAND.PRN")
     # load_data_file("scripts/simaple_example/diamond6.txt")
     # run_fortran()
@@ -296,5 +320,5 @@ if __name__ == '__main__':
     # run_fortran(corr_type=corr_type)
     # path = r"C:\\Users\\Raz_Z\\Desktop\\shmuel-project\\fssa-21\\GRAND.PRN"
     # path = r"C:\Users\Raz_Z\Desktop\shmuel-project\shared\example_3\babystu4.prn"
-    path = r"C:\Users\Raz_Z\Desktop\shmuel-project\shared\simaple_example\diamond6.txt"
-    load_data_file(path, delimiter=",", lines_per_var=2)
+    # path = r"C:\Users\Raz_Z\Desktop\shmuel-project\shared\simaple_example\diamond6.txt"
+    # load_data_file(path, delimiter=",", lines_per_var=2)

@@ -5,6 +5,7 @@ from lib.tests_utils import *
 from const import *
 
 SET_MODE_TEST()
+# SET_MODE_PRODUCTION()
 
 ###
 test_facets = [

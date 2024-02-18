@@ -1,0 +1,838 @@
+<html><head><style>body{max-width:1250px;}body,table,td {font-size:14px; font-family: Arial, Helvetica, sans-serif;}</style>
+
+
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+<!--font table contains 7 fonts total-->
+</head>
+<body><div id="divhlpmain"><sup>#</sup><font face="Tms Rmn"><font size="1"> </font></font><b><font size="3">FSSA for Windows Help Index<font size="2"><br>
+</font></font></b><font face="Helvetica"><sup>K</sup><br>
+<u>What is FSSA ?</u></font><br>
+<br>
+<b>How To ...<br>
+<u></u></b><u>Move between screens</u><u><br>
+</u><u>Use the keyboard</u><u><br>
+</u><u>Use facets</u><u><br>
+</u><u>Not use facets</u><u><br>
+<br>
+</u><b>Commands<br>
+<u></u></b><u>File menu</u><br>
+<u>Input Data menu</u><br>
+<u>SSA menu</u><br>
+<u>Facets menu</u><br>
+<u>View menu</u><br>
+<u>Help menu</u><br>
+<p></p><hr><p>
+<sup>#</sup><b>What is FSSA ?</b><br>
+<br>
+Faceted Smallest Space Analysis (FSSA) is a Multidimensional Scaling (MDS) procedure which optionally allows for the incorporation of content classifications (=facets) of the mapped objects into the analysis.<br>
+<br>
+FSSA maps objects (most often the "objects" are observed variables) in a space of prespecified dimensionality, so as to represent pairwise similarity or dissimilarity observed between them. The (dis)similarity measures -- or coefficients -- are created in advance by a statistical package or otherwise conceived and written into a file (e.g., using your editor). Coefficients should be in the form of a symmetric matrix written into an ASCII file, having a fixed format. Optionally, FSSA first computes a matrix of pearson correlations or a matrix of monotonicity coefficients from an appropriate data file (i.e. an ASCII file where each variable is numerical, and ordered from HIGH to LOW in some sense). Then FSSA goes on to processing the matrix -- interpreting its entries as similarity coefficients -- and to mapping the variables in 2-dimensional projections of the requested spaces. <br>
+<br>
+Before you start FSSA you must verify that either the matrix file or the data file you wish to process is indeed in your computer. If you are going to process an existing matrix, you should know:<br>
+The name of the matrix file, and its full path (e.g. \mydir\simil.mat)<br>
+How many objects (e.g. variables) are referred to by that matrix<br>
+In what format is the matrix written in the file. I.e.,<br>
+The number of fields in each (physical) row. (This may be smaller than the number of objects if rows wrap;)<br>
+The number of columns in each field;<br>
+The number of decimal places used, if any.<br>
+Whether coefficients represent pairwise similarity between objects (correlations, confusion coefficients, judged similarity) or pairwise dissimilarity (distance).<br>
+<br>
+If you are going to run a two-stage procedure, where a matrix is first computed from an existing data set, you should know:<br>
+The name of the data file, and its full path (e.g. \mydir\coded.dat) ;<br>
+How many records (lines) per subject are there in the data file;<br>
+How many variables are to be processed and where they are located in the data file; i.e. the record number and column(s) of each variable;<br>
+For each variable, what are its valid values (the range of numerical values over which correlations are computed) and what are its non- valid (including missing) values.<br>
+<br>
+The full power of FSSA for scientific theory construction is attained by identifying a correspondence between a content facet (i.e. a classification of the variables) and a partition of the FSSA solution space into regions. This is facilitated by the program "facet option". <br>
+<br>
+<b>References</b><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Guttman, L. A general nonmetric technique for finding the smallest coordinate space for a configuration of points. PSYCHOMETRIKA, 1968. <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Lingoes, J.C. The Guttman-Lingoes Nonmetric Program Series. Ann Arbor: Mathesis, 1973. <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Shye, S. (ed.) Theory Construction and Data Analysis in the Behavioral Sciences. San Francisco: Jossey-Bass, 1978. <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Shye, S. Achievement motive: a faceted definition and structural analysis . MULTIVARIATE BEHAVIORAL RESEARCH, 1978.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Shye, S. Smallest Space Analysis. In T. Husen &amp; T.N. Postlethwaite (eds.) INTERNATIONAL ENCYCLOPEDIA OF EDUCATION. Oxford: Pergamon, 1985.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Shye, S. Multiple Scaling. Amsterdam: North Holland. 1985.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Borg, T. and Shye, S. Facet Theory: Form and Content. Thousand Oaks, CA: Sage, 1995.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Shye, S. and Elizur, D. Intriduction to Facet Theory. Thousand Oaks, CA: Sage, 1994.<br>
+</p><p></p><hr><p>
+<sup>$</sup><sup>#</sup><b>How to move between screens</b><br>
+<br>
+There are two ways to navigate the screens:<br>
+<br>
+You can use the menu bar to choose commands from the <u>Input Data</u>, <u>SSA</u> &amp; <u>Facets</u> menus that will get you immediately where you are going.<br>
+<br>
+Or, you can use the <u>Next</u> and <u>Previous</u> commands to move serially from one screen to the next. These commands are available through the <u>View menu</u>, through the toolbar, and through buttons on the bottom of the screen.<br>
+<br>
+</p><p></p><hr><p>
+<sup>#</sup><b>How to use the keyboard</b><br>
+<br>
+There are a few tricks to using the keyboard, all except one of them standard to the Windows operating system.<br>
+<br>
+The Tab key moves between fields on the screen; the Shift-Tab key combination moves backwards.<br>
+<br>
+The field you are in is said to 'have the focus', and it will usually have a caret to show it. This caret's appearance differs by field (control) type. In an editable text field, it is usually a text cursor; in most other types (buttons, check-boxes, list-boxes) it is a dotted frame around a piece of text.<br>
+<br>
+You can use the space-bar to push buttons or mark check-boxes, when they have the focus.<br>
+<br>
+The Enter key may cause surprises to the unwary: In most screens and dialogs there is a 'default' button, marked by a thick black frame. If no button has the focus, the Enter key will push the default button. But if the dotted-frame caret is on another button, then Enter will press the button that has the focus.<br>
+<br>
+The one exception to Windows standards is in the <u>Variable Elements in Facets screen</u> where selecting a combo-box element also moves you to the next field.<br>
+<br>
+</p><p></p><hr><p>
+<sup>$</sup><sup>#</sup><b>How to use facets</b><br>
+<br>
+To use facets, after you have defined and selected your variables, select <u>Facets</u> | <u>Element Labels</u> to go to the <u>Facet Definition screen</u>. In the box in the top right corner, choose the number of facets you want. Fields will show up for facet elements number and element labels, for each facet. Fill those in if you want. In addition, when you choose a number of facets to use, the Next button will be enabled.<br>
+<br>
+Push <u>Next</u> to move to the <u>Variable Elements in Facets screen</u>. In this screen you should classify variables in facets.<br>
+<br>
+You may go to the <u>Facet Hypotheses</u> and <u>Facet Diagrams</u> screens to fine-tune the output you want. They are the next two screens.<br>
+<br>
+</p><p></p><hr><p>
+<sup>$</sup><sup>#</sup><b>How to NOT use facets</b><br>
+<br>
+select <u>Facets</u> | <u>Element Labels</u> to go to the <u>Facet Definition screen</u>. In the box in the top right corner, choose 'No facets'. The Next command, along with all other commands on the Facets menu will be disabled, and no facets will be used in the process.<br>
+<br>
+</p><p></p><hr><p>
+<sup>$</sup><sup>#</sup><b>File menu commands</b><br>
+<br>
+The File menu offers the following commands:<br>
+<br>
+<br><p></p><hr><p>
+</p><br><table border="2">
+<tbody><tr><td><u>New</u></td>
+<td>Creates a new form.</td>
+</tr>
+<tr><td><u>Open</u><u></u></td>
+<td>Opens an existing form.</td>
+</tr>
+<tr><td><u>Save</u><u></u></td>
+<td>Saves an opened form using the same file name.</td>
+</tr>
+<tr><td><u>Save As</u><u></u></td>
+<td>Saves an opened form to a specified file name.</td>
+</tr>
+<tr><td><u>Run</u><u></u></td>
+<td>Runs FSSA according to current form</td>
+</tr>
+<tr><td><u>Exit</u><br>
+<u></u></td>
+<td>Exits FSSA for Windows.</td>
+</tr>
+
+<tr><td><sup>#</sup><b>Input Data menu commands</b><br>
+<br>
+The Input Data menu offers the following commands:<br>
+<br>
+<u>Recorded Data</u></td>
+<td>Open the recorded data file definitions screen, marking recorded data is to be used.</td>
+</tr>
+<tr><td><u>Coefficient Matrix</u><u></u></td>
+<td>Open the coefficient matrix file definitions screen, marking a coefficient matrix is to be used.</td>
+</tr>
+<tr><td><u>Variables</u><u></u></td>
+<td>Open the Variable Definitions screen.</td>
+</tr>
+
+<tr><td>Only one type of input can be used in each run; the currently selected type (i.e. Recorded Data or Coefficient Matrix) will be marked with a check-mark in the Input Data menu. <br>
+<br>
+<p></p><hr><p>
+</p></td>
+</tr>
+</tbody></table>
+<sup>$</sup><sup>#</sup><b>SSA menu commands</b><br>
+<br>
+The SSA menu offers the following comands:<br>
+<br>
+<br><p></p><hr><p>
+</p><br><p></p><hr><p>
+</p><p></p><hr><p>
+</p><br><br><p></p><hr><p>
+</p><table border="2">
+<tbody><tr><td><u>Dimensions &amp; Coeffs</u></td>
+<td>Open the Dimensions and Coefficients screen.</td>
+</tr>
+<tr><td><u>Technical Options</u></td>
+<td>Open the Technical Options dialog.</td>
+</tr>
+
+<tr><td><sup>$</sup><sup>#</sup><b>Facets menu commands</b><br>
+<br>
+The Facets menu offers the following commands:<br>
+<br>
+<u>Element Labels</u></td>
+<td>Open the Facets Definition screen to define number of facets, number of elements in each facet, and facet element labels.</td>
+</tr>
+<tr><td><u>Variable elements</u></td>
+<td>Open the Variable Elements in Facets screen to define to which element in each facet each variable belongs.</td>
+</tr>
+<tr><td><u>Hypotheses</u></td>
+<td>Open the Regional Hypotheses screen to specify which geometric hypotheses to check for each facet.</td>
+</tr>
+<tr><td><u>Diagrams</u></td>
+<td>Open the Facet Diagrams screen to specify which diagrams to draw.</td>
+</tr>
+
+<tr><td><sup>#</sup><b>View menu commands</b><br>
+<br>
+The View menu offers the following commands:<br>
+<br>
+<u>Next</u><u></u></td>
+<td>Move to next screen</td>
+</tr>
+<tr><td><u>Previous</u><u></u></td>
+<td>Move to previous screen</td>
+</tr>
+<tr><td><u>Toolbar</u><u></u></td>
+<td>Shows or hides the toolbar.</td>
+</tr>
+<tr><td><u>Status Bar</u><u></u></td>
+<td>Shows or hides the status bar.</td>
+</tr>
+<tr><td><u>Input File</u><u></u></td>
+<td>Open input file in a DOS editor.</td>
+</tr>
+<tr><td><u>Output File</u><u></u></td>
+<td>Open last output file in a DOS editor.</td>
+</tr>
+<tr><td><u>Diagrams</u><u></u></td>
+<td>Show diagrams for last run.</td>
+</tr>
+<tr><td><sup>#</sup><b>Help menu commands</b><br>
+<br>
+The Help menu offers the following commands, which provide you assistance with this application: <br>
+<br>
+<u>Contents</u><u></u></td>
+<td>Opens the help main screen, for general help.</td>
+</tr>
+<tr><td>Help on current screen<u></u></td>
+<td>Provides help on the currently visible screen of the application. </td>
+</tr>
+<tr><td>Open Readme.txt<u></u></td>
+<td>Opens the file Readme.txt (supplied with FSSA for Windows) in notepad for viewing.</td>
+</tr>
+<tr><td><u>Using Help</u><u></u></td>
+<td>Provides general instructions on using help.</td>
+</tr>
+<tr><td><u>About</u><u></u></td>
+<td>Displays the version number of this application.</td>
+</tr>
+
+
+<tr><td><sup>$</sup><sup>#</sup><b>New command (File menu)</b><br>
+<br>
+Use this command to create a new form in FSSA for Windows. Select the type of input for the new form you want to create in the <u>New form dialog box</u><font face="Tms Rmn">. </font><br>
+<br>
+You can open an existing form with the <u>Open command</u>.<br>
+<br>
+<b>Shortcuts<br>
+</b>Toolbar:<img data="bm0.bmp" title="bm0.bmp" src="bm0.bmp"><br>
+Keys:CTRL+N<br>
+<br>
+<p></p><hr><p>
+</p></td>
+</tr>
+</tbody></table>
+<sup>#</sup><b>New form dialog box<br>
+</b><br>
+Specify the type of input file for the new form you wish to create:<br>
+<br>
+The option of Coefficient Matrix processing enables you to run FSSA directly in a single stage. This selection assumes that a file containing the matrix in ASCII code exists in your computer. The path to that file (drive, directory, file name) must be known to you, as well as the exact (fixed) format of the matrix (the field width of each matrix entry, number of decimals, and whether lines are wrapped or not, i.e. the actual number of entries in each line of the file). If you are not sure about the format, you can use the View Input File command to check.<br>
+<br>
+A matrix file may be created, before running FSSA, either by using your editor or by a statistical package using the saved results of a correlation command (e.g. SPSS.PRC).<br>
+<br>
+The option of DATA processing results in a two stage operation: FSSA first produces a correlation matrix from an existing data file, and then the variables are mapped. The data file must exist in you computer and its path (drive, directory, file-name) and structure (records, columns and field-widths of the variables) known to you. Again, use View Input File to check the format.<br>
+<br>
+A data file may be created, before running FSSA, either by using an editor or by a statistical package using the saved results of a write command (often after recoding and defining the missing values for raw data).</p><p></p><hr><p>
+<sup>$</sup><sup>#</sup><b>Open command (File menu)</b><br>
+<br>
+Use this command to open an existing form<br>
+<br>
+You can create new forms with the <u>New command</u>.<br>
+<br>
+<b>Shortcuts<br>
+</b>Toolbar:<img data="bm1.bmp" title="bm1.bmp" src="bm1.bmp"><br>
+Keys:CTRL+O<br>
+<br>
+</p><p></p><hr><p>
+<sup>#</sup><b>File Open dialog box<br>
+</b><br>
+The following options allow you to specify which file to open:<br>
+<b>File Name<br>
+</b>Type or select the file name you want to open. This box lists files with the extension you select in the List Files of Type box. <br>
+<b>List Files of Type<br>
+</b>Select the type of file you want to open:<br>
+*.mem is the default extension for FSSA for Windows forms.<br>
+*.dat may be used when opening Recorded Data files.<br>
+*.mat may be used when opening Coefficient Matrix files.<br>
+<b>Drives<br>
+</b>Select the drive in which FSSA for Windows stores the file that you want to open. <br>
+<b>Directories<br>
+</b>Select the directory in which FSSA for Windows stores the file that you want to open.<br>
+<b>Network...<br>
+</b>If available, choose this button to connect to a network location, assigning it a new drive letter. <br>
+<br>
+</p><p></p><hr><p>
+<sup>$</sup><sup>#</sup><b>Save command (File menu)</b><br>
+<br>
+Use this command to save the active form to its current name and directory. When you save a form for the first time, FSSA for Windows displays the <u>Save As dialog box</u> so you can name your form. If you want to change the name and directory of an existing form before you save it, choose the <u>Save As command</u>.<br>
+<br>
+<b>Shortcuts<br>
+</b>Toolbar:<img data="bm3.bmp" title="bm3.bmp" src="bm3.bmp"><br>
+Keys:CTRL+S<br>
+<br>
+<br>
+</p><p></p><hr><p>
+<sup>$</sup><sup>#</sup><b>Save As command (File menu)</b><br>
+<br>
+Use this command to save and name the active form. FSSA for Windows displays the <u>Save As dialog box</u> so you can name your form. <br>
+<br>
+To save a form with its existing name and directory, use the <u>Save command</u>.<br>
+<br>
+</p><p></p><hr><p>
+<sup>#</sup><b>File Save As dialog box<br>
+</b><br>
+The following options allow you to specify the name and location of the file you're about to save:<br>
+<b>File Name<br>
+</b>Type a new filename to save a form with a different name. A filename can contain up to eight characters and an extension of up to three characters. FSSA for Windows adds the extension you specify in the Save File As Type box.<br>
+<b>Drives<br>
+</b>Select the drive in which you want to store the form.<br>
+<b>Directories<br>
+</b>Select the directory in which you want to store the form.<br>
+<b>Network...<br>
+</b>If available, choose this button to connect to a network location, assigning it a new drive letter. <br>
+</p><p></p><hr><p>
+<sup>$</sup><sup>#</sup><b>Run command (File menu)<br>
+<br>
+</b>Use this command to run FSSA according to the form you have filled. FSSA for Windows will then do the following:<br>
+<br>
+1. Check your form for correctness and consistency. If you have failed to supply some information that is needed for FSSA to run correctly, or filled a form that cannot be run, FSSA for Windows will indicate the error and bring you to the screen where you can correct it.<br>
+<br>
+2. Check for old output files. FSSA for Windows places graphics (*.scr) output files in a fixed place, in the directory where it is installed. These files are created when you run a form. When you run another form, without taking measures against it, new files for the same processing will overwrite the old ones, and old files will remain in place where similar processing has not been requested; this may cause old output to be shown for new runs. To prevent this situation, FSSA for Windows offers to delete the old output files, if they exist. If you wish to keep them, you may at that point choose to cancel the run and move them to another directory (e.g. using the Windows File Manager). You may also choose to keep them where they are and run, which is not recommended.<br>
+<br>
+3. Ask for a job name and an output file name. The job name is an arbitrary string that will show up as a headline in the ouput file. The output file will contain the details of the run and analysis in DOS text form.<br>
+</p><p></p><hr><p>
+<sup>$</sup><sup>#</sup><b>1, 2, 3, 4 command (File menu)</b><br>
+<br>
+Use the numbers and filenames listed at the bottom of the File menu to open the last four forms you closed. Choose the number that corresponds to the form you want to open.<br>
+</p><p></p><hr><p>
+<sup>$</sup><sup>#</sup><b>Exit command (File menu)</b><br>
+<br>
+Use this command to end your FSSA for Windows session. You can also use the Close command on the application Control menu. FSSA for Windows prompts you to save the current form.<br>
+<br>
+<b>Shortcuts<br>
+</b>Mouse:Double-click the application's Control menu button.<br>
+Keys:ALT+F4<br>
+</p><p></p><hr><p>
+<sup>$</sup><sup>#</sup><b>Recorded Data command (Input Data menu)<br>
+<br>
+</b>Use this command to indicate that you are going to use recorded (variables) data, and to open the <u>Recorded Data file definition screen</u>.<b><br>
+</b></p><p></p><hr><p><b>
+<sup>$</sup><sup>#</sup></b>Recorded Data file definition screen<br>
+<br>
+In this screen you are required to define the general properties of your input file. The details of each variable are defined later in the <u>Variable Definitions Screen</u>.<br>
+<br>
+1. Specify path of data file. You can use the Browse button to open a <u>file selection box</u> to help you find the right path. If the specified data file cannot be read, you will be notified upon finishing the screen (After the FSSA run has been successfully completed, the output file will be directed, by default, to the directory where the data file is).<br>
+<br>
+2. Specify the number of rows (physical records) per case (logical record) in the data file specified above. This number can have a value from 1 to 10 and depends on how your data is set up.<br>
+<br>
+3. If any of the variables have missing values other than zero, or if zero itself is not a missing value, choose 'No' in answer to the question. Otherwise, choose 'Yes'. Pressing the button switches between the two.<br>
+<br>
+</p><p></p><hr><p>
+<sup>$</sup><sup>#</sup><b>Coefficient Matrix command (Input Data menu)<br>
+<br>
+</b>Use this command to indicate you are going to use a file containing a matrix of coefficients of similarity (or dissimilarity) between your variables, and open the <u>Coefficient Matrix file definition screen</u>.<br>
+<b><br>
+</b></p><p></p><hr><p><b>
+<sup>$</sup><sup>#</sup></b>Coefficient Matrix file definition screen<br>
+<br>
+In this file you are required to fill in the properties of your input file, in case it is a matrix of coefficients. You can define the variable labels in the <u>Variable Definitions Screen</u>. <br>
+<br>
+1. Specify path of data file. You can use the Browse button to open a <u>file selection box</u> to help finding the right path. If the specified data file cannot be read, you will be notified upon finishing the screen (After the FSSA run has been successfully completed, the output file will be directed, by default, to the directory where the data file is).<br>
+<br>
+2. The number of objects (variables, for example) to be mapped. This number must equal the number of logical rows of the matrix. The number of physical rows may be larger - and the number of physical columns correspondingly smaller - if matrix rows are wrapped around; for example, so as to fit into the screen. There should be no spaces between rows; that is, no empty rows.<br>
+<br>
+3. The number of entries (or fields) that are actually written in each of the file's rows. This number may be smaller than the number of objects (which is the number of entries in each logical row).<br>
+<br>
+4. Matrix cell (i.e., field) width. All cells must be of equal size. Width specification should include spaces, if there are any, between matrix entries.<br>
+<br>
+5. Precision, i.e., number of decimal digits used in writing each coefficient (after the decimal point).<br>
+<br>
+6. Missing value ranges: specify here in pairs the lower &amp; upper bounds of the ranges of entries (coefficients) that are to be considered as missing values. Delete the default option if it does represent a valid value. Any number of field-pairs may be empty.<br>
+<br>
+</p><p></p><hr><p>
+<sup>$</sup><sup>#</sup><b>Variables command (Input Data menu)<br>
+</b><br>
+Use this command to open the <u>Variables screen</u>, where you can define variable labels and select variables for a run. If you are working with Recorded Data, you are also required to define the file structure (i.e. where in the file the variables data reside) in this screen.<br>
+<br>
+</p><p></p><hr><p>
+<sup>$</sup><sup>#</sup><b>Variables screen<br>
+</b><br>
+In this screen you can define variable labels and select variables for a run. If you are working with Recorded Data, you are also required to define the file structure (i.e. where in the file the variables data reside) in this screen.<br>
+<br>
+The main attraction in this screen is a list box with a line for every variable. This list box is actually a table with the following columns:<br>
+<br>
+<br><br><br><table border="2">
+<tbody><tr><td>Var No.</td>
+<td>Variable serial number.</td>
+</tr>
+<tr><td>Sel'd Y/N</td>
+<td>Y if the variable is selected for this run, N otherwise.</td>
+</tr>
+<tr><td>Sel'd Var</td>
+<td>If the variable is selected, its serial number for this run (its selected number).</td>
+</tr>
+<tr><td>Var Label</td>
+<td>The label (name) given to this variable.</td>
+</tr>
+
+<tr><td>If you choose to work with recorded data, the table will also have these columns:<br>
+<br>
+Rec No.</td>
+<td>In which record is the variable located. </td>
+</tr>
+<tr><td>Field Width</td>
+<td>Field width of the variable (must be 1 or 2).</td>
+</tr>
+<tr><td>Start Col</td>
+<td>Starting column in the record. If field width is 1 this is simply the column number. If field width is 2 this simply the number of the first column.</td>
+</tr>
+
+<tr><td>If you use recorded data and specify that zero is not the only missing value, the table will also have the following columns:<br>
+<br>
+Valid Hi/Lo.</td>
+<td>The valid minimum and maximum values of the variable</td>
+</tr>
+
+<tr><td><b>Editing variables</b><br>
+<br>
+One of the variables in the list box is marked with an asterisk next to its serial number. This variable is the 'current' variable. You can edit it by pressing the Edit Variable button. You can also open every variable for editing by double-clicking it. If you press the Add Variable button (enabled only for Recorded Data), a new variable (i.e. with serial number one after the last defined so far) will be created and opened for you to edit. Likewise, if you press the Insert Variable button, a new variable will be created and inserted at the cursor position, pushing the existing variables down.<br>
+<br>
+In each of these scenarios, you will be presented with the <u>Variable Definition dialog</u>.<br>
+<br>
+The variables from a given record in the file can be listed in any order. But all variables from a given record must be listed <i>before</i> variables from later records (Thus e.g. you cannot list a variable from record 1 after a variable from record 2).<br>
+<br>
+When working with Recorded Data, you can also delete the current variable in the list by using the Delete Variable button. This option is included to help correct errors in defining the variables; if a variable is correctly defined, but you do not want it in this run, you should unselect it, not delete it.<br>
+<br>
+<b>Selecting and unselecting variables</b><br>
+<br>
+Clicking any variable (or pressing the space bar when the focus is on it, i.e. when it has a dotted frame around it) will make it the current variable and, more importantly, change its selection status. Only selected variables are used in the FSSA run, and the numbers that will appear in the output file are the selected numbers of the variables. By unselecting a variable, you choose to ignore it completely - but reversibly. All variables are selected by default.<br>
+<p></p><hr><p>
+</p></td>
+</tr>
+</tbody></table>
+<sup>$</sup><sup>#</sup><b>Variable Definition dialog</b><br>
+<br>
+In this dialog you can alter the fields that define a variable:<br>
+<br>
+1. Var No.: You cannot change the variable number, this field notifies you which variable you are working on.<br>
+2. Var Label: This label will appear in the FSSA output and in the screen diagrams. <br>
+<br>
+These fields will only be available when working with Recorded Data:<br>
+<br>
+3. Rec No.: Which record the variable is loacated in.<br>
+4. Field Width: Field width of the variable (must be 1 or 2). <br>
+5. Start Col: Starting column in the record.<br>
+<br>
+These fields will only be available when working with Recorded Data and zero is not the only missing value:<br>
+<br>
+6. Valid Lo: Minimal valid value for the variable.<br>
+7. Valid Hi: Maximal valid value for the variable.<br>
+<br>
+When you are done editing a variable, press one of these buttons:<br>
+<br>
+<br><table border="2">
+<tbody><tr><td>Next Var</td>
+<td>Apply the data as entered to this variable and move on to the next. This is the default button, so pressing the Enter key while the cursor is in one of the fields will press it.</td>
+</tr>
+<tr><td>Done</td>
+<td>Apply the data as entered to this variable and close the Variable Definition dialog.</td>
+</tr>
+<tr><td>Cancel</td>
+<td>Leave this variable as it was and close the Variable Definition dialog.</td>
+</tr>
+
+<tr><td>When working with Recorded Data, the Next Var button can be used to add a new variable.<br>
+<p></p><hr><p>
+<sup>$</sup><sup>#</sup></p></td>
+</tr>
+</tbody></table>
+<sup>K</sup><b>Dimensions &amp; Coeffs command (SSA menu)</b><br>
+<br>
+Use this command to open the <u>Dimensions and Coefficients screen</u> to select the dimensionalities you wish to test and the type of coefficients you want to use.<br>
+<br>
+</p><p></p><hr><p>
+<sup>$</sup><sup>#</sup><b>Dimensions and Coefficients screen</b><br>
+<br>
+This screen reports the number of variables you have selected to work on, and offers the following fields:<br>
+<br>
+Type of coefficients:<br>
+<br>
+When working with Recorded Data, you can select between Monotonicity and Pearson. The coefficient of Monotonicity between two variables ranges from -1 to +1 and assesses to what extent an increase in one variable is accompanied by an increase (or no decrease) in the other variable, with no reference to an a priori regression line. Its absolute value is no smaller, and usually larger, than that of Pearson correlation. The coefficient of monotonicity is more appropriate for ordinal data, where no linearity is assumed for the regression line. Pearson correlation is the familiar linear correlation coefficient. Select either Monotonicity or Pearson, to suit your data and assumptions.<br>
+<br>
+When working with a Coefficient Matrix, you can select between Similarity and Dissimilarity.Specify whether the matrix-entries represent similarity between the objects (e.g. correlation coefficients, indices of confusion, judged similarity) or dissimilarity between the objects (e.g., distance or indices of alienation).<br>
+<br>
+Lowest dimensionality and Highest dimensionality specify the range of dimensionalities to be tested. Dimensionalities may be between 2 and 10 with the lower being less than or equal to the higher. If only one dimensionality is desired, for example, two-dimensional, enter that dimensionality in both fields (i.e. 2 and 2 in the example).<br>
+<br>
+</p><p></p><hr><p>
+<sup>$</sup><sup>#</sup><b>Technical Options command (SSA menu)</b><br>
+<br>
+Use this command to open the <u>Technical Options dialog</u> where you can set some output formatting options and the weight for locality.<br>
+<br>
+</p><p></p><hr><p>
+<sup>$</sup><sup>#</sup><b>Technical Options dialog</b><br>
+<br>
+This dialog offers you the ability to set the following parameters:<br>
+<br>
+The weight for locality parameter determines weight to be assigned by the program to high (vs. low) similarity between variables (or other mapped objects) . The default value of 2 is recommended for most usages. High values for this parameter would result in better spatial representation of high similarities, possibly at the expense of the representation of low similarities. Low values for this parameter would produce a map 'interpretable as a version of cluster analysis. '<br>
+<br>
+In case your printer uses a form feed character that is different from chr(12), then you should enter it in the special formfeed field, otherwise leave it blank. <br>
+<br>
+If you want to change the characters used by the program to draw frames around diagrams in FSSA output, enter the characters here of your choosing in the following order: <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+TOP,BOTTOM,LEFT,RIGHT, <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+TOPLEFT,TOPRIGHT,BOTTOMLEFT,BOTTOMRIGHT <br>
+otherwise leave blank.<br>
+You can hold the 'Alt' key and then strike a series of 3 numbers on the numerical keypad and lift the 'Alt' key to print many graphic characters.<br>
+<br>
+Choose 'Yes' (by pushing the button) for trimmed ASCII file to create an ASCII file 'SOLUTION.FSS' with the essentials of FSSA solution in fixed format.<br>
+<br>
+</p><p></p><hr><p>
+<sup>$</sup><sup>#</sup><b>Element Labels command (Facets menu)</b><br>
+<br>
+Use this command to open the <u>Facets Definition screen</u> to define number of facets, number of elements in each facet, and facet element labels.<br>
+<br>
+Use these command and screen also to specify that you want no faceted calculations.<br>
+<br>
+</p><p></p><hr><p>
+<sup>$</sup><sup>#</sup><sup>K</sup><b>Facets Definition screen</b><br>
+<br>
+A facet is a classification of the objects (variables) by some content criterion. One facet of psychological variables may, for example, classify those variables according to whether they refer to subjects' 'knowledge', 'love' or 'action'. A common facet of scholastic aptitude items classifies the items according to whether they assess verbal, spatial, or numerical ability. Each object may be classifiable independently by several facets. This program allows up to 4 facets to be chosen. <br>
+<br>
+Each facet is a content-classification of the variables into classes, and so contains several FACET-ELEMENTS, each facet-element representing a class within that facet. Above the labels for facet-elements is their number, in each facet. The labels you assign to facet-elements of each facet will be used in output FSSA facet diagrams. <br>
+<br>
+By default, there are 4 elements in each facet, labeled by facet letter and element number (i.e. facet A has 4 elements labeled a1,a2,a3,a4).<br>
+<br>
+If you choose 'No facets', no facet analysis will be carried out at all, just Smallest Space Analysis (SSA), an MDS procedure. This is the default.<br>
+<br>
+</p><p></p><hr><p>
+<sup>$</sup><sup>#</sup><b>Variable elements command (Facets menu)</b><br>
+<br>
+Use this command to open the <u>Variable Elements in Facets screen</u> to define for each variable, to which element in each facet it belongs.<br>
+</p><p></p><hr><p>
+<sup>$</sup><sup>#</sup><sup>K</sup><b>Variable Elements in Facets screen</b><br>
+<br>
+That the variables may be classified by a facet, means that each variable belongs to one of the facet's classes. I.e., each variable may be assigned a facet-element of that particular facet. Similarly, from each of the additional facets you may have defined, a facet-element can be assigned to the same variable. In this screen you are asked to classify each variable by Facet A (then by Facet B, if any, etc). In carrying out this task use the numerical designation of the appropriate facet-element.<br>
+<br>
+You can use the mouse to open a combo-box of facet elements that you have defined, or select by a digit. Select 0 (Undefined) for a variable that has no classification in a particular facet.<br>
+<br>
+Upon selection, the cursor will automatically move to the next variable; You do not need to move it yourself (by mouse or Tab key, as you usually do).<br>
+<br>
+</p><p></p><hr><p>
+<sup>$</sup><sup>#</sup><b>Hypotheses command (Facets menu)</b><br>
+<br>
+Use this command to open the <u>Regional Hypotheses screen</u> to specify which geometric hypotheses to check for each facet.<br>
+<br>
+</p><p></p><hr><p>
+<sup>$</sup><sup>#</sup><sup>K</sup><b>Regional Hypotheses screen</b><br>
+<br>
+In this screen you choose, for each facet, which regional hypotheses to test for it.<br>
+<br>
+Mark the Axial check-box if you want to test the hypothesis that tha above mentioned facet is an AXIAL FACET. The program will then look for the set of PARALLEL LINES that best partition the space into strips according to that facet. The <u>Separation Index</u> will indicate agreement with the axial partition pattern. <br>
+<br>
+Mark the Angular check-box if you want to test the hypothesis that the above mentioned facet is an ANGULAR FACET. The program will then look for the set of RADIUSES that best partition the space into sectors according to that facet. The Separation Index will indicate agreement with the angular partition pattern. <br>
+<br>
+Mark the Radial check-box if you want to test the hypothesis that the above mentioned facet is a RADIAL FACET. The program will then look for the set of CONCENTRIC CIRCLES that best partition the space into rings according to that facet. The Separation Index will indicate agreement with the radial partition pattern. <br>
+<br>
+</p><p></p><hr><p>
+<sup>$</sup><sup>#</sup><b>Diagrams command (Facets menu)</b><br>
+<br>
+Use this command to open the <u>Facet Diagrams screen</u> to specify which dimensionalities are to be diagrammed for each facet.<br>
+<br>
+</p><p></p><hr><p>
+<sup>$</sup><sup>#</sup><sup>K</sup><b>Facet Diagrams screen</b><br>
+<br>
+A facet diagram is a reproduction of the SSA solution except that in the place of each variable, its facet-element is printed. Facet diagram facilitates the identification of systematic partitioning of the space by the facet represented. For a 2-dimensional solution, one facet diagram will be produced for every facet. For a 3-dimensional solution, three; and for 4-d solution, six such diagrams will be produced. <br>
+<br>
+To switch a Yes/No, just click on it. Alternatively, you can use the Tab/Shft-Tab keys to move the button on the grid and use the space-bar to push and change it.<br>
+<br>
+</p><p></p><hr><p>
+<sup>$</sup><sup>#</sup><sup>K</sup><b>Next command (View menu)</b><br>
+<br>
+Use this command to move to the next screen in the FSSA form.<br>
+<br>
+This command is also available via a button on the bottom of the screen and a little right arrow in the toolbar.<br>
+<br>
+</p><p></p><hr><p>
+<sup>$</sup><sup>#</sup><b>Previous command (View menu)</b><br>
+<br>
+Use this command to move to the preceding screen in the FSSA form.<br>
+<br>
+This command is also available via a button on the bottom of the screen and a little left arrow in the toolbar.<br>
+<br>
+</p><p></p><hr><p>
+<sup>$</sup><sup>#</sup><b>Toolbar command (View menu)</b><br>
+<br>
+Use this command to display and hide the Toolbar, which includes buttons for some of the most common commands in FSSA for Windows, such as File Open. A check mark appears next to the menu item when the Toolbar is displayed.<br>
+<br>
+See <u>Toolbar</u> for help on using the toolbar.<br>
+</p><p></p><hr><p>
+<sup>$</sup><sup>#</sup><b>Toolbar</b><br>
+<img data="bm17.bmp" title="bm17.bmp"><br>
+<br>
+The toolbar is displayed across the top of the application window, below the menu bar. The toolbar provides quick mouse access to many tools used in FSSA for Windows,<br>
+<br>
+To hide or display the Toolbar, choose Toolbar from the View menu (ALT, V, T).<br>
+<br>
+<b>ClickTo</b><br>
+<img data="bm0.bmp" title="bm0.bmp">Open a new form.<br>
+<br>
+<img data="bm1.bmp" title="bm1.bmp">Open an existing form. FSSA for Windows displays the Open dialog box, in which you can locate and open the desired file.<br>
+<br>
+<img data="bm3.bmp" title="bm3.bmp">Save the active form or template with its current name. If you have not named the form, FSSA for Windows displays the Save As dialog box.<br>
+<br>
+(left arrow)&nbsp;&nbsp;&nbsp;&nbsp;
+Move to the previous screen.<br>
+<br>
+(right arrow)&nbsp;&nbsp;&nbsp;
+Move to the next screen.<br>
+<br>
+(GO)&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Run FSSA according to form.<br>
+<br>
+</p><p></p><hr><p>
+<sup>$</sup><sup>#</sup><b>Status Bar command (View menu)<br>
+</b><br>
+Use this command to display and hide the Status Bar, which describes the action to be executed by the selected menu item or depressed toolbar button, and keyboard latch state. A check mark appears next to the menu item when the Status Bar is displayed.<br>
+<br>
+See <u>Status Bar</u> for help on using the status bar.<br>
+</p><p></p><hr><p>
+<sup>$</sup><sup>#</sup><sup>K</sup><b>Status Bar</b><br>
+<img data="bm16.bmp" title="bm16.bmp"><br>
+<br>
+The status bar is displayed at the bottom of the FSSA for Windows window. To display or hide the status bar, use the Status Bar command in the View menu.<br>
+<br>
+The left area of the status bar describes actions of menu items as you use the arrow keys to navigate through menus. This area similarly shows messages that describe the actions of toolbar buttons as you depress them, before releasing them. If after viewing the description of the toolbar button command you wish not to execute the command, then release the mouse button while the pointer is off the toolbar button.<br>
+<br>
+The right areas of the status bar indicate which of the following keys are latched down:<br>
+<br>
+<b>IndicatorDescription</b><br>
+CAPThe Caps Lock key is latched down.<br>
+NUMThe Num Lock key is latched down.<br>
+SCRLThe Scroll Lock key is latched down.<br>
+</p><p></p><hr><p>
+<sup>$</sup><sup>#</sup><b>Input File command (View menu)</b><br>
+<br>
+Use this command to take a peek in your data input file, e.g. if you are not sure about its format and where variables lie or how coefficients are formatted.<br>
+<br>
+The input file will be opened for you in a DOS editor; use the editor's exit command to return to FSSA for Windows.<br>
+<br>
+</p><p></p><hr><p>
+<sup>$</sup><sup>#</sup><sup>K</sup><b>Output File command (View menu)</b><br>
+<br>
+Use this command to look at the output file after a successful run.<br>
+<br>
+The output file will be opened for you in a DOS editor; use the editor's exit command to return to FSSA for Windows.<br>
+<br>
+</p><p></p><hr><p>
+<sup>$</sup><sup>#</sup><b>Diagrams submenus (View menu)</b><br>
+<br>
+Use the commands in these submenus to view the diagrams for the different two- and three-dimensional FSSA solutions.<br>
+<br>
+Screen diagrams are invoked through DOS. Where there is more than one diagram (3 dimensions means 3 diagrams - one for each projection on 2 dimensions; hypotheses for 2 dimensional solutions) press Enter to switch between them. While diagram is on screen:<br>
+<br>
+Press 'Q' and Enter to quit screen diagram and return to FSSA for Windows.<br>
+Press 'P' and Enter to print screen diagram on a dot-matrix printer.<br>
+Press 'L' and Enter to print screen diagram on a laser printer.<br>
+Press 'F' and Enter to create a *.PCX picture file that can be transported to a word processor.<br>
+<br>
+Screen diagram files are overwritten in each new run, but they can be saved by changing their names. For details on screen diagram file names, see README.TXT file (accessible from the <u>Help menu</u>).<br>
+</p><p></p><hr><p>
+<sup>#</sup><b>Contents command (Help menu)<br>
+</b><br>
+Use this command to display the opening screen of Help. From the opening screen, you can jump to step-by-step instructions for using FSSA for Windows and various types of reference information. <br>
+<br>
+Once you open Help, you can click the Contents button whenever you want to return to the opening screen.<br>
+<br>
+</p><p></p><hr><p>
+<sup>#</sup><b>Using Help command (Help menu)<br>
+</b><br>
+Use this command for instructions about using Help.<br>
+</p><p></p><hr><p>
+<sup>#</sup><b>About command (Help menu)<br>
+</b><br>
+Use this command to display the copyright notice and version number of your copy of FSSA for Windows.<br>
+</p><p></p><hr><p>
+<sup>$</sup><sup>#</sup><b>Context Help command <br>
+</b><img data="bm10.bmp" title="bm10.bmp" src="bm10.bmp"><br>
+<br>
+Use the Context Help command to obtain help on some portion of FSSA for Windows. When you choose the Toolbar's Context Help button, the mouse pointer will change to an arrow and question mark. Then click somewhere in the FSSA for Windows window, such as another Toolbar button. The Help topic will be shown for the item you clicked.<br>
+<br>
+<b>Shortcut<br>
+</b>Keys:SHIFT+F1<br>
+</p><p></p><hr><p>
+<sup>#</sup><b>Modifying the Document<br>
+</b><br>
+&lt;&lt; Write application-specific help here that provides an overview of how the user should modify a document using your application. <br>
+<br>
+If your application supports multiple document types and you want to have a distinct help topic for each, then use the help context i.d. generated by running the MAKEHELP.BAT file produced by AppWizard. Alternatively, run MAKEHM as follows:<br>
+<br>
+makehm IDR_HIDR_,0x2000 resource.h<br>
+<br>
+If the IDR_ symbol for one of your document types is, for example, IDR_CHARTTYPE, then the help context i.d. generated by MAKEHM will be HIDR_CHARTTYPE.<br>
+<br>
+Note, AppWizard defines the HIDR_DOC1TYPE help context i.d. used by this help topic for the first document type supported by your application. AppWizard produces an alias in the .HPJ file for your application, mapping HIDR_DOC1TYPE to the HIDR_ produced by MAKEHM for that document type. &gt;&gt;<br>
+<br>
+</p><p></p><hr><p>
+<br>
+</p><p></p><hr><p>
+<sup>#</sup><b>No Help Available</b><br>
+<br>
+No help is available for this area of the window.<br>
+</p><p></p><hr><p>
+<sup>#</sup><b>No Help Available<br>
+</b><br>
+No help is available for this message box.<br>
+<br>
+&lt;&lt; If you wish to author help specific to each message box prompt, then remove the AFX_HIDP_xxx values from the [ALIAS] section of your .HPJ file, and author a topic for each AFX_HIDP_xxx value. For example, AFX_HIDP_INVALID_FILENAME is the help topic for the Invalid Filename message box. &gt;&gt;<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+</p><p></p><hr><p>
+</p></div>
+
+
+<style>#divhlpmain img{max-width:1000px}#divhlpmain canvas{max-width:400px}</style>
+<script>
+var g_wmf_injected=false; var g_wmf_list=[];
+function init_index(){
+function getWindowHeight(){
+    var windowHeight = 0;
+    if (typeof(window.innerHeight) == 'number'){
+        windowHeight = window.innerHeight;
+    }else{
+        var ieStrict = document.documentElement.clientHeight; 
+        var ieQuirks = document.body.clientHeight;
+        windowHeight = (ieStrict > 0) ? ieStrict : ieQuirks;
+    }
+	if(!windowHeight) windowHeight=0;
+    return windowHeight;
+}
+function getScrollTop(){
+    var scrollTop;
+	if(document.body && document.body.scrollTop){
+		scrollTop = document.body.scrollTop;
+	}else if(document.documentElement && document.documentElement.scrollTop){
+		scrollTop = document.documentElement.scrollTop;
+	}
+	if(!scrollTop) scrollTop=0;
+    return scrollTop;
+} 
+function getOffset(b){
+    var a = 0;
+    var c = 0;
+    while (b && !isNaN(b.offsetLeft) && !isNaN(b.offsetTop)) {
+        a += b.offsetLeft;
+        c += b.offsetTop;
+        b = b.offsetParent;
+    }     
+    return {
+        left: a,
+        top: c
+    }
+}
+function getfileext(s){
+	if(!s) s='';
+	var arr=s.split('.');
+	if(arr.length>1){
+		return arr[arr.length-1].toLowerCase();
+	}
+	return '';
+}
+function inject(s){
+	var o = document.createElement('scri' + 'pt');
+	o.setAttribute('src', s);
+	o.setAttribute('type', 'text/javascript');
+	document.body.appendChild(o);
+}	
+var gwaok=false;
+if(window.WebAssembly) gwaok=true;
+function proc_loadimg(){
+	var wh=getWindowHeight();
+	var st=getScrollTop();
+	var dt=st-(wh*2);
+	var db=st+wh+(wh*2);
+	var dy,data,c,ext;	
+	var a=document.getElementsByTagName('IMG');	
+	for(var i = 0; i < a.length; i++){ 
+		if(a[i].src)continue;
+		data=a[i].getAttribute('data');
+		if(!data)continue;
+		c=getOffset(a[i]);
+		if (c.top>=dt && c.top<=db){
+			a[i].src=data;
+			ext=getfileext(data);
+			if(ext=='wmf' || (gwaok && (ext=='shg'|| ext=='dib' || ext=='emf' || ext=='mrb'))){
+				g_wmf_list.push(a[i]);
+				if(!g_wmf_injected){
+					g_wmf_injected=true;					
+					if(gwaok){
+						inject('/chmviewer/js/all_wmf_wasm.js?t=1');
+					}else{
+						inject('/chmviewer/js/all_wmf.js');
+					}
+				}
+			}
+		}
+	}	
+}
+function proc_fix1(){
+	var a=document.getElementsByTagName('SPAN');	
+	for(var i = 0; i < a.length; i++){ 		
+		if(a[i].style.backgroundColor=='rgb(0, 0, 0)'){
+			if(a[i].parentNode.tagName=='FONT'){
+				if(a[i].parentNode.color=='#000000'){
+					a[i].style.backgroundColor='#FFFFFF';
+				}
+			}
+		}
+	}
+	var a=document.getElementsByTagName('FONT');	
+	for(var i = 0; i < a.length; i++){ 		
+		if(a[i].color=='#000000'){
+			if(a[i].parentNode.tagName=='SPAN'){
+				if(a[i].parentNode.style.backgroundColor=='rgb(0, 0, 0)'){
+					a[i].parentNode.style.backgroundColor='#FFFFFF';
+				}
+			}
+		}
+	}
+}
+	var timer1;
+	window.onscroll=function(){
+		clearTimeout(timer1);
+		timer1=setTimeout(function(){
+			proc_loadimg();
+		},50);
+	}
+	proc_loadimg();
+	proc_fix1();
+}
+init_index();
+</script></body></html>

@@ -4,6 +4,7 @@ import tkinter as tk
 from tkhtmlview import *
 from lib.moduls.help_content import *
 from lib.components.window import Window
+from lib.utils import get_resource
 ###################################
 ############ SECTIONS #############
 ###################################
@@ -26,7 +27,7 @@ s_VARIABLE_ELEMENTS_FACETS_SCREEN = "variable_elements_in_facets_screen"
 s_RECORDED_DATA_SCREEN = "recorded_data_screen"
 s_DATA_SCREEN = "data_screen"
 s_FACETS_DEFINITION_SCREEN = "facets_definition_screen"
-s_VARIABLE_DEFINITION = "variable_definition"
+s_VARIABLE_DEFINITION_SCREEN = "variable_definition_screen"
 s_FACET_DIAGRAMS_SCREEN = "facet_diagrams_screen"
 s_HYPOTHESES_SCREEN = "hypotheses_screen"
 
@@ -67,13 +68,19 @@ s_ABOUT_COMMAND = "about_command"
 s_COEFFICIENT_MATRIX_SCREEN = None
 s_INPUT_FILE_COMMAND = "input_file_command"
 s_OUTPUT_FILE_COMMAND = "output_file_command"
-s_VARIABLES_SCREEN = None
-s_DIMENSIONS_AND_COEFFS_SCREEN = "dimensions_and_coefficients_screen"
 s_TECHNICAL_OPTIONS_DIALOG = "technical_options_dialog"
+
+# add to the data screen
+# self.add_heading("Selecting and unselecting variables", tag="h2")
+# self.add_paragraph("You can select or unselect a variable by hiding "
+#                    "or showing the variable column in the main. You "
+#                    "can do so by right-clicking on the variable column"
+#                    " and selecting 'hide co"
 
 ###################################
 ############ GUI ##################
 ###################################
+
 SECTION_FUNC_PREFIX = "section_"
 LINK_PREFIX = 'clickable_'
 TEXT = 'text'
@@ -83,7 +90,7 @@ H1 = 'h1'
 
 FONT = "Candara"
 h1_font = (FONT, 13, "bold")
-h2_font = (FONT, 13, "bold")
+h2_font = (FONT, 12, "bold")
 text_font = (FONT, 11)
 text_small_font = (FONT, 10)
 link_font = (FONT, 11, "underline")
@@ -99,7 +106,7 @@ class HelpWindow(Window):
         """
         super().__init__(**kwargs, geometry="1240x900")
         self.title("FSSA For Windows Help")
-        self.iconbitmap(os.path.abspath("../assets/help.ico"))
+        self.iconbitmap(get_resource("help.ico"))
         # sets the geometry of toplevel
         self.center_window()
         # set the content
@@ -591,14 +598,14 @@ Great Vibes"""
 
     def next_section(self):
         if self.history_index == len(self.history) - 1:
-            raise ("No next section")
+            return
         else:
             self.history_index += 1
             self.switch_to_section(self.history[self.history_index])
 
     def back_section(self):
         if self.history_index == 0:
-            raise ("No back section")
+            return
         else:
             self.history_index -= 1
             self.switch_to_section(self.history[self.history_index])
@@ -619,7 +626,7 @@ Great Vibes"""
         # Here you can define what to do for each entry
         dest = tag[len(LINK_PREFIX):]
         # Navigation
-        if dest == self.history[-1]: return
+        if dest == self.history[self.history_index]: return
         if self.history_index < len(self.history) - 1:
             self.history = self.history[:self.history_index + 1]
         self.history_index += 1
@@ -1083,7 +1090,7 @@ Great Vibes"""
         self.add_heading("Variables command (Input Data menu)")
         self.add_line_break()
         self.add_txt("Use this command to open the ")
-        self.add_link("Variables screen", s_VARIABLES_SCREEN)
+        self.add_link("Variables screen", s_VARIABLE_DEFINITION)
         self.add_paragraph(", where you can define variable labels and select"
                    "variables for a run. If you are working with Recorded "
                            "Data, you are also required to define the file "
@@ -1138,3 +1145,22 @@ Great Vibes"""
         self.add_paragraph("Use this command to display the copyright notice "
                          "and version number of your copy of FSSA for "
                          "Windows.")
+
+    def section_variable_definition_screen(self):
+        self.add_heading("Variable Definition Screen")
+        self.add_line_break()
+        self.add_paragraph(VARIABLE_DEFINITION_SCREEN_p1)
+        self.add_row(left = "#", right = "Variable serial number.")
+        self.add_row(left = "Line No.", right = "In which record is the variable located.")
+        self.add_row(left = "Start Col.",
+                     right = "Starting column in the record. If field width "
+                             "is 2 this the number of the first column.")
+        self.add_paragraph("If you use recorded data and specify that zero is not the only missing value, the table will also have the following columns:")
+        self.add_row(left = "Valid Hi/Lo.", right="The valid minimum and maximum values of the variable")
+        self.add_heading("Editing variables", tag="h2")
+        self.add_paragraph(VARIABLE_DEFINITION_SCREEN_p2)
+
+    def section_dimensions_and_coefficients_screen(self):
+        self.add_heading("Dimensions and Coefficients Screen")
+        self.add_line_break()
+        self.add_paragraph(DIMENSIONS_AND_COEFFICIENTS_SCREEN_p1)

@@ -1,5 +1,5 @@
 import os
-import config
+from lib import config
 
 WINDOW_HEIGHT = 600
 WINDOW_WIDTH = 750
@@ -19,16 +19,28 @@ p_FSS_DIR = './scripts/fssa-21'
 SCRIPT_PEARSON = "PEARSON"
 SCRIPT_MONO = "MONO"
 
+
 def GET_MODE():
     return os.environ.get('MODE')
+
 
 def SET_MODE_TEST():
     import os
     os.environ['MODE'] = config.MODE_DEBUG
+
+def SET_MODE_PRODUCTION():
+    import os
+    os.environ['MODE'] = config.MODE_PRODUCTION
+
+def SET_MODE_NO_VALIDATION():
+    import os
+    os.environ['MODE'] = config.MODE_NO_VALIDATION
+
 def IS_PRODUCTION():
-    import config
     return GET_MODE() == config.MODE_PRODUCTION
 
+def IS_NO_VALIDATE():
+    return GET_MODE() == config.MODE_NO_VALIDATION
 def get_script_dir_path():
     try:
         base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -36,6 +48,7 @@ def get_script_dir_path():
     except FileNotFoundError:
         raise FileNotFoundError("FSSA script directory not found")
     return fss_dir
+
 
 # Output Paths
 SCRIPT_NESTING_PREFIX = "..\\..\\..\\"
@@ -76,13 +89,29 @@ FACET_DIM_PAGE_NAME = "FacetDimPage"
 ########
 # Help #
 ########
+
 help_pages_dict = {
-    START_PAGE_NAME : "recorded_data_screen",
-    DATA_PAGE_NAME : "data_screen",
-    DIMENSIONS_PAGE_NAME : "dimensions_and_coefficients_screen",
-    FACET_PAGE_NAME : "facets_definition_screen",
-    FACET_VAR_PAGE_NAME : "variable_elements_in_facets_screen",
-    MANUAL_FORMAT_PAGE_NAME : "variable_definition",
-    HYPOTHESIS_PAGE_NAME : "hypotheses_screen",
-    FACET_DIM_PAGE_NAME : "contents"
+    START_PAGE_NAME: "recorded_data_screen",
+    DATA_PAGE_NAME: "data_screen",
+    DIMENSIONS_PAGE_NAME: "dimensions_and_coefficients_screen",
+    FACET_PAGE_NAME: "facets_definition_screen",
+    FACET_VAR_PAGE_NAME: "variable_elements_in_facets_screen",
+    MANUAL_FORMAT_PAGE_NAME: "variable_definition_screen",
+    HYPOTHESIS_PAGE_NAME: "hypotheses_screen",
+    FACET_DIM_PAGE_NAME: "contents"
 }
+
+
+##################
+#   Resources    #
+##################
+
+def get_resource(asset_name):
+    # Get the directory of the current script file
+    script_dir = os.path.dirname(os.path.realpath(__file__))
+    path = os.path.join(script_dir,"assets",asset_name)
+    path = os.path.abspath(path)
+    # check
+    if not os.path.isfile(path):
+        raise FileNotFoundError(f"Resource not found: {path}")
+    return path
