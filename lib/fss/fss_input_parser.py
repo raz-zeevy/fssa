@@ -148,6 +148,9 @@ def simulate_hypothesis(hypo_per_facet: List[List], widgets: List[List]):
 
 
 def simulate_facets_dim(facets_dim: List[List], widgets: List[List]):
+    for dim in widgets:
+        for widget in widgets[dim]:
+            widget.invoke()
     for dim, facets in facets_dim.items():
         for facet in facets:
             widgets[dim][facet - 1].invoke()

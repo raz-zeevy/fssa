@@ -1,7 +1,6 @@
 import os
 import ttkbootstrap as ttk
 import tkinter as tk
-from tkhtmlview import *
 from lib.moduls.help_content import *
 from lib.components.window import Window
 from lib.utils import get_resource

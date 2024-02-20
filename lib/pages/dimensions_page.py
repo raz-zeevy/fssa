@@ -25,11 +25,11 @@ class DimensionsPage(ttk.Frame):
         frame_correlation_combo = ttk.Frame(self)
         frame_correlation_combo.pack(fill='x', padx=ENTRIES_PADX, pady=(20, 0))
         #
-        correlation_label = ttk.Label(frame_correlation_combo,
+        self.correlation_label = ttk.Label(frame_correlation_combo,
                                       text="Type of coefficients to "
                                            "generate and use: ",
                                       )
-        correlation_label.pack(side=ttk.LEFT)
+        self.correlation_label.pack(side=ttk.LEFT)
         #
         self.correlation_combo = ttk.Combobox(frame_correlation_combo,
                                               state="readonly",
@@ -114,3 +114,8 @@ class DimensionsPage(ttk.Frame):
         )
         box.pack(side=ttk.RIGHT)
         return box
+
+    def set_matrix_mode(self):
+        self.correlation_combo.set("Similarity")
+        self.correlation_combo.config(values=["Similarity","Dissimilarity"])
+        self.correlation_label.config(text="Coefficients in matrix designate:")

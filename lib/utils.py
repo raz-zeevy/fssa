@@ -1,7 +1,7 @@
 import os
 from lib import config
 
-WINDOW_HEIGHT = 600
+WINDOW_HEIGHT = 650
 WINDOW_WIDTH = 750
 
 DELIMITER_1_D = "1-digit"
@@ -28,19 +28,25 @@ def SET_MODE_TEST():
     import os
     os.environ['MODE'] = config.MODE_DEBUG
 
+
 def SET_MODE_PRODUCTION():
     import os
     os.environ['MODE'] = config.MODE_PRODUCTION
+
 
 def SET_MODE_NO_VALIDATION():
     import os
     os.environ['MODE'] = config.MODE_NO_VALIDATION
 
+
 def IS_PRODUCTION():
     return GET_MODE() == config.MODE_PRODUCTION
 
+
 def IS_NO_VALIDATE():
     return GET_MODE() == config.MODE_NO_VALIDATION
+
+
 def get_script_dir_path():
     try:
         base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -77,7 +83,10 @@ STOP SSA terminated successfully.
 """
 
 ### Gui
+
 START_PAGE_NAME = "StartPage"
+INPUT_PAGE_NAME = "InputPage"
+MATRIX_INPUT_PAGE_NAME = "MatrixInputPage"
 DATA_PAGE_NAME = "DataPage"
 DIMENSIONS_PAGE_NAME = "DimensionsPage"
 FACET_PAGE_NAME = "FacetPage"
@@ -91,7 +100,8 @@ FACET_DIM_PAGE_NAME = "FacetDimPage"
 ########
 
 help_pages_dict = {
-    START_PAGE_NAME: "recorded_data_screen",
+    START_PAGE_NAME: "start_screen",
+    INPUT_PAGE_NAME: "recorded_data_screen",
     DATA_PAGE_NAME: "data_screen",
     DIMENSIONS_PAGE_NAME: "dimensions_and_coefficients_screen",
     FACET_PAGE_NAME: "facets_definition_screen",
@@ -109,9 +119,17 @@ help_pages_dict = {
 def get_resource(asset_name):
     # Get the directory of the current script file
     script_dir = os.path.dirname(os.path.realpath(__file__))
-    path = os.path.join(script_dir,"assets",asset_name)
+    path = os.path.join(script_dir, "assets", asset_name)
     path = os.path.abspath(path)
     # check
     if not os.path.isfile(path):
         raise FileNotFoundError(f"Resource not found: {path}")
     return path
+
+
+##################
+#   Exceptions   #
+##################
+
+class DataLoadingException(Exception):
+    pass

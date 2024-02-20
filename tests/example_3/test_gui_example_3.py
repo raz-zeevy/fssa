@@ -1,7 +1,7 @@
 from lib.controller import *
 from lib.controller import Controller
 from lib.fss.fss_input_parser import *
-from lib.tests_utils import *
+from tests.tests_utils import *
 from const import *
 
 SET_MODE_TEST()
@@ -22,13 +22,14 @@ class example_3_gui(Controller):
 
     def test_example_3(self):
         # get the absoult path of the data file
+        self.gui.pages[START_PAGE_NAME].button_recorded_data.invoke()
         test_dir_path = os.path.dirname(os.path.abspath(__file__))
         data_file_path = os.path.join(test_dir_path,
                                       EX_3_DATA_PATH)
-        self.gui.pages[START_PAGE_NAME].set_data_file_path(
+        self.gui.pages[INPUT_PAGE_NAME].set_data_file_path(
             data_file_path)
-        self.gui.pages[START_PAGE_NAME].checkbox_missing_value.invoke()
-        self.gui.pages[START_PAGE_NAME].set_entry_lines(4)
+        self.gui.pages[INPUT_PAGE_NAME].checkbox_missing_value.invoke()
+        self.gui.pages[INPUT_PAGE_NAME].set_entry_lines(4)
         self.gui.button_next.invoke()
         manual_page = self.gui.pages[MANUAL_FORMAT_PAGE_NAME]
         simulate_manual_format(EX_3_FORMAT_TXT, manual_page.add_variable,

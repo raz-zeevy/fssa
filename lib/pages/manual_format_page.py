@@ -38,9 +38,11 @@ class ManualFormatPage(ttk.Frame):
         self.are_missing_values = True
         self.colors = parent.root.style.colors
         self.create_data_buttons()
-        self.create_data_table()
+        self.matrix_edit_mode = False
 
     def create_data_table(self):
+        if self.data_table:
+            self.data_table.destroy()
         self.coldata = ["#", "Line No.", "Start Col.", "Field Width",
                         "Valid Lo.", "Valid Hi.",
                         "Label"]
@@ -80,28 +82,33 @@ class ManualFormatPage(ttk.Frame):
         if self.data_table.tablerows:
             self.data_table.delete_row(index=-1)
 
-    def add_variable(self, line_num="", start_col="", field_width="",
-                     valid_low="", valid_high="", label=""):
+    def add_variable(self, line_num=None, start_col=None, field_width=None,
+                     valid_low=None, valid_high=None, label=None):
         index = len(self.data_table.iidmap)+1
         label = f"var{index}" if not label else label
-        def new_row_from_last(line_num_="", start_col_="", field_width_="",
-                     valid_low_="", valid_high_="", label_=""):
-            line_num = line_num_ if line_num_ else last_row[1]
-            start_col = start_col_ if start_col_ else int(last_row[2]) + \
+        def new_row_from_last(line_num_=None, start_col_=None,
+                              field_width_=None,
+                     valid_low_=None, valid_high_=None, label_=""):
+            line_num = line_num_ if line_num_ is not None else last_row[1]
+            start_col = start_col_ if start_col_ is not None else int(last_row[
+                                                                       2]) + \
                                                      int(last_row[3])
-            field_width = field_width_ if field_width_ else last_row[3]
-            valid_low = valid_low_ if valid_low_ else last_row[4]
-            valid_high = valid_high_ if valid_high_ else last_row[5]
+            field_width = field_width_ if field_width_ is not None else \
+                last_row[3]
+            valid_low = valid_low_ if valid_low_ is not None else last_row[4]
+            valid_high = valid_high_ if valid_high_ is not None else \
+                last_row[5]
             return [index, line_num, start_col, field_width, valid_low,
                     valid_high, label]
 
-        def new_row_from_default(line_num_="", start_col_="", field_width_="",
-                                 valid_low_="", valid_high_="", label_=""):
-            line_num = line_num_ if line_num_ else '1'
-            start_col = start_col_ if start_col_ else '1'
-            field_width = field_width_ if field_width_ else '1'
-            valid_low = valid_low_ if valid_low_ else '1'
-            valid_high = valid_high_ if valid_high_ else '9'
+        def new_row_from_default(line_num_=None, start_col_=None,
+                                 field_width_=None,
+                                 valid_low_=None, valid_high_=None, label_=""):
+            line_num = line_num_ if line_num_ is not None else '1'
+            start_col = start_col_ if start_col_ is not None else '1'
+            field_width = field_width_ if field_width_ is not None else '1'
+            valid_low = valid_low_ if valid_low_ is not None else '1'
+            valid_high = valid_high_ if valid_high_ is not None else '9'
             return [index, line_num, start_col, field_width, valid_low,
                     valid_high, label]
 
@@ -119,11 +126,12 @@ class ManualFormatPage(ttk.Frame):
             self.data_table.goto_next_page()
 
     def on_double_click(self, event):
-        print("double click")
         item = self.data_table.view.identify('item', event.x, event.y)
         column_key = self.data_table.view.identify_column(event.x)
         column_i = int(column_key[1:])
         if column_i == 1: return
+        if self.matrix_edit_mode and column_i != len(self.coldata):
+            return
         if not self.are_missing_values:
             column_i += 2
         try:
@@ -145,9 +153,10 @@ class ManualFormatPage(ttk.Frame):
                                                                  "Var.",
                                               command=self.add_variable)
         self.button_add_variable.pack(side=tk.LEFT, padx=5)
-        self.button_save = DataButton(frame_data_buttons, text="Remove Var.",
+        self.button_remove_variable = DataButton(frame_data_buttons,
+                                              text="Remove Var.",
                                       command= self.remove_variable)
-        self.button_save.pack(side=tk.LEFT, padx=5)
+        self.button_remove_variable.pack(side=tk.LEFT, padx=5)
 
     def get_data_format(self):
         """
@@ -200,6 +209,15 @@ class ManualFormatPage(ttk.Frame):
         if self.data_table:
             self.data_table.view.bind_all("<Double-1>", self.on_double_click)
         super().pack(kwargs, **kw)
+
+    def set_matrix_edit_mode(self) -> None:
+        self.matrix_edit_mode = True
+        self.button_add_variable.config(state="disabled")
+        self.button_remove_variable.config(state="disabled")
+
+    def get_labels(self) -> list:
+        return [row.values[len(self.coldata)-1] for row in
+                self.data_table.tablerows]
 
     def pack_forget(self) -> None:
         if self.data_table:

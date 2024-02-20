@@ -11,11 +11,13 @@ from lib.pages.facet_page import FacetPage
 from lib.pages.facet_var_page import FacetVarPage
 from lib.pages.hypothesis_page import HypothesisPage
 from lib.pages.manual_format_page import ManualFormatPage
+from lib.pages.input_page import InputPage
+from lib.pages.matrix_input_page import MatrixInputPage
 from lib.pages.start_page import StartPage
 from lib.utils import *
 from ttkbootstrap.dialogs.dialogs import Messagebox
 
-THEME_NAME = 'flatly'
+THEME_NAME = 'sandstone'
 p_ICON = 'icon.ico'
 
 def gui_only(func, *args, **kwargs):
@@ -45,18 +47,22 @@ class GUI():
         # init pages
         self.current_page = None
         self.pages = {}
-        for Page in (StartPage, ManualFormatPage, DataPage,
+        for Page in (StartPage, InputPage, MatrixInputPage, ManualFormatPage,
+                     DataPage,
                      DimensionsPage, FacetPage, FacetVarPage,
                      HypothesisPage,
-                     FacetDimPage):
+                     FacetDimPage,):
             page_name = Page.__name__
             self.pages[page_name] = Page(self)
 
         # init common gui
+        self.center_window()
+
+    def start_fss(self):
+        self.root.geometry(f'{WINDOW_WIDTH}x{WINDOW_HEIGHT}')
         self.create_menu()
         self.create_help_bar()
         self.create_navigation()
-        self.center_window()
 
     def center_window(self):
         self.root.update_idletasks()  # Update "requested size" from geometry
@@ -203,6 +209,12 @@ class GUI():
         # You might want to inform the user with a message box
         # messagebox.showerror("Save Error", "The file contains non-ASCII characters.")
 
+    def show_warning(self, title, msg):
+        # Handle the error if your data contains non-ASCII characters
+        Messagebox.show_warning(msg, title=title)
+        # You might want to inform the user with a message box
+        # messagebox.showerror("Save Error", "The file contains non-ASCII characters.")
+
     @gui_only
     def show_msg(self, msg, title=None, yes_commend=None,
                  buttons=['Yes:primary', 'No:secondary']):
@@ -268,60 +280,61 @@ class FFSAPage(ttk.Frame):
 
 if __name__ == '__main__':
     gui = GUI()
-    from lib.components.shapes import Line, Circle, DivideAxis
-
-    line = Line(intercept=0, slope=1)
-    circle1 = Circle((49.8782, 42), 8)
-    circle2 = Circle((5, 5), 30)
-    axis1 = DivideAxis((30, 30), 0.7854)
-    axis2 = DivideAxis((25, 25), 0.3)
-    geoms1 = [axis1, axis2,
-              circle1, line,
-              ]
-    geoms2 = [axis2]
-    geoms3 = [axis2, axis1, line]
-    legend = [dict(index=0, value="var1"),
-              dict(index=1, value="var2"),
-              dict(index=2, value="var3"),
-              dict(index=3, value="var4"),
-              dict(index=4, value="var5")]
-    graph_data_1 = dict(
-        x=[10, 20, 30, 40, 50],
-        y=[10, 20, 30, 40, 50],
-        annotations=["A", "B", "C", "D", "E"],
-        title="Facet A:  d=2, 1*2",
-        legend=legend * 2,
-    )
-    graph_data_2 = dict(
-        x=[10, 20, 30, 40, 50],
-        y=[13, 23, 23, 34, 45],
-        annotations=["1", "2", "3", "4", "5"],
-        title="SSA Solution d=2 1*2",
-        legend=legend,
-        caption="This is a test caption",
-        geoms=geoms2
-    )
-    graph_data_3 = dict(
-        x=[1, 2, 3, 4, 5],
-        y=[1, 2, 3, 4, 5],
-        annotations=["A1", "B2", "C3", "4D", "E5"],
-        title="Facet C:  d=2, 1X2",
-        legend=legend * 15,
-        geoms=geoms3
-    )
-    graph_data_4 = dict(
-        x=[100, 200, 300, 400, 500],
-        y=[160, 240, 330, 420, 510],
-        annotations=["A1", "B2", "C3", "4D", "E5"],
-        title="Facet C:  d=2, 1*2",
-        legend=legend * 2,
-        geoms=geoms3
-    )
-    gui.show_diagram_window([
-        graph_data_2,
-        graph_data_1,
-        graph_data_3,
-        graph_data_4,
-    ])
+    # from lib.components.shapes import Line, Circle, DivideAxis
+    #
+    # line = Line(intercept=0, slope=1)
+    # circle1 = Circle((49.8782, 42), 8)
+    # circle2 = Circle((5, 5), 30)
+    # axis1 = DivideAxis((30, 30), 0.7854)
+    # axis2 = DivideAxis((25, 25), 0.3)
+    # geoms1 = [axis1, axis2,
+    #           circle1, line,
+    #           ]
+    # geoms2 = [axis2]
+    # geoms3 = [axis2, axis1, line]
+    # legend = [dict(index=0, value="var1"),
+    #           dict(index=1, value="var2"),
+    #           dict(index=2, value="var3"),
+    #           dict(index=3, value="var4"),
+    #           dict(index=4, value="var5")]
+    # graph_data_1 = dict(
+    #     x=[10, 20, 30, 40, 50],
+    #     y=[10, 20, 30, 40, 50],
+    #     annotations=["A", "B", "C", "D", "E"],
+    #     title="Facet A:  d=2, 1*2",
+    #     legend=legend * 2,
+    # )
+    # graph_data_2 = dict(
+    #     x=[10, 20, 30, 40, 50],
+    #     y=[13, 23, 23, 34, 45],
+    #     annotations=["1", "2", "3", "4", "5"],
+    #     title="SSA Solution d=2 1*2",
+    #     legend=legend,
+    #     caption="This is a test caption",
+    #     geoms=geoms2
+    # )
+    # graph_data_3 = dict(
+    #     x=[1, 2, 3, 4, 5],
+    #     y=[1, 2, 3, 4, 5],
+    #     annotations=["A1", "B2", "C3", "4D", "E5"],
+    #     title="Facet C:  d=2, 1X2",
+    #     legend=legend * 15,
+    #     geoms=geoms3
+    # )
+    # graph_data_4 = dict(
+    #     x=[100, 200, 300, 400, 500],
+    #     y=[160, 240, 330, 420, 510],
+    #     annotations=["A1", "B2", "C3", "4D", "E5"],
+    #     title="Facet C:  d=2, 1*2",
+    #     legend=legend * 2,
+    #     geoms=geoms3
+    # )
+    # gui.show_diagram_window([
+    #     graph_data_2,
+    #     graph_data_1,
+    #     graph_data_3,
+    #     graph_data_4,
+    # ])
     # gui.show_help_windw()
+    gui.switch_page(DATA_PAGE_NAME)
     gui.run_process()

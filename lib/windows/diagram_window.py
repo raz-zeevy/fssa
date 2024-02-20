@@ -1,11 +1,8 @@
 import os
-
-import numpy as np
 import ttkbootstrap as ttk
 import tkinter as tk
 from tkinter import filedialog
 from lib.components.form import NavigationButton
-import matplotlib.pyplot as plt
 import matplotlib
 from lib.components.window import Window
 from lib.components.shapes import Line, Circle, DivideAxis
@@ -65,9 +62,18 @@ class DiagramWindow(Window):
         self.file_menu.add_separator()
         self.file_menu.add_command(label="Exit", command=self.exit)
 
+    def get_default_fig_file_name(self):
+        label = self.graph_data_lst[self.index]["title"]
+        clean_label = label.replace(" ", "_")
+        default_name = f"{clean_label}.png"
+        return default_name
+
     def save_figure(self):
+        default_name = self.get_default_fig_file_name()
         file = filedialog.asksaveasfilename(defaultextension=".png",
-                                            filetypes=[("PNG files", "*.png")])
+                                            filetypes=[("PNG files",
+                                                        "*.png")],
+                                            initialfile=default_name)
         if file:
             self.figure.savefig(file, dpi=DPI_SAVE)
 
@@ -76,8 +82,9 @@ class DiagramWindow(Window):
         current_page = self.index
         self.load_page(0)
         for i in range (len(self.graph_data_lst)):
-            path = os.path.join(dir, f"figure_{i}.png")
-            # sleep for a while to allow the figure to be saved
+            # I don't use the self.get_name because it would cause that
+            # some figures would not be saved
+            path = os.path.join(dir, "figure_" + str(i + 1) + ".png")
             self.figure.set_size_inches(5, 5)
             self.figure.savefig(path, dpi=DPI_SAVE)
             self.next_graph()

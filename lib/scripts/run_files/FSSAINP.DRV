@@ -1,24 +1,195 @@
-Diamond6
-  6   2   3   1   0   1   2  6   2   0   1   0   0   0
+Test 3 Gui
+  84   2   3   1   0   1   2  84   4   0   1   0   0   0
    1 99.0000000 99.0000000
 (8F10.7)
-   1
-   2
-   3
-   4
-   5
-   6
- 1 1
- 1 2
- 1 1
- 2 2
- 2 1
- 1 2
-   2   2
-A1
-A2
-B1
-B2
+   1  cre1
+   2  cre2
+   3  cref3
+   4  cref4
+   5  cref5
+   6  cref6
+   7  cref7
+   8  cref8
+   9  crev1
+  10  crev2
+  11  crev3
+  12  crev4
+  13  crev5
+  14  crev6
+  15  crev7
+  16  crev8
+  17  cren1
+  18  cren2
+  19  cren3
+  20  cren4
+  21  cren5
+  22  cren6
+  23  cren7
+  24  cren8
+  25  cres1
+  26  cres2
+  27  cres3
+  28  cres4
+  29  cres5
+  30  cres6
+  31  cres7
+  32  cres8
+  33  creavf
+  34  creaver
+  35  creavn
+  36  creavs
+  37  torverf1
+  38  torverf2
+  39  torverf3
+  40  torverf4
+  41  torver5
+  42  torver7
+  43  torverflx1
+  44  torverflx2
+  45  torverflx3
+  46  torflx4
+  47  torverflx5
+  48  torverflx7
+  49  torverorg1
+  50  torverorg2
+  51  torverorg3
+  52  torverorg4
+  53  torverorg5
+  54  torverorg7
+  55  torverflutot
+  56  torvflu_stn
+  57  torvflxtot
+  58  torvflx_stn
+  59  torvorgtot
+  60  torvorg_sn
+  61  torvave_sn
+  62  torzflu2
+  63  torzflu3
+  64  torzorg1
+  65  tozrorg2
+  66  torzorg3
+  67  torztit1
+  68  torztit2
+  69  torzela1
+  70  torzela2
+  71  torzela3
+  72  torzcls
+  73  torzflutot
+  74  torzorgtot
+  75  torztittot
+  76  torzelatot
+  77  bounus2
+  78  bonus3
+  79  torzflu_sn
+  80  torzorg_sn
+  81  torztit_sn
+  82  torzela_sn
+  83  torzcls_sn
+  84  torzave_sn
+ 1 7 1 2
+ 1 7 1 2
+ 1 7 1 2
+ 1 7 1 2
+ 1 7 1 2
+ 1 7 1 2
+ 1 7 1 2
+ 1 7 1 2
+ 2 7 1 1
+ 2 7 1 1
+ 2 7 1 1
+ 2 7 1 1
+ 2 7 1 1
+ 2 7 1 1
+ 2 7 1 1
+ 2 7 1 1
+ 3 7 1 5
+ 3 7 1 5
+ 3 7 1 5
+ 3 7 1 5
+ 3 7 1 5
+ 3 7 1 5
+ 3 7 1 5
+ 3 7 1 5
+ 4 7 1 6
+ 4 7 1 6
+ 4 7 1 6
+ 4 7 1 6
+ 4 7 1 6
+ 4 7 1 6
+ 4 7 1 6
+ 4 7 1 6
+ 1 0 1 2
+ 2 0 1 1
+ 3 0 1 5
+ 4 0 1 6
+ 2 1 2 3
+ 2 1 2 3
+ 2 1 2 3
+ 2 1 2 3
+ 2 1 2 3
+ 2 1 2 3
+ 2 2 2 3
+ 2 2 2 3
+ 2 2 2 3
+ 2 2 2 3
+ 2 2 2 3
+ 2 2 2 3
+ 2 3 2 3
+ 2 3 2 3
+ 2 3 2 3
+ 2 3 2 3
+ 2 3 2 3
+ 2 3 2 3
+ 2 1 2 3
+ 2 1 2 3
+ 2 2 2 3
+ 2 2 2 3
+ 2 3 2 3
+ 2 3 2 3
+ 2 0 2 3
+ 1 1 2 4
+ 1 1 2 4
+ 1 3 2 4
+ 1 3 2 4
+ 1 3 2 4
+ 1 6 2 4
+ 1 6 2 4
+ 1 4 2 4
+ 1 4 2 4
+ 1 4 2 4
+ 1 5 2 4
+ 1 1 2 4
+ 1 3 2 4
+ 1 6 2 4
+ 1 4 2 4
+ 1 3 2 4
+ 1 3 2 4
+ 1 1 2 4
+ 1 3 2 4
+ 1 6 2 4
+ 1 4 2 4
+ 1 5 2 4
+ 1 0 2 4
+   4   7   2   6
+figural
+verbal
+numeral
+social
+fluency
+flexibility
+orginality
+elaboration
+closure
+titles
+appropriateness
+creativity
+torrance
+cre v
+cre f
+tor v
+tor f
+cre n
+cre s
    2   1   1   2   0
    2   1   1   2   1
    2   1   1   2   2
@@ -27,9 +198,23 @@ B2
    2   2   1   2   1
    2   2   1   2   2
    2   2   1   2   3
+   2   3   1   2   0
+   2   3   1   2   1
+   2   3   1   2   2
+   2   3   1   2   3
+   2   4   1   2   0
+   2   4   1   2   1
+   2   4   1   2   2
+   2   4   1   2   3
    3   1   1   2   0
    3   1   1   3   0
    3   1   2   3   0
    3   2   1   2   0
    3   2   1   3   0
    3   2   2   3   0
+   3   3   1   2   0
+   3   3   1   3   0
+   3   3   2   3   0
+   3   4   1   2   0
+   3   4   1   3   0
+   3   4   2   3   0

@@ -34,7 +34,7 @@ def validate_input(i, var, lines):
                         "than the number of columns in the "
                         "file")
 
-def load_data_file(path, delimiter=None, lines_per_var=1, manual_format: List[
+def load_recordad_data(path, delimiter=None, lines_per_var=1, manual_format: List[
     dict] = None, safe_mode=False):
     """
     Load data file from path and return a pandas dataframe
@@ -54,6 +54,7 @@ def load_data_file(path, delimiter=None, lines_per_var=1, manual_format: List[
     if not delimiter and not manual_format:
         raise Exception("Either delimiter or manual format must be specified")
     data = []
+    failed_rows = []
     with open(path, "r") as f:
         lines = f.readlines()
         if len(lines) % lines_per_var != 0:
@@ -61,29 +62,70 @@ def load_data_file(path, delimiter=None, lines_per_var=1, manual_format: List[
                             "of lines is not a multiple of the number of "
                             "lines per row")
         for i in range(0, len(lines), lines_per_var):
-            row = []
-            if manual_format:
-                for var in manual_format:
-                    if safe_mode:
-                        validate_input(i, var, lines)
-                    row.append(lines[i + var["line"] - 1][
-                               var["col"] - 1:var["col"] - 1 + var["width"]])
-            elif delimiter == DELIMITER_1_D:
-                rrow = "".join(lines[i:i + lines_per_var]).strip().replace(
-                    "\n", "")
-                row = list(map(int, str(rrow)))
-            elif delimiter == DELIMITER_2_D:
-                rrow = "".join(lines[i:i + lines_per_var]).strip().replace(
-                    "\n", "")
-                row = [int(rrow[i:i + 2]) for i in range(0, len(rrow), 2)]
-            else:
-                rrow = "".join(lines[i:i + lines_per_var]).strip().replace(
-                    "\n", "")
-                row = rrow.split(delimiter)
+            try:
+                row = []
+                if manual_format:
+                    for var in manual_format:
+                        if safe_mode:
+                            validate_input(i, var, lines)
+                        row.append(lines[i + var["line"] - 1][
+                                   var["col"] - 1:var["col"] - 1 + var["width"]])
+                elif delimiter == DELIMITER_1_D:
+                    rrow = "".join(lines[i:i + lines_per_var]).strip().replace(
+                        "\n", "")
+                    row = list(map(int, str(rrow)))
+                elif delimiter == DELIMITER_2_D:
+                    rrow = "".join(lines[i:i + lines_per_var]).strip().replace(
+                        "\n", "")
+                    row = [int(rrow[i:i + 2]) for i in range(0, len(rrow), 2)]
+                else:
+                    rrow = "".join(lines[i:i + lines_per_var]).strip().replace(
+                        "\n", "")
+                    row = rrow.split(delimiter)
+            except:
+                failed_rows.append(i+1)
             data.append(row)
+    for line in data:
+        if line: break
+    else:
+        raise DataLoadingException("bad file")
+    if failed_rows:
+        import warnings
+        if len(failed_rows) > 10:
+            warnings.warn("Failed to load the following rows: "
+                                    f"["
+                          f"{','.join([str(i) for i in failed_rows[:9]])}..."
+                          f"{failed_rows[-1]}]")
+        else:
+            warnings.warn("Failed to load the following rows: "
+                                    f"{failed_rows}")
     df = pd.DataFrame(data, columns=[i + 1 for i in range(len(data[0]))])
     return df
 
+
+def load_matrix_data(path, matrix_details) -> pd.DataFrame:
+    entries_num_in_row = matrix_details["entries_num_in_row"]
+    var_num = matrix_details["var_num"]
+    # Step 1: Read the file content
+    with open(path, 'r') as file:
+        file_content = file.read()
+
+    # Step 2: Convert the string of numbers into a list of integers or floats
+    numbers = [float(num) for num in file_content.split()]
+
+    # Calculate the total number of logical rows based on the total entries and number of columns
+    num_logical_rows = len(numbers) // var_num
+
+    # Step 3: Convert the list into a numpy array
+    matrix = np.array(numbers)
+
+    # Step 4: Reshape the array into the desired shape based on the number of logical rows and columns
+    matrix = matrix.reshape((num_logical_rows, var_num))
+
+    # Convert to pandas DataFrame (optional)
+    df = pd.DataFrame(matrix, columns=[i + 1 for i in range(len(matrix[0]))])
+
+    return df
 
 def get_random_data() -> pd.DataFrame:
     """
@@ -284,8 +326,51 @@ def create_fssa_data_file(data_matrix: List[List[int]]):
         for row in data_matrix:
             f.write("".join(map(parse_item_2d, row)) + "\n")
 
+def create_matrix_running_files(
+        job_name : str,
+        variables_labels: List[dict],
+        correlation_type: str,
+        data_matrix: List[List],
+        min_dim: int = 2, max_dim: int = 2,
+        is_similarity_data: bool = True, eps=0,
+        missing_cells: list = [(99, 99)],
+        iweigh=2, nfacet=0, ntface=0,
+        store_coordinates_on_file: bool = False, iboxstring=0,
+        default_form_feed=0, nmising: int = 0, nlabel: int = 0,
+        iprfreq: bool = False, iintera: bool = False,
+        facet_details = None,
+        facet_var_details = None,
+        hypotheses_details = None,
+        facet_dim_details = None,
+        valid_values_range = None
+):
+    """
+    This function creates the running files for FSSA program
+    :return:
+    """
+    # Create the FSSA input file
+    fssi = FssInputWriter()
+    fssi.create_fssa_input_file(
+        job_name,
+        variables_labels,
+        min_dim,
+        max_dim,
+        is_similarity_data,
+        eps,
+        missing_cells,
+        iweigh,
+        nfacet,
+        ntface,
+        store_coordinates_on_file,
+        iboxstring,
+        default_form_feed,
+        facet_details,
+        facet_var_details,
+        hypotheses_details,
+        facet_dim_details)
 
-
+    # Create the FSSA Partial Matrix File
+    create_fssa_data_file(data_matrix)
 
 
 

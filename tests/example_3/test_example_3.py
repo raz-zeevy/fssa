@@ -1,7 +1,7 @@
 from lib.controller import *
 from lib.controller import Controller
 from lib.fss.fss_input_parser import *
-from lib.tests_utils import *
+from tests.tests_utils import *
 import unittest
 from const import *
 
@@ -24,11 +24,11 @@ class example_3_controller(unittest.TestCase):
         test_dir_path = os.path.dirname(os.path.abspath(__file__))
         data_file_path = os.path.join(test_dir_path,
                                       EX_3_DATA_PATH)
-        self.controller.gui.pages[START_PAGE_NAME].set_data_file_path(
+        self.controller.gui.pages[INPUT_PAGE_NAME].set_data_file_path(
             data_file_path)
-        self.controller.gui.pages[START_PAGE_NAME].set_entry_lines(4)
+        self.controller.gui.pages[INPUT_PAGE_NAME].set_entry_lines(4)
         self.controller.gui.pages[
-            START_PAGE_NAME].checkbox_missing_value.invoke()
+            INPUT_PAGE_NAME].checkbox_missing_value.invoke()
         self.controller.gui.button_next.invoke()
         manual_page = self.controller.gui.pages[MANUAL_FORMAT_PAGE_NAME]
         simulate_manual_format(EX_3_FORMAT_TXT, manual_page.add_variable,

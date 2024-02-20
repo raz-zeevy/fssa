@@ -1,7 +1,5 @@
 from lib.controller import *
 from lib.controller import Controller
-from lib.fss.fss_input_parser import *
-from lib.tests_utils import *
 from const import *
 
 SET_MODE_PRODUCTION()
@@ -24,10 +22,10 @@ class simple_example_gui(Controller):
         test_dir_path = os.path.dirname(os.path.abspath(__file__))
         data_file_path = os.path.join(test_dir_path,
                                       DATA_PATH)
-        self.gui.pages[START_PAGE_NAME].set_data_file_path(
+        self.gui.pages[INPUT_PAGE_NAME].set_data_file_path(
             data_file_path)
-        self.gui.pages[START_PAGE_NAME].set_entry_lines(1)
-        self.gui.pages[START_PAGE_NAME].check_box_manual_input.invoke()
+        self.gui.pages[INPUT_PAGE_NAME].set_entry_lines(1)
+        self.gui.pages[INPUT_PAGE_NAME].check_box_manual_input.invoke()
         self.next_page()
         manual_page = self.gui.pages[MANUAL_FORMAT_PAGE_NAME]
         for _ in range(5):

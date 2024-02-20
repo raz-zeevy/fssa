@@ -1,8 +1,11 @@
 # controller.py
+import warnings
+
 import pandas as pd
 from lib.components.shapes import ShapeFactory
 from lib.gui import GUI
-from lib.fss.fss_module import get_random_data, load_data_file
+from lib.fss.fss_module import get_random_data, load_recordad_data, \
+    load_matrix_data, create_matrix_running_files
 from lib.fss.fss_module import create_running_files, run_fortran
 from lib.utils import *
 
@@ -11,25 +14,46 @@ class Controller:
     def __init__(self):
         self.gui = GUI()
         self.bind_gui_events()
-        self.bind_menu()
-        self.bind_keys()
         self.navigator = self.init_navigator()
+        ###
+        self.init_controller_attributes()
+        self.manual_input = False
+        self.matrix_input = False
+        self.are_missing_values = None
+        self.lines_per_var = None
+        self.output_path = None
         self.facets_num = 0
         self.max_dim = None
         self.min_dim = None
-        self.data_file_path = None
-        self.lines_per_var = None
-        self.are_missing_values = None
-        self.manual_input = False
-        self.output_path = None
-        self.var_labels = None
-        self.facet_var_details = None
-        self.facet_details = None
-        self.facet_dim_details = None
-        self.navigate_page(START_PAGE_NAME)
+        #
+        self.gui.switch_page(START_PAGE_NAME)
+        #
+        # self.start_fss()
         # self.navigate_page(DATA_PAGE_NAME)
         # self.navigate_page(FACET_PAGE_NAME)
+        # self.navigate_page(INPUT_PAGE_NAME)
         # self.switch_to_facet_dim_page()
+
+        # Override the default showwarning method with your custom one
+        warnings.showwarning = self.custom_show_warning
+
+    def custom_show_warning(self, message, category, filename, lineno,
+                            file=None,
+                            line=None):
+        # Convert the warning message to a string and display it using your GUI
+        warning_msg = f"{message}"
+        # Assuming you have a GUI instance available as `self.gui`
+        self.gui.show_warning("Warning", warning_msg)
+
+    def init_controller_attributes(self):
+        self.data_file_path = None
+        self.var_labels = None
+        self.facet_var_details = None
+        self.facet_details = []
+        self.facet_dim_details = None
+        #
+        self.gui.pages[MANUAL_FORMAT_PAGE_NAME].create_data_table()
+        self.gui.pages[INPUT_PAGE_NAME].reset_entries()
 
     def init_navigator(self):
         navigator = Navigator(self.gui.pages)
@@ -43,7 +67,17 @@ class Controller:
                 return func(self, *args, **kwargs)
             except Exception as e:
                 if IS_PRODUCTION():
-                    self.gui.show_error("Error Occurred", str(e))
+                    if isinstance(e, DataLoadingException):
+                        self.gui.show_error("Data Loading Error",
+                                            "Failed to automatically parse "
+                                            "the data file variables. Please "
+                                            "check again "
+                                            "that the data file matches the "
+                                            "options you selected, "
+                                            "or if you use recorded data chose"
+                                            " the manual parsing option.")
+                    else:
+                        self.gui.show_error("Error Occurred", str(e))
                 else:
                     raise e
 
@@ -53,12 +87,18 @@ class Controller:
         self.gui.root.bind("<F1>", lambda x: self.show_help())
 
     def bind_gui_events(self):
-        self.gui.pages[START_PAGE_NAME]. \
+        # Matrix page
+        self.gui.pages[MATRIX_INPUT_PAGE_NAME]. \
             button_browse.bind("<Button-1>",
-                               lambda x: self.load_file())
-        self.gui.pages[START_PAGE_NAME].check_box_manual_input.config(
+                               lambda x: self.load_matrix_file())
+        # input page
+        self.gui.pages[INPUT_PAGE_NAME]. \
+            button_browse.bind("<Button-1>",
+                               lambda x: self.load_recorded_data_file())
+        self.gui.pages[INPUT_PAGE_NAME].check_box_manual_input.config(
             command=self.on_manual_input_change
         )
+        # data page
         self.gui.pages[DATA_PAGE_NAME]. \
             button_save.bind("<Button-1>",
                              lambda x: self.save_data())
@@ -67,10 +107,13 @@ class Controller:
         self.gui.pages[FACET_PAGE_NAME]. \
             facets_combo.bind("<<ComboboxSelected>>",
                               self.on_facet_num_change)
-        # bind the buttons
-        self.gui.button_run.config(command=lambda: self.run_button_click())
-        self.gui.button_next.config(command=self.next_page)
-        self.gui.button_previous.config(command=self.previous_page)
+        # bind start page buttons
+        self.gui.pages[START_PAGE_NAME].button_recorded_data.configure(
+            command=lambda: self.start_fss(matrix=False))
+        self.gui.pages[START_PAGE_NAME].button_matrix_data.configure(
+            command=lambda: self.start_fss(matrix=True))
+        self.gui.pages[START_PAGE_NAME].button_info.configure(
+            command=lambda: self.show_help("what_is_fssa"))
         # bind gui getters
         self.gui.get_input_file_name = lambda: os.path.basename(
             self.data_file_path)
@@ -102,6 +145,25 @@ class Controller:
         self.gui.diagram_3d_menu.entryconfig("Facet D", command=lambda:
         self.show_diagram_window(3, 3))
 
+    def start_fss(self, matrix=False):
+        self.navigator.pop_page(0)
+        if matrix:
+            self.matrix_input = True
+            self.navigator.hide_page(INPUT_PAGE_NAME)
+            self.navigator.hide_page(DATA_PAGE_NAME)
+            self.navigator.show_page(MANUAL_FORMAT_PAGE_NAME)
+        else:
+            self.navigator.hide_page(MATRIX_INPUT_PAGE_NAME)
+        self.gui.start_fss()
+        self.bind_menu()
+        self.bind_keys()
+        # bind the navigation buttons
+        self.gui.button_run.config(command=lambda: self.run_button_click())
+        self.gui.button_next.config(command=self.next_page)
+        self.gui.button_previous.config(command=self.previous_page)
+        # start
+        self.navigate_page(self.navigator.get_current())
+
     def enable_run(self):
         self.gui.file_menu.entryconfig("Run", state="normal")
         self.gui.button_run.config(state="normal")
@@ -124,57 +186,6 @@ class Controller:
         for menu in [self.gui.diagram_2d_menu, self.gui.diagram_3d_menu]:
             for i in range(self.facets_num):
                 menu.entryconfig("Facet " + chr(65 + i), state="normal")
-
-    def show_diagram_window(self, dim, facet):
-        from lib.fss.fss_output_parser import parse_output
-        self.get_labels()
-        output = parse_output(self.output_path)
-        graph_data_list = []
-        axes = list(range(dim))
-        axes_pairs = [(a, b) for idx, a in enumerate(axes) for b in
-                      axes[idx + 1:]]
-        for a, b in axes_pairs:
-            coors = output["dimensions"][dim]["coordinates"]
-            x = [point['coordinates'][a] for point in coors]
-            y = [point['coordinates'][b] for point in coors]
-            index = [point['serial_number'] for point in coors]
-            labels = [self.var_labels[i - 1] for i in index]
-            legend = [dict(index=index[i], value=labels[i]) for i in range(len(
-                index))]
-            graph = dict(
-                x=x,
-                y=y,
-                annotations=index,
-                title=f"FSS Solution d={dim} {a + 1}X{b + 1}",
-                legend=legend
-            )
-            graph_data_list.append(graph)
-            if facet is not None:
-                index = [point['serial_number'] for point in coors]
-                annotations = [self.facet_var_details[i - 1][
-                                   facet - 1] for i in index]
-                legend = [
-                    dict(index=i + 1, value=self.facet_details[facet - 1][i])
-                    for i in range(len(self.facet_details[facet - 1]))]
-                for model in output["models"]:
-                    if model["facet"] != facet: continue
-                    geoms = ShapeFactory.shapes_from_list(model[
-                                                              "divide_geoms"])
-                    graph = dict(
-                        x=x,
-                        y=y,
-                        annotations=annotations,
-                        title=f"Facet {chr(64 + facet)}: d={dim} {a + 1}X{b + 1}",
-                        legend=legend,
-                        geoms=geoms,
-                        caption=f"Seperation index for "
-                                f"{model['deviant_points_num']} Deviant Points "
-                                f"Is  {model['seperation_index']}"
-                    )
-                    graph_data_list.append(graph)
-        self.gui.show_diagram_window(graph_data_list)
-        self.gui.diagram_window.bind("<F1>", lambda e: self.show_help(
-            "facet_diagrams_screen"))
 
     def enable_view_input(self):
         def view_input():
@@ -199,9 +210,9 @@ class Controller:
 
     def on_manual_input_change(self):
         self.gui.pages[
-            START_PAGE_NAME].on_manual_input_change()
+            INPUT_PAGE_NAME].on_manual_input_change()
         self.manual_input = self.gui.pages[
-            START_PAGE_NAME].manual_input_var.get()
+            INPUT_PAGE_NAME].manual_input_var.get()
         if self.manual_input:
             self.navigator.show_page(MANUAL_FORMAT_PAGE_NAME)
         else:
@@ -211,22 +222,26 @@ class Controller:
     def next_page(self):
         cur_page = self.navigator.get_current()
         next_page = self.navigator.get_next()
-        # Start Page
-        if cur_page == START_PAGE_NAME:
-            Validator.validate_start_page(
-                self.gui.pages[START_PAGE_NAME].get_data_file_path())
+        # Input Page
+        if cur_page == INPUT_PAGE_NAME:
+            Validator.validate_input_page(
+                self.gui.pages[INPUT_PAGE_NAME].get_data_file_path())
             self.manual_input = self.gui.pages[
-                START_PAGE_NAME].manual_input_var.get()
+                INPUT_PAGE_NAME].manual_input_var.get()
             self.are_missing_values = self.gui.pages[
-                START_PAGE_NAME].missing_value_var.get()
+                INPUT_PAGE_NAME].missing_value_var.get()
             if self.manual_input:
                 self.gui.pages[MANUAL_FORMAT_PAGE_NAME].load_missing_values(
                     self.are_missing_values)
                 self.navigator.show_page(MANUAL_FORMAT_PAGE_NAME)
             else:
                 self.navigator.hide_page(MANUAL_FORMAT_PAGE_NAME)
+        # Matrix Input page
+        if cur_page == MATRIX_INPUT_PAGE_NAME:
+            self.load_matrix()
         # Manual Format Page
-        if cur_page == MANUAL_FORMAT_PAGE_NAME:
+        if cur_page == MANUAL_FORMAT_PAGE_NAME and \
+            next_page == DATA_PAGE_NAME:
             Validator.validate_manual_input(self.gui.pages[
                                                 MANUAL_FORMAT_PAGE_NAME].get_data_format())
             self.manual_input = True
@@ -264,10 +279,27 @@ class Controller:
         if cur_page == FACET_VAR_PAGE_NAME:
             Validator.validate_facet_var_page(self.gui.pages[
                                                   FACET_VAR_PAGE_NAME].get_all_var_facets_indices())
+
         if next_page == DATA_PAGE_NAME:
             self.load_data_page()
         self.navigate_page(next_page)
 
+    def load_matrix(self):
+        self.data_file_path = self.gui.pages[
+            MATRIX_INPUT_PAGE_NAME].get_data_file_path()
+        Validator.validate_input_page(self.data_file_path)
+        matrix_details = self.gui.pages[MATRIX_INPUT_PAGE_NAME]. \
+            get_matrix_details()
+        try:
+            self.matrix = load_matrix_data(self.data_file_path,
+                                           matrix_details)
+        except:
+            raise DataLoadingException("Error loading matrix data")
+        manual_input = self.gui.pages[MANUAL_FORMAT_PAGE_NAME]
+        for i in range(len(self.matrix)):
+            manual_input.add_variable("","","","","")
+        manual_input.set_matrix_edit_mode()
+        self.gui.pages[DIMENSIONS_PAGE_NAME].set_matrix_mode()
     def previous_page(self):
         previous_page = self.navigator.get_prev()
         self.navigate_page(previous_page)
@@ -292,7 +324,7 @@ class Controller:
         self.update_navigation_buttons()
 
         # change the state of the run button
-        if page_name in [START_PAGE_NAME, MANUAL_FORMAT_PAGE_NAME,
+        if page_name in [INPUT_PAGE_NAME, MANUAL_FORMAT_PAGE_NAME,
                          DATA_PAGE_NAME, DIMENSIONS_PAGE_NAME]:
             self.disable_run()
         else:
@@ -308,7 +340,39 @@ class Controller:
     def run_button_click(self):
         self.output_path = self.gui.run_button_click()
         if self.output_path:
-            self.run_fss()
+            if self.matrix_input:
+                self.run_matrix_fss()
+            else:
+                self.run_fss()
+
+    @error_handler
+    def run_matrix_fss(self):
+        labels = []
+        # remove the labels that are default
+        for i, label in enumerate(self.gui.pages[
+                                      DATA_PAGE_NAME].get_visible_labels()):
+            if label == f"var{i + 1}":
+                labels.append("")
+            else:
+                labels.append(label)
+        variables_labels = [{'index': i + 1, 'label': label} for i, label in
+                            enumerate(labels)]
+        create_matrix_running_files(
+            job_name=os.path.basename(self.output_path.split(".")[0]),
+            nfacet=self.facets_num,
+            variables_labels=variables_labels,
+            correlation_type=self.gui.pages[
+            DIMENSIONS_PAGE_NAME].get_correlation_type(),
+            data_matrix=None,
+            min_dim=self.min_dim, max_dim=self.max_dim,
+            facet_details=self.facet_details,
+            facet_var_details=self.facet_var_details,
+            hypotheses_details=self.gui.pages[
+            HYPOTHESIS_PAGE_NAME].get_hypotheses(),
+            facet_dim_details=self.facet_dim_details,
+            valid_values_range=None
+        )
+
 
     @error_handler
     def run_fss(self):
@@ -359,31 +423,36 @@ class Controller:
                               buttons=["Open:primary", "Close:secondary"],
                               yes_commend=self.open_results)
 
-    @error_handler
     def load_data_page(self):
         # load data
         self.data_file_path = self.gui.pages[
-            START_PAGE_NAME].get_data_file_path()
+            INPUT_PAGE_NAME].get_data_file_path()
         self.lines_per_var = self.gui.pages[
-            START_PAGE_NAME].get_lines_per_var()
+            INPUT_PAGE_NAME].get_lines_per_var()
         if self.data_file_path:
             self.enable_view_input()
         #
         if self.manual_input:
             data_format = self.gui.pages[
                 MANUAL_FORMAT_PAGE_NAME].get_data_format()
-            data = load_data_file(self.data_file_path,
-                                  lines_per_var=self.lines_per_var,
-                                  manual_format=data_format)
+            data = load_recordad_data(self.data_file_path,
+                                      lines_per_var=self.lines_per_var,
+                                      manual_format=data_format)
             data.columns = [row["label"] for row in data_format]
         else:
             if not self.data_file_path:
                 data = get_random_data()
             else:
-                data = load_data_file(self.data_file_path,
-                                      lines_per_var=self.lines_per_var,
-                                      delimiter=self.gui.pages[
-                                          'StartPage'].get_delimiter())
+                delimiter = self.gui.pages[INPUT_PAGE_NAME].get_delimiter()
+                try:
+                    data = load_recordad_data(self.data_file_path,
+                                              lines_per_var=self.lines_per_var,
+                                              delimiter=delimiter)
+                except Exception as e:
+                    if IS_PRODUCTION():
+                        raise DataLoadingException(e)
+                    else:
+                        raise e
             data.columns = [f"var{i + 1}" for i in
                             range(len(data.columns))]
         ##########
@@ -397,7 +466,10 @@ class Controller:
             facet_details=facets_details, )
 
     def get_labels(self):
-        self.var_labels = self.gui.pages[DATA_PAGE_NAME].get_visible_labels()
+        if self.matrix_input:
+            self.var_labels = self.gui.pages[MANUAL_FORMAT_PAGE_NAME].get_labels()
+        else:
+            self.var_labels = self.gui.pages[DATA_PAGE_NAME].get_visible_labels()
 
     def load_facet_dim_page(self):
         max_dim = max(self.gui.pages[DIMENSIONS_PAGE_NAME].get_dimensions())
@@ -412,23 +484,34 @@ class Controller:
     def run_process(self):
         self.gui.run_process()
 
+    def load_matrix_file(self):
+        self.gui.pages[MATRIX_INPUT_PAGE_NAME].browse_file()
+        data_file_path = self.gui.pages[
+            MATRIX_INPUT_PAGE_NAME].entry_data_file.get()
+        if self.data_file_path != data_file_path:
+            self.init_controller_attributes()
+            self.data_file_path = data_file_path
+
     @error_handler
-    def load_file(self):
+    def load_recorded_data_file(self):
         def suggest_delimiter(path):
             file_extension = os.path.splitext(path)[
                 1].lower()
             if file_extension in ['.csv', '.xlsx', '.xls']:
-                self.gui.pages['StartPage'].set_delimiter(",")
+                self.gui.pages[INPUT_PAGE_NAME].set_delimiter("Comma")
             elif file_extension == '.tsv':
-                self.gui.pages['StartPage'].set_delimiter('\t')
+                self.gui.pages[INPUT_PAGE_NAME].set_delimiter('Tab')
             else:
-                self.gui.pages['StartPage'].set_delimiter(DELIMITER_1_D,
-                                                          readonly=False)
+                self.gui.pages[INPUT_PAGE_NAME].set_delimiter(DELIMITER_1_D,
+                                                              readonly=False)
 
-        self.gui.pages['StartPage'].browse_file()
-        self.data_file_path = self.gui.pages['StartPage'].entry_data_file.get()
+        self.gui.pages[INPUT_PAGE_NAME].browse_file()
+        data_file_path = self.gui.pages[INPUT_PAGE_NAME].entry_data_file.get()
+        if self.data_file_path != data_file_path:
+            self.init_controller_attributes()
+            self.data_file_path = data_file_path
         if self.data_file_path:
-            self.gui.pages['StartPage'].default_entry_lines()
+            self.gui.pages[INPUT_PAGE_NAME].default_entry_lines()
             suggest_delimiter(self.data_file_path)
 
     @error_handler
@@ -467,6 +550,64 @@ class Controller:
             section = help_pages_dict[self.navigator.get_current()]
         self.gui.show_help_windw(section)
 
+    def show_diagram_window(self, dim, facet):
+        from lib.fss.fss_output_parser import parse_output
+        self.get_labels()
+        output = parse_output(self.output_path)
+        graph_data_list = []
+        axes = list(range(dim))
+        axes_pairs = [(a, b) for idx, a in enumerate(axes) for b in
+                      axes[idx + 1:]]
+        for a, b in axes_pairs:
+            coors = output["dimensions"][dim]["coordinates"]
+            x = [point['coordinates'][a] for point in coors]
+            y = [point['coordinates'][b] for point in coors]
+            index = [point['serial_number'] for point in coors]
+            labels = [self.var_labels[i - 1] for i in index]
+            legend = [dict(index=index[i], value=labels[i]) for i in range(len(
+                index))]
+            graph = dict(
+                x=x,
+                y=y,
+                annotations=index,
+                title=f"FSS Solution d={dim} {a + 1}X{b + 1}",
+                legend=legend
+            )
+            graph_data_list.append(graph)
+            if facet is not None:
+                index = [point['serial_number'] for point in coors]
+                annotations = [self.facet_var_details[i - 1][
+                                   facet - 1] for i in index]
+                legend = [
+                    dict(index=i + 1, value=self.facet_details[facet - 1][i])
+                    for i in range(len(self.facet_details[facet - 1]))]
+                graph = dict(
+                    x=x,
+                    y=y,
+                    annotations=annotations,
+                    title=f"Facet {chr(64 + facet)}: d={dim} {a + 1}X{b + 1}",
+                    legend=legend,
+                )
+                if dim == 2:
+                    for model in output["models"]:
+                        if model["facet"] != facet: continue
+                        m_graph = dict(x=x,
+                                       y=y,
+                                       annotations=annotations,
+                                       title=f"Facet {chr(64 + facet)}: d={dim} {a + 1}X{b + 1}",
+                                       legend=legend)
+                        m_graph["geoms"] = ShapeFactory.shapes_from_list(model[
+                                                                             "divide_geoms"])
+                        m_graph["caption"] = f"Separation index for" \
+                                             f" {model['deviant_points_num']} Deviant " \
+                                             f"Points Is  {model['seperation_index']}"
+                        graph_data_list.append(m_graph)
+                else:
+                    graph_data_list.append(graph)
+        self.gui.show_diagram_window(graph_data_list)
+        self.gui.diagram_window.bind("<F1>", lambda e: self.show_help(
+            "facet_diagrams_screen"))
+
 
 class Validator():
     def __init__(self, gui):
@@ -483,7 +624,7 @@ class Validator():
 
     @staticmethod
     @mode_dependent
-    def validate_start_page(data_path):
+    def validate_input_page(data_path):
         if not data_path:
             raise FileNotFoundError("Please chose a data file for the "
                                     "analysis.")
@@ -551,7 +692,9 @@ class Navigator():
                 return self.pages_list[i].name
 
     def get_current(self) -> str:
-        return self.pages_list[self.index].name
+        for i in range(self.index, len(self.pages_list)):
+            if self.pages_list[i].show:
+                return self.pages_list[i].name
 
     def get_prev(self) -> str:
         if self.index == 0:

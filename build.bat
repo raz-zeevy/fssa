@@ -1,3 +1,3 @@
-:: call venv\Scripts\activate
-pyinstaller app.spec
+call venv\Scripts\activate
+py -m PyInstaller app.spec
 
