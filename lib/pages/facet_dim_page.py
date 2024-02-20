@@ -64,8 +64,8 @@ class FacetDimPage(ttk.Frame):
                 dim_facet_button = ttk.Checkbutton(self.table_frame,
                                                    variable=check_var,
                                                    text="Yes",
-                                                   onvalue=1,
-                                                   offvalue=0,
+                                                   onvalue=0,
+                                                   offvalue=1,
                                                    bootstyle="dark-outline-toolbutton")
                 dim_facet_button.configure(command=lambda
                     var=check_var,
@@ -93,23 +93,6 @@ class FacetDimPage(ttk.Frame):
             facet_dim[dim] = [facet+1 for facet, btn in
                               enumerate(facets) if btn.cget("text") == "Yes"]
         return facet_dim
-    # def create_navigation(self):
-    #     # Navigation Buttons Frame
-    #     frame_navigation = ttk.Frame(self)
-    #     frame_navigation.pack(side='bottom', fill='x', padx=10, pady=5)
-    #
-    #     center_frame = ttk.Frame(frame_navigation)
-    #     center_frame.pack(pady=5, expand=True)
-    #
-    #     self.button_previous = ttk.Button(center_frame, text="Previous")
-    #     self.button_previous.pack(side=tk.LEFT, padx=5)
-    #
-    #     self.button_next = ttk.Button(center_frame, text="Next",
-    #                                   state=ttk.DISABLED)
-    #     self.button_next.pack(side=tk.LEFT, padx=5)
-    #
-    #     self.button_run = ttk.Button(center_frame, text="Run")
-    #     self.button_run.pack(side=tk.LEFT, padx=5)
 
     def validate_input(self, num_facets, max_dim, min_dim):
         if num_facets > 4:

@@ -43,9 +43,12 @@ class InputPage(ttk.Frame):
         self.entry_data_file.pack(side=ttk.LEFT, fill='x', expand=True)
         self.button_browse = ttk.Button(frame_data_file, text="Browse")
         self.button_browse.pack(side=ttk.LEFT, padx=10)
+        advanced_frame = ttk.LabelFrame(self, text="Advanced Options",
+                                        bootstyle="primary")
+        advanced_frame.pack(fill='x', padx=ENTRIES_PADX, pady=(30, 0))
         # Lines per Case Frame
-        frame_lines = ttk.Frame(self)
-        frame_lines.pack(fill='x', padx=ENTRIES_PADX, pady=(30,10))
+        frame_lines = ttk.Frame(advanced_frame)
+        frame_lines.pack(fill='x', padx=ENTRIES_PADX, pady=(15,10))
         # Records per Case Entry
         label_lines = ttk.Label(frame_lines,
                                   text="How many lines per case ? (1-99)")
@@ -53,7 +56,7 @@ class InputPage(ttk.Frame):
         self.entry_lines = ttk.Entry(frame_lines, width=5)
         self.entry_lines.pack(side=ttk.RIGHT, padx=ENTRIES_PADX)
         # Delimiter Frame
-        frame_delimiter = ttk.Frame(self)
+        frame_delimiter = ttk.Frame(advanced_frame)
         frame_delimiter.pack(fill='x', padx=ENTRIES_PADX, pady=10)
         # What is the delimiter Entry
         label_delimiter = ttk.Label(frame_delimiter,
@@ -66,7 +69,7 @@ class InputPage(ttk.Frame):
             width=5,)
         self.entry_delimiter.pack(side=ttk.RIGHT, padx=ENTRIES_PADX)
         # Fixed Width
-        frame_fixed_width = ttk.Frame(self)
+        frame_fixed_width = ttk.Frame(advanced_frame)
         frame_fixed_width.pack(fill='x', padx=ENTRIES_PADX, pady=10)
         # Label for the text
         label_text = ttk.Label(frame_fixed_width,
@@ -86,7 +89,7 @@ class InputPage(ttk.Frame):
             values=["No",DELIMITER_1_D, DELIMITER_2_D])
         self.selection_box_fixed_width.pack(side=ttk.RIGHT, padx=ENTRIES_PADX)
         # Manual Input
-        frame_manual_input = ttk.Frame(self)
+        frame_manual_input = ttk.Frame(advanced_frame)
         frame_manual_input.pack(fill='x', padx=ENTRIES_PADX, pady=10)
         # Label for the text
         label_text = ttk.Label(frame_manual_input,
@@ -104,8 +107,8 @@ class InputPage(ttk.Frame):
                                                  offvalue=False,)
         self.check_box_manual_input.pack(side=ttk.RIGHT, padx=(0,27))
         # Missing Value Frame
-        frame_missing_value = ttk.Frame(self)
-        frame_missing_value.pack(fill='x', padx=ENTRIES_PADX, pady=10)
+        frame_missing_value = ttk.Frame(advanced_frame)
+        frame_missing_value.pack(fill='x', padx=ENTRIES_PADX, pady=(10,20))
         # Label for the text
         label_text = ttk.Label(frame_missing_value,
                                text="Is zero (0) a valid value or are "

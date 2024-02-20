@@ -1,6 +1,5 @@
 # controller.py
 import warnings
-
 import pandas as pd
 from lib.components.shapes import ShapeFactory
 from lib.gui import GUI
@@ -9,6 +8,7 @@ from lib.fss.fss_module import get_random_data, load_recordad_data, \
 from lib.fss.fss_module import create_running_files, run_fortran
 from lib.utils import *
 
+SET_MODE_TEST()
 
 class Controller:
     def __init__(self):
@@ -296,7 +296,13 @@ class Controller:
         except:
             raise DataLoadingException("Error loading matrix data")
         manual_input = self.gui.pages[MANUAL_FORMAT_PAGE_NAME]
-        for i in range(len(self.matrix)):
+        # reset existing variables
+        if manual_input.data_table:
+            n = len(manual_input.data_table.tablerows)
+            for _ in range(n):
+                manual_input.remove_variable()
+        # insert new variables
+        for _ in range(len(self.matrix)):
             manual_input.add_variable("","","","","")
         manual_input.set_matrix_edit_mode()
         self.gui.pages[DIMENSIONS_PAGE_NAME].set_matrix_mode()

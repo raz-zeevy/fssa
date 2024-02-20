@@ -80,7 +80,15 @@ class ManualFormatPage(ttk.Frame):
     def remove_variable(self):
         # removes the last row from the table
         if self.data_table.tablerows:
-            self.data_table.delete_row(index=-1)
+            self.data_table.delete_row(iid=
+                self.data_table.tablerows[-1].iid,
+                                       visible=False)
+            # it is mandatory to check both because the interface is bugged
+            if len(self.data_table.tablerows) == PAGE_SIZE:
+                self.data_table.goto_first_page()
+            elif len(self.data_table.tablerows) % PAGE_SIZE == 0:
+                self.data_table.goto_prev_page()
+
 
     def add_variable(self, line_num=None, start_col=None, field_width=None,
                      valid_low=None, valid_high=None, label=None):

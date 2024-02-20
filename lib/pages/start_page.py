@@ -54,7 +54,7 @@ class StartPage(ttk.Frame):
 
         self.button_info = CTkButton(master=frame, text="What is FSSA?",
                   fg_color=self.colors.primary,
-                  hover_color="#E44982", font=("Arial Bold", 12),
+                  hover_color="#02CCFE", font=("Arial Bold", 12),
                   text_color="#ffffff", width=225)
         self.button_info.pack(anchor="w",
                                                         padx=(25, 0),
