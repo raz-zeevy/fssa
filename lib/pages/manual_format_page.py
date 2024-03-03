@@ -69,6 +69,7 @@ class ManualFormatPage(ttk.Frame):
     def load_missing_values(self, are_missing_values):
         if are_missing_values == self.are_missing_values:
             return
+        self.create_data_table()
         self.are_missing_values = are_missing_values
         if self.are_missing_values:
             self.data_table.tablecolumns[-2].show()
@@ -138,9 +139,11 @@ class ManualFormatPage(ttk.Frame):
         column_key = self.data_table.view.identify_column(event.x)
         column_i = int(column_key[1:])
         if column_i == 1: return
-        if self.matrix_edit_mode and column_i != len(self.coldata):
-            return
-        if not self.are_missing_values:
+        if self.matrix_edit_mode:
+            if column_i != 2:
+                return
+            column_i = len(self.coldata)
+        if not self.are_missing_values and column_i > 4:
             column_i += 2
         try:
             value = self.data_table.view.item(item, 'values')[column_i - 1]
@@ -219,13 +222,35 @@ class ManualFormatPage(ttk.Frame):
         super().pack(kwargs, **kw)
 
     def set_matrix_edit_mode(self) -> None:
-        self.matrix_edit_mode = True
-        self.button_add_variable.config(state="disabled")
-        self.button_remove_variable.config(state="disabled")
+        if not self.matrix_edit_mode:
+            self.matrix_edit_mode = True
+            self.button_add_variable.config(state="disabled")
+            self.button_remove_variable.config(state="disabled")
+            for i in range(1, len(self.coldata)-1):
+                self.data_table.tablecolumns[i].hide()
 
     def get_labels(self) -> list:
         return [row.values[len(self.coldata)-1] for row in
                 self.data_table.tablerows]
+
+    def set_labels(self, list):
+        """
+        Notice : doesn't change the values in the GUI only in the underlying
+        data structure.
+        :param list:
+        :return:
+        """
+        assert len(list) == len(self.data_table.tablerows)
+        for i, row in enumerate(self.data_table.tablerows):
+            row.values[len(self.coldata)-1] = list[i]
+
+
+    def get_vars_valid_values(self):
+        all_format = self.get_data_format()
+        valid_values = [(var['valid_low'], var['valid_high']) for var in
+                        all_format]
+        return valid_values
+
 
     def pack_forget(self) -> None:
         if self.data_table:

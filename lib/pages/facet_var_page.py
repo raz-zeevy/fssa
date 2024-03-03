@@ -1,5 +1,7 @@
 from tkinter import filedialog, Menu
 import ttkbootstrap as ttk
+from typing import List
+from lib.components.form import *
 from lib.utils import *
 import tkinter as tk
 from ttkbootstrap import Canvas, Frame, Scrollbar, Label
@@ -21,7 +23,7 @@ class FacetVarPage(ttk.Frame):
         frame_correlation_combo.pack(fill='x', padx=ENTRIES_PADX, pady=(20,
                                                                         20))
 
-        correlation_label = ttk.Label(frame_correlation_combo,
+        correlation_label = Label(frame_correlation_combo,
                                       text="For each variable below, specify "
                                            "its facet element in each facet")
         correlation_label.pack(side="left")
@@ -126,6 +128,12 @@ class FacetVarPage(ttk.Frame):
             self.header_frame.grid_columnconfigure(col, weight=col_weights[
                 col])
             self.table_frame.grid_columnconfigure(col, weight=1)
+
+    def set_facets_vars(self, facets_vars : List[list]):
+        for i, var in enumerate(self.combo_by_var):
+            for j, facet in enumerate(var):
+                self.combo_by_var[i][j].current(facets_vars[i][j])
+
 
     def get_all_var_facets_indices(self):
         data = []

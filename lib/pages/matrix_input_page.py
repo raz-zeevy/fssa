@@ -1,7 +1,7 @@
 from tkinter import filedialog, Menu
 import ttkbootstrap as ttk
 from typing import List
-import lib.components.form
+from lib.components.form import *
 from lib.utils import *
 
 MISSING_RANGES_NUM = 5
@@ -44,7 +44,7 @@ class MatrixInputPage(ttk.Frame):
         frame_data_file = ttk.Frame(frame_main)
         frame_data_file.pack(fill='x', padx=ENTRIES_PADX, pady=(40, 0))
         # Data File Entry
-        label_data_file = ttk.Label(frame_data_file, text="Data File:")
+        label_data_file = Label(frame_data_file, text="Matrix File:")
         label_data_file.pack(side=ttk.LEFT, padx=(0, 10))
         data_file_path = ttk.StringVar()
         self.entry_data_file = ttk.Entry(frame_data_file, width=45,
@@ -163,13 +163,13 @@ class MatrixInputPage(ttk.Frame):
     def newline_label(self, frame, text):
         missing_label_frame = ttk.Frame(frame)
         missing_label_frame.pack(fill='x')
-        missing_label = ttk.Label(missing_label_frame, text=text)
+        missing_label = Label(missing_label_frame, text=text)
         missing_label.pack(side="left", padx=ENTRIES_PADX)
 
     def label_entry(self, frame, label, default=None):
         var_num_frame = ttk.Frame(frame)
         var_num_frame.pack(fill='x', padx=ENTRIES_PADX, pady=(15, 0))
-        label_var_num = ttk.Label(var_num_frame, text=label,
+        label_var_num = Label(var_num_frame, text=label,
                                   wraplength=600, justify='left')
         label_var_num.pack(side=ttk.LEFT, padx=(0, 10))
         entry = ttk.Entry(var_num_frame, width=8)
@@ -179,16 +179,16 @@ class MatrixInputPage(ttk.Frame):
 
     def label_multi_entry(self, frame, label, n, default=None):
         var_num_frame = ttk.Frame(frame)
-        var_num_frame.pack(fill='x', padx=ENTRIES_PADX, pady=(15, 0))
-        label_var_num = ttk.Label(var_num_frame, text=label,
+        var_num_frame.pack(fill='x', padx=(ENTRIES_PADX,70), pady=(15, 0))
+        label_var_num = Label(var_num_frame, text=label,
                                   wraplength=600, justify='left')
         label_var_num.pack(side=ttk.LEFT, padx=(0, 5))
         entries = []
         for i in range(n):
             entry = ttk.Entry(var_num_frame, width=9)
-            if default:
+            if default is not None:
                 entry.insert(0, default)
-            entry.pack(side=ttk.RIGHT, padx=(10, 0))
+            entry.pack(side=ttk.RIGHT, padx=(20, 0))
             entries.append(entry)
         return entries
 

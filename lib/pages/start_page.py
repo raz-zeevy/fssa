@@ -43,7 +43,8 @@ class StartPage(ttk.Frame):
         self.button_recorded_data.pack(anchor="w",padx=(25, 0),
                                                         pady=(38, 0))
 
-        self.button_matrix_data = CTkButton(master=frame, text="Matrix Data",
+        self.button_matrix_data = CTkButton(master=frame,
+                                            text="Dis/similarity Matrix",
                            fg_color="#601E88",
                   hover_color="#E44982", font=("Arial Bold", 12),
                   text_color="#ffffff", width=225)

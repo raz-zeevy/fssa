@@ -1,7 +1,7 @@
 from tkinter import filedialog, Menu
 import ttkbootstrap as ttk
 from lib.utils import *
-
+from lib.components.form import *
 ENTRIES_PADX = 20
 
 
@@ -22,7 +22,7 @@ class HypothesisPage(ttk.Frame):
         self.main_frame = ttk.Frame(self)
         self.main_frame.pack(fill='x', padx=ENTRIES_PADX, pady=(40, 0))
         # Label for the text
-        label_text = ttk.Label(self.main_frame,
+        label_text = Label(self.main_frame,
                                text="Regional Hypotheses To Be Tested",)
         label_text.pack(side=ttk.TOP, fill='x',
                         expand=True, padx=ENTRIES_PADX+20)
@@ -48,7 +48,7 @@ class HypothesisPage(ttk.Frame):
                                                 offvalue=False)
                 checkbox_hypo.pack(side=ttk.LEFT, padx=(10,0))
                 facet_models.append(checkbox_hypo)
-                hypo_label = ttk.Label(hypo_label_frame,
+                hypo_label = Label(hypo_label_frame,
                                         text=hypo,
                                         anchor='w',)
                 hypo_label.pack(side=ttk.LEFT, fill='x', expand=True,

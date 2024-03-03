@@ -22,9 +22,10 @@ class FssInputWriter():
             iboxstring=0,
             default_form_feed=0,
             facet_details=None,
-            facet_var_details=None,
+            facet_var_details=[],
             hypotheses_details=None,
-            facet_dim_details=None, ):
+            facet_dim_details=None,
+            input_matrix_format=INPUT_MATRIX_FORMAT):
         """
     This function creates the FSSA input file (FSSAINP.DRV) for the FSSA program
         :param variables_labels:
@@ -61,9 +62,10 @@ class FssInputWriter():
             f.write(f"   {default_form_feed}\n   {len(missing_cells)}")
             for missing_cell_range in missing_cells:
                 f.write(
-                    f" {missing_cell_range[0]:.7f} {missing_cell_range[1]:.7f}")
+                    f" {missing_cell_range[0]:.6f}"
+                    f" {missing_cell_range[1]:.6f}")
             f.write("\n")
-            f.write(INPUT_MATRIX_FORMAT + "\n")
+            f.write(input_matrix_format + "\n")
             for variable in variables_labels:
                 f.write(f" {' ' if variable['index'] < 10 else ''}"
                         f" {variable['index']}"

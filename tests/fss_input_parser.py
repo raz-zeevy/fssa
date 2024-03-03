@@ -74,9 +74,23 @@ def simulate_manual_format(format_txt: str, add_variable: callable,
 
 
 def simulate_facets_details(facets_txt: str, set_details: callable, ):
+    """
+    :param facets_txt:
+           4   4   0   0
+    per
+    phy
+    soc
+    cul
+    exp
+    ada
+    int
+    con
+    :param set_details:
+    :return:
+    """
     lines = facets_txt.strip().split("\n")
     num_labels = [int(i) for i in lines[0].split("   ")]
-    data = [[] for _ in num_labels]
+    data = [[] for i in num_labels if i > 0]
     line_index, var_index = 1, 0
     while line_index <= len(lines) - 1:
         if int(num_labels[var_index]) > 0:
@@ -90,6 +104,17 @@ def simulate_facets_details(facets_txt: str, set_details: callable, ):
 
 
 def simulate_facets_var_data(facets_var_txt, entries: List[List]):
+    """
+    :param facets_var_txt: eg.
+     1 1
+     1 2
+     1 3
+     1 4
+     2 1
+     2 2
+    :param entries:
+    :return:
+    """
     for i, line in enumerate(facets_var_txt.strip().split("\n")):
         var_facets = line.strip().split()
         for j, facet_index in enumerate(var_facets):

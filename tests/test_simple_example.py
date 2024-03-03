@@ -3,7 +3,7 @@ import unittest
 
 import numpy as np
 
-from lib.controller import Controller
+from lib.controller.controller import Controller
 from lib.fss import load_data_file
 from lib.utils import DELIMITER_1_D
 

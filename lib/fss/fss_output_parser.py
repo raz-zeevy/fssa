@@ -1,6 +1,11 @@
+import inspect
 import json
 import re
 import pprint
+import warnings
+
+from lib.utils import *
+import numpy as np
 
 END_BLOCK = '\x0c'
 BUFFER = "."
@@ -18,13 +23,23 @@ class OutputParser:
         self.models = []
         self.extract_data()
 
-    def next_row(self):
-        self.index += 1
-        self.current_row = self.rows[self.index]
+    def next_row(self, called_function=None):
+        # get the name of the function that called next_row
+        if not called_function:
+            called_function = inspect.stack()[1].function
+        try:
+            self.index += 1
+            self.current_row = self.rows[self.index]
+        except IndexError as e:
+            if IS_PRODUCTION():
+                pass
+            else:
+                warnings.warn(f"OUTPUT PARSER ERORR: {e} \non {called_function}")
 
     def next_rows(self, num: int):
+        called_function = inspect.stack()[1].function
         for i in range(num):
-            self.next_row()
+            self.next_row(called_function=called_function)
 
     def extract_data(self):
         while self.index < len(self.rows) - 1:
@@ -105,6 +120,10 @@ class OutputParser:
 
         def parse_separation_index():
             row = self.current_row.split()
+            if len(row) < 8: return {
+                "deviant_points_num": np.nan,
+                "seperation_index": np.nan,
+            }
             return {
                 "deviant_points_num": int(row[3]),
                 "seperation_index": float(row[7]),

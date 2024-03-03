@@ -3,6 +3,7 @@ import ttkbootstrap as ttk
 from lib.utils import *
 from lib.components.form import *
 
+
 ENTRIES_PADX = 20
 DIMENSION_OPTIONS = [
     "Single Dimensionality",
@@ -15,17 +16,21 @@ class DimensionsPage(ttk.Frame):
         self.dimension_boxes = None
         self.create_entries()
 
+
+    def set_number_of_variables(self, num):
+        self.label_var_num.config(text=f"You have selected {num} "
+                                           f"variables")
+
     def create_entries(self):
         frame_var_label = ttk.Frame(self)
         frame_var_label.pack(fill='x', padx=ENTRIES_PADX, pady=(20, 0))
-        label_var_num = ttk.Label(frame_var_label,
-            text="You have selected 5 Variables")
-        label_var_num.pack(side=ttk.LEFT)
+        self.label_var_num = Label(frame_var_label,text="")
+        self.label_var_num.pack(side=ttk.LEFT)
         ####
         frame_correlation_combo = ttk.Frame(self)
         frame_correlation_combo.pack(fill='x', padx=ENTRIES_PADX, pady=(20, 0))
         #
-        self.correlation_label = ttk.Label(frame_correlation_combo,
+        self.correlation_label = Label(frame_correlation_combo,
                                       text="Type of coefficients to "
                                            "generate and use: ",
                                       )
@@ -43,7 +48,7 @@ class DimensionsPage(ttk.Frame):
         frame_dimension_combo = ttk.Frame(self)
         frame_dimension_combo.pack(fill='x', padx=ENTRIES_PADX, pady=(20, 0))
         #
-        dimension_label = ttk.Label(frame_dimension_combo,
+        dimension_label = Label(frame_dimension_combo,
                                     text="Dimensionality: ",
                                     )
         dimension_label.pack(side=ttk.LEFT)
@@ -93,6 +98,9 @@ class DimensionsPage(ttk.Frame):
         return [int(box.get()) for box in self.dimension_boxes]
 
     def set_dims(self, min, max=None):
+        if max and len(self.dimension_boxes) == 1:
+            self.dimension_combo.set(DIMENSION_OPTIONS[1])
+            self.dimension_combo_selected(None)
         self.dimension_boxes[0].set(min)
         if max:
             self.dimension_boxes[1].set(max)
@@ -104,7 +112,7 @@ class DimensionsPage(ttk.Frame):
         frame_band = ttk.Frame(master)
         frame_band.pack(fill='x',pady=(20,0))
         # # header label
-        hdr = ttk.Label(frame_band, text=text)
+        hdr = Label(frame_band, text=text)
         hdr.pack(side=ttk.LEFT, fill='x', pady=5, padx=(0,40))
         # value label
         box = SelectionBox(frame_band,
@@ -116,6 +124,6 @@ class DimensionsPage(ttk.Frame):
         return box
 
     def set_matrix_mode(self):
-        self.correlation_combo.set("Similarity")
-        self.correlation_combo.config(values=["Similarity","Dissimilarity"])
+        self.correlation_combo.set(SIMILARITY)
+        self.correlation_combo.config(values=[SIMILARITY, DISSIMILARITY])
         self.correlation_label.config(text="Coefficients in matrix designate:")

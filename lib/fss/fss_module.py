@@ -1,11 +1,12 @@
 # Python code to run the specified command using subprocess
 
 import subprocess
+
 import pandas as pd
 from contextlib import contextmanager
 from lib.fss.fss_corr_input_writer import CorrelationInputWriter
 from lib.fss.fss_input_writer import FssInputWriter
-from lib.fss.fss_input_parser import *
+from tests.fss_input_parser import *
 from lib.utils import *
 
 
@@ -34,8 +35,10 @@ def validate_input(i, var, lines):
                         "than the number of columns in the "
                         "file")
 
+
 def load_recordad_data(path, delimiter=None, lines_per_var=1, manual_format: List[
-    dict] = None, safe_mode=False):
+    dict] = None, safe_mode=False, extension=None,
+                       has_header=False):
     """
     Load data file from path and return a pandas dataframe
     :param lines_per_var:
@@ -45,62 +48,90 @@ def load_recordad_data(path, delimiter=None, lines_per_var=1, manual_format: Lis
     each variable]
     :return:
     """
+    def load_supported_formats(extension):
+        header = 0 if has_header else None
+        if extension == ".csv":
+            df = pd.read_csv(path, sep=",", header=header)
+        elif extension == ".tsv":
+            df = pd.read_csv(path, sep="\t", header=header)
+        elif extension == ".xls" or extension == ".xlsx":
+            df = pd.read_excel(path, header=header)
+        else:
+            raise Exception(f"Invalid extension: {extension}")
+        if header is None:
+            df.columns = [f"var{i + 1}" for i in df.columns]
+        return df
+
+    def load_other_formats():
+        data = []
+        failed_rows = []
+        with open(path, "r") as f:
+            lines = f.readlines()
+            if len(lines) % lines_per_var != 0:
+                raise Exception(
+                    "Invalid number of lines:\n It seems the number "
+                    "of lines is not a multiple of the number of "
+                    "lines per row")
+            for i in range(0, len(lines), lines_per_var):
+                try:
+                    row = []
+                    if manual_format:
+                        for var in manual_format:
+                            if safe_mode:
+                                validate_input(i, var, lines)
+                            row.append(lines[i + var["line"] - 1][
+                                       var["col"] - 1:var["col"] - 1 + var[
+                                           "width"]])
+                    elif delimiter == DELIMITER_1_D:
+                        rrow = "".join(
+                            lines[i:i + lines_per_var]).strip().replace(
+                            "\n", "")
+                        row = list(map(int, str(rrow)))
+                    elif delimiter == DELIMITER_2_D:
+                        rrow = "".join(
+                            lines[i:i + lines_per_var]).strip().replace(
+                            "\n", "")
+                        row = [int(rrow[i:i + 2]) for i in
+                               range(0, len(rrow), 2)]
+                    else:
+                        rrow = "".join(
+                            lines[i:i + lines_per_var]).strip().replace(
+                            "\n", "")
+                        row = [int(i) for i in rrow.split(delimiter)]
+                except:
+                    failed_rows.append(i + 1)
+                if row:
+                    data.append(row)
+        for line in data:
+            if line: break
+        else:
+            raise DataLoadingException("bad file")
+        if failed_rows:
+            import warnings
+            if len(failed_rows) > 10:
+                warnings.warn("Failed to load the following rows: "
+                              f"["
+                              f"{','.join([str(i) for i in failed_rows[:9]])}..."
+                              f"{failed_rows[-1]}]")
+            else:
+                warnings.warn("Failed to load the following rows: "
+                              f"{failed_rows}")
+        df = pd.DataFrame(data, columns=[f"var{i + 1}" for i in range(len(data[
+                                                                      0]))])
+        return df
+
     if manual_format:
         if "line" not in manual_format[0] or \
                 "col" not in manual_format[0] or \
                 "width" not in manual_format[0]:
             raise Exception("Invalid manual format:\n Each variable must have "
                             "line, col and width")
-    if not delimiter and not manual_format:
-        raise Exception("Either delimiter or manual format must be specified")
-    data = []
-    failed_rows = []
-    with open(path, "r") as f:
-        lines = f.readlines()
-        if len(lines) % lines_per_var != 0:
-            raise Exception("Invalid number of lines:\n It seems the number "
-                            "of lines is not a multiple of the number of "
-                            "lines per row")
-        for i in range(0, len(lines), lines_per_var):
-            try:
-                row = []
-                if manual_format:
-                    for var in manual_format:
-                        if safe_mode:
-                            validate_input(i, var, lines)
-                        row.append(lines[i + var["line"] - 1][
-                                   var["col"] - 1:var["col"] - 1 + var["width"]])
-                elif delimiter == DELIMITER_1_D:
-                    rrow = "".join(lines[i:i + lines_per_var]).strip().replace(
-                        "\n", "")
-                    row = list(map(int, str(rrow)))
-                elif delimiter == DELIMITER_2_D:
-                    rrow = "".join(lines[i:i + lines_per_var]).strip().replace(
-                        "\n", "")
-                    row = [int(rrow[i:i + 2]) for i in range(0, len(rrow), 2)]
-                else:
-                    rrow = "".join(lines[i:i + lines_per_var]).strip().replace(
-                        "\n", "")
-                    row = rrow.split(delimiter)
-            except:
-                failed_rows.append(i+1)
-            data.append(row)
-    for line in data:
-        if line: break
-    else:
-        raise DataLoadingException("bad file")
-    if failed_rows:
-        import warnings
-        if len(failed_rows) > 10:
-            warnings.warn("Failed to load the following rows: "
-                                    f"["
-                          f"{','.join([str(i) for i in failed_rows[:9]])}..."
-                          f"{failed_rows[-1]}]")
-        else:
-            warnings.warn("Failed to load the following rows: "
-                                    f"{failed_rows}")
-    df = pd.DataFrame(data, columns=[i + 1 for i in range(len(data[0]))])
-    return df
+    if not delimiter and not manual_format and not extension:
+        raise Exception("Recorded data loader don't have enough information "
+                        "to load the file")
+    if extension:
+        return load_supported_formats(extension)
+    return load_other_formats()
 
 
 def load_matrix_data(path, matrix_details) -> pd.DataFrame:
@@ -138,7 +169,57 @@ def get_random_data() -> pd.DataFrame:
     df = pd.DataFrame(data, columns=[i + 1 for i in range(len(data[0]))])
     return df
 
+def run_matrix_fortran(output_path: str):
+    def get_path(path: str):
+        if os.path.exists(path):
+            return os.path.abspath(path)
+        else:
+            return SCRIPT_NESTING_PREFIX + path
+    data_file = p_DATA_FILE
+    fssa_input_drv_file = p_FSS_DRV
+    output_results_file = output_path
 
+    # Define the command and arguments
+    arguments = [
+        get_path(fssa_input_drv_file),  # A file in a specific format (see
+        # fssainp.drv
+        # instructions file) that tells the program how to read data file and
+        # what you want done.
+        get_path(data_file),
+        # Path and filename of the input data file in ASCII (simple txt
+        # file). You can change it to fit with your own directory, and you
+        # can simplify
+        # filename. For example, c:\tstfssa\tstdata.dat
+        output_results_file  # Path and filename of the output
+        # data file. You can change it to your own directory, and simplify
+        # filename. For example  c:\tstfssa\tstdata.fss
+    ]
+    # command = r"C:\Users\Raz_Z\Desktop\shmuel-project\fssa-21\FASSA.BAT"
+    command = "FASSA.BAT"
+
+    # Combine the command and arguments into a single list
+    full_command = [command] + arguments
+
+    # Run the command
+    fss_dir = get_script_dir_path()
+    with cwd(fss_dir):
+        result = subprocess.run(full_command, shell=True, stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE, text=True)
+        # Print the output and error, if any
+        if result.returncode != 0:
+            raise Exception(f"FSSA script failed : {result.stderr}")
+        if RESULTS_SUCCESS_STDERR in result.stderr:
+            if len(result.stderr.split("\n")) >= 3:
+                if result.stderr.split("\n")[2] == 'Fortran runtime error: ' \
+                                                   'Cannot write to file opened for READ':
+                    exception = result.stderr.split('\n')[2]
+                    raise Exception(exception)
+            else:
+                raise Exception(f"FSSA script failed : {result.stderr}")
+        else:
+            raise Exception(f"FSSA script failed : {result.stderr}")
+        print("Output:", result.stdout)
+        print("Error:", result.stderr)
 def run_fortran(corr_type,
                 output_path,
                 create_simplified_matrix_file="NUL"):
@@ -229,12 +310,15 @@ def run_fortran(corr_type,
         if result.returncode != 0:
             raise Exception(f"FSSA script failed : {result.stderr}")
         if result.stderr != RESULTS_SUCCESS_STDERR:
-            if result.stderr.split("\n")[2] == 'Fortran runtime error: ' \
-                                               'Cannot write to file opened for READ':
-                exception = result.stderr.split('\n')[2]
-                raise Exception(exception)
+            if len(result.stderr.split("\n")) >= 3:
+                if result.stderr.split("\n")[2] == 'Fortran runtime error: ' \
+                                                   'Cannot write to file opened for READ':
+                    exception = result.stderr.split('\n')[2]
+                    raise Exception(exception)
             else:
                 raise Exception(f"FSSA script failed : {result.stderr}")
+        else:
+            raise Exception(f"FSSA script failed : {result.stderr}")
         print("Output:", result.stdout)
         print("Error:", result.stderr)
 
@@ -326,28 +410,55 @@ def create_fssa_data_file(data_matrix: List[List[int]]):
         for row in data_matrix:
             f.write("".join(map(parse_item_2d, row)) + "\n")
 
+
+def create_fss_matrix_file(matrix_details: dict, matrix_path: str):
+   matrix = np.loadtxt(matrix_path).reshape(matrix_details['var_num'],-1).tolist()
+   # matrix = np.around(matrix, matrix_details['decimal_places'])
+   precision = f".{matrix_details['decimal_places']}f"
+   spacing = matrix_details['field_width']
+   def parse_item(item):
+       if item >= 0:
+           res = f"{item:{precision}}" if (item > 9) else f"" \
+                                                              f"0{item:{precision}}"
+       else:
+              res = f"{item:{precision}}" if (item < -9) else f"" \
+                                                                f"-0{abs(item):{precision}}"
+       return (spacing - 1 - len(res)) * " " + str(res)
+
+   for i in range(len(matrix)):
+       matrix[i] = " ".join(map(parse_item, matrix[i]))
+   with open(p_DATA_FILE, 'w', encoding="ascii") as f:
+       f.writelines(row + "\n" for row in matrix)
+
 def create_matrix_running_files(
         job_name : str,
         variables_labels: List[dict],
         correlation_type: str,
-        data_matrix: List[List],
-        min_dim: int = 2, max_dim: int = 2,
-        is_similarity_data: bool = True, eps=0,
+        matrix_details: dict,
+        matrix_path: str,
+        min_dim: int = 2,
+        max_dim: int = 2,
+        eps=0,
         missing_cells: list = [(99, 99)],
         iweigh=2, nfacet=0, ntface=0,
         store_coordinates_on_file: bool = False, iboxstring=0,
         default_form_feed=0, nmising: int = 0, nlabel: int = 0,
         iprfreq: bool = False, iintera: bool = False,
         facet_details = None,
-        facet_var_details = None,
+        facet_var_details = [],
         hypotheses_details = None,
         facet_dim_details = None,
-        valid_values_range = None
 ):
     """
     This function creates the running files for FSSA program
     :return:
     """
+
+    is_similarity_data = correlation_type == SIMILARITY
+    input_matrix_format = f"({matrix_details['entries_num_in_row']}F" \
+                          f"{matrix_details['field_width']}." \
+                          f"{matrix_details['decimal_places']})"
+    missing_cells = matrix_details['missing_ranges']
     # Create the FSSA input file
     fssi = FssInputWriter()
     fssi.create_fssa_input_file(
@@ -367,10 +478,11 @@ def create_matrix_running_files(
         facet_details,
         facet_var_details,
         hypotheses_details,
-        facet_dim_details)
+        facet_dim_details,
+        input_matrix_format)
 
     # Create the FSSA Partial Matrix File
-    create_fssa_data_file(data_matrix)
+    create_fss_matrix_file(matrix_details, matrix_path)
 
 
 

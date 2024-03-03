@@ -1,12 +1,16 @@
 import os
 from lib import config
 
-WINDOW_HEIGHT = 650
-WINDOW_WIDTH = 750
+WINDOW_HEIGHT = 700
+WINDOW_WIDTH = 820
 
 DELIMITER_1_D = "1-digit"
 DELIMITER_2_D = "2-digit"
 
+GROUPING_TYPES = ["Percentile", "Equal Intervals", "By Rank"]
+
+DISSIMILARITY = "Dissimilarity"
+SIMILARITY = "Similarity"
 MONO = "Monotonicity"
 PEARSON = "Pearson"
 ENTRY_WIDTH = 2
@@ -77,10 +81,7 @@ INPUT_MATRIX_FORMAT = "(8F10.7)"
 
 # Results
 
-RESULTS_SUCCESS_STDERR = """STOP NEWMON terminated successfully
-Note: The following floating-point exceptions are signalling: IEEE_DENORMAL
-STOP SSA terminated successfully.
-"""
+RESULTS_SUCCESS_STDERR = "STOP SSA terminated successfully."
 
 ### Gui
 
@@ -126,6 +127,15 @@ def get_resource(asset_name):
         raise FileNotFoundError(f"Resource not found: {path}")
     return path
 
+def get_path(relative_path):
+    # Get the directory of the current script file
+    script_dir = os.path.dirname(os.path.realpath(__file__))
+    path = os.path.join(script_dir,".." ,relative_path)
+    path = os.path.abspath(path)
+    # check
+    if not os.path.isfile(path):
+        raise FileNotFoundError(f"Path not found: {path}")
+    return path
 
 ##################
 #   Exceptions   #

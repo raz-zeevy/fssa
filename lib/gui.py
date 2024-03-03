@@ -5,6 +5,7 @@ import ttkbootstrap as ttk
 from lib.components.form import NavigationButton
 from lib.pages.data_page import DataPage
 from lib.windows.diagram_window import DiagramWindow
+from lib.windows.recode_window import RecodeWindow
 from lib.pages.dimensions_page import DimensionsPage
 from lib.pages.facet_dim_page import FacetDimPage
 from lib.pages.facet_page import FacetPage
@@ -58,11 +59,23 @@ class GUI():
         # init common gui
         self.center_window()
 
+##################
+#   Functions    #
+##################
+
     def start_fss(self):
         self.root.geometry(f'{WINDOW_WIDTH}x{WINDOW_HEIGHT}')
         self.create_menu()
         self.create_help_bar()
         self.create_navigation()
+
+    def run_process(self):
+        self.root.mainloop()
+
+
+##################
+# Initialization #
+##################
 
     def center_window(self):
         self.root.update_idletasks()  # Update "requested size" from geometry
@@ -82,6 +95,27 @@ class GUI():
                                relief=ttk.SUNKEN, anchor='w')
         # pack the status bar at the bottom of the screen
         status_bar.pack(side=ttk.BOTTOM, fill='x')
+
+    def create_navigation(self):
+        # Navigation Buttons Frame
+        frame_navigation = ttk.Frame(self.root)
+        # pack the navigation at the bottom of the screen but above the help
+        # bar
+        frame_navigation.pack(side=ttk.BOTTOM, fill='x', padx=10,
+                              pady=(0, 40))
+        center_frame = ttk.Frame(frame_navigation)
+        center_frame.pack(pady=5, expand=True)
+        self.button_previous = NavigationButton(center_frame,
+                                                text="Previous", )
+        self.button_previous.pack(side=ttk.LEFT, padx=20)
+        self.button_next = NavigationButton(center_frame, text="Next", )
+        self.button_next.pack(side=ttk.LEFT, padx=20, )
+        self.button_run = NavigationButton(center_frame, text="Run", )
+        self.button_run.pack(side=ttk.LEFT, padx=20)
+
+##################
+#      Menu      #
+##################
 
     def create_menu(self):
         # Menu
@@ -113,13 +147,13 @@ class GUI():
         self.input_data_menu.add_separator()
         self.input_data_menu.add_command(label="Data")
         self.input_data_menu.add_command(label="Variables")
-        self.menu_bar.add_cascade(label="Input Data",
+        self.menu_bar.add_cascade(label="FSSA Data",
                                   menu=self.input_data_menu)
         # SSA Menu
-        self.SSA_menu = Menu(self.menu_bar, tearoff=0)
-        self.SSA_menu.add_command(label="Dimensions & Coeffs")
-        self.SSA_menu.add_command(label="Technical Options")
-        self.menu_bar.add_cascade(label="SSA", menu=self.SSA_menu)
+        self.FSSA_menu = Menu(self.menu_bar, tearoff=0)
+        self.FSSA_menu.add_command(label="Dimensions & Coeffs")
+        self.FSSA_menu.add_command(label="Technical Options")
+        self.menu_bar.add_cascade(label="FSSA", menu=self.FSSA_menu)
         self.facet_menu = Menu(self.menu_bar, tearoff=0)
         self.facet_menu.add_command(label="Element Labels")
         self.facet_menu.add_command(label="Variable Elements")
@@ -130,17 +164,6 @@ class GUI():
         self.view_menu = Menu(self.menu_bar, tearoff=0)
         self.view_menu.add_command(label="Next")
         self.view_menu.add_command(label="Previous")
-        self.view_menu.add_separator()
-        self.toolbar_radio = tk.StringVar()
-        self.toolbar_radio.set(1)
-        self.view_menu.add_radiobutton(label="Toolbar",
-                                       variable=self.toolbar_radio,
-                                       value=1)
-        self.status_bar_radio = tk.StringVar()
-        self.status_bar_radio.set(1)
-        self.view_menu.add_radiobutton(label="Toolbar",
-                                       variable=self.status_bar_radio,
-                                       value=1)
         self.view_menu.add_separator()
         self.view_menu.add_command(label="Input File",
                                    state="disabled")
@@ -185,6 +208,26 @@ class GUI():
         #
         self.root.config(menu=self.menu_bar)
 
+    def set_menu_recorded_data(self):
+        self.input_data_radio.set(1)
+        self.input_data_menu.entryconfig("Recorded Data", state="disabled")
+        self.input_data_menu.entryconfig("Coefficient Matrix", state="disabled")
+        self.input_data_menu.entryconfig("Data", state="disabled")
+        self.input_data_menu.entryconfig("Variables", state="disabled")
+
+    def set_menu_matrix_data(self):
+        self.input_data_radio.set(2)
+        self.input_data_menu.entryconfig("Recorded Data", state="disabled")
+        self.input_data_menu.entryconfig("Coefficient Matrix", state="disabled")
+        # delete the entry data from the input data menu
+        self.input_data_menu.delete(3)
+        self.input_data_menu.entryconfig("Variables", state="disabled")
+
+
+##################
+#   Navigation   #
+##################
+
     def show_page(self, page):
         self.current_page = page
         page.pack(fill='both', expand=True)
@@ -194,14 +237,31 @@ class GUI():
         self.show_page(self.pages[page_name])
         self.current_page = self.pages[page_name]
 
+    def button_next_config(self, **kwargs):
+        self.button_next.config(**kwargs)
+        self.view_menu.entryconfig("Next", **kwargs)
+
+    def button_previous_config(self, **kwargs):
+        self.button_previous.config(**kwargs)
+        self.view_menu.entryconfig("Previous", **kwargs)
+
+#########################
+# Dialogues and Windows #
+#########################
+
     def show_diagram_window(self, graph_data_lst):
         self.diagram_window = DiagramWindow(self, graph_data_lst)
+        self.diagram_window.bind("<F1>", lambda x: self.show_help_windw())
 
     def show_help_windw(self, section=None):
         self.help_window = HelpWindow(self, section)
 
-    def run_process(self):
-        self.root.mainloop()
+    def show_recode_window(self):
+        self.recode_window = RecodeWindow(self)
+        recode_func = self.pages[DATA_PAGE_NAME].recode_variables
+        self.recode_window.button_recode.config(command=lambda:
+        recode_func(self.recode_window))
+        self.recode_window.bind("<F1>", lambda x: self.show_help_windw())
 
     def show_error(self, title, msg):
         # Handle the error if your data contains non-ASCII characters
@@ -217,18 +277,21 @@ class GUI():
 
     @gui_only
     def show_msg(self, msg, title=None, yes_commend=None,
+                 no_commend=None,
                  buttons=['Yes:primary', 'No:secondary']):
-        # Handle the error if your data contains non-ASCII characters
         if yes_commend:
             clicked_yes = Messagebox.show_question(msg, title, buttons=[
                 buttons[0], buttons[1]])
             if clicked_yes == buttons[0].split(":")[0]:
                 yes_commend()
+            elif no_commend:
+                no_commend()
         else:
             Messagebox.show_info(msg, title)
 
-    def save_file(self, file_types=None, default_extension=None,
-                  initial_file_name=None, title=None):
+
+    def save_file_diaglogue(self, file_types=None, default_extension=None,
+                            initial_file_name=None, title=None):
         file_name = filedialog.asksaveasfilename(filetypes=file_types,
                                                  defaultextension=default_extension,
                                                  title=title,
@@ -236,105 +299,25 @@ class GUI():
                                                  initialfile=initial_file_name)
         return file_name
 
-    def create_navigation(self):
-        # Navigation Buttons Frame
-        frame_navigation = ttk.Frame(self.root)
-        # pack the navigation at the bottom of the screen but above the help
-        # bar
-        frame_navigation.pack(side=ttk.BOTTOM, fill='x', padx=10,
-                              pady=(0, 40))
-        center_frame = ttk.Frame(frame_navigation)
-        center_frame.pack(pady=5, expand=True)
-        self.button_previous = NavigationButton(center_frame,
-                                                text="Previous", )
-        self.button_previous.pack(side=ttk.LEFT, padx=20)
-        self.button_next = NavigationButton(center_frame, text="Next", )
-        self.button_next.pack(side=ttk.LEFT, padx=20, )
-        self.button_run = NavigationButton(center_frame, text="Run", )
-        self.button_run.pack(side=ttk.LEFT, padx=20)
-
-    def button_next_config(self, **kwargs):
-        self.button_next.config(**kwargs)
-        self.view_menu.entryconfig("Next", **kwargs)
-
-    def button_previous_config(self, **kwargs):
-        self.button_previous.config(**kwargs)
-        self.view_menu.entryconfig("Previous", **kwargs)
-
-    def get_input_file_name(self):
+    def get_input_file_name(self) -> str:
+        """
+        Placeholder for the controller-planted method that returns the input
+        file name
+        :return:
+        """
         pass
 
-    def run_button_click(self):
+    def run_button_dialogue(self):
         default_output_file_name = self.get_input_file_name().split(".")[
                                        0] + ".fss"
-        output_file_path = self.save_file(file_types=[('fss', '*.fss')],
-                                          default_extension='.fss',
-                                          initial_file_name=default_output_file_name,
-                                          title="Save Output File To...")
+        output_file_path = self.save_file_diaglogue(file_types=[('fss', '*.fss')],
+                                                    default_extension='.fss',
+                                                    initial_file_name=default_output_file_name,
+                                                    title="Save Output File To...")
         return output_file_path
-
-
-class FFSAPage(ttk.Frame):
-    pass
 
 
 if __name__ == '__main__':
     gui = GUI()
-    # from lib.components.shapes import Line, Circle, DivideAxis
-    #
-    # line = Line(intercept=0, slope=1)
-    # circle1 = Circle((49.8782, 42), 8)
-    # circle2 = Circle((5, 5), 30)
-    # axis1 = DivideAxis((30, 30), 0.7854)
-    # axis2 = DivideAxis((25, 25), 0.3)
-    # geoms1 = [axis1, axis2,
-    #           circle1, line,
-    #           ]
-    # geoms2 = [axis2]
-    # geoms3 = [axis2, axis1, line]
-    # legend = [dict(index=0, value="var1"),
-    #           dict(index=1, value="var2"),
-    #           dict(index=2, value="var3"),
-    #           dict(index=3, value="var4"),
-    #           dict(index=4, value="var5")]
-    # graph_data_1 = dict(
-    #     x=[10, 20, 30, 40, 50],
-    #     y=[10, 20, 30, 40, 50],
-    #     annotations=["A", "B", "C", "D", "E"],
-    #     title="Facet A:  d=2, 1*2",
-    #     legend=legend * 2,
-    # )
-    # graph_data_2 = dict(
-    #     x=[10, 20, 30, 40, 50],
-    #     y=[13, 23, 23, 34, 45],
-    #     annotations=["1", "2", "3", "4", "5"],
-    #     title="SSA Solution d=2 1*2",
-    #     legend=legend,
-    #     caption="This is a test caption",
-    #     geoms=geoms2
-    # )
-    # graph_data_3 = dict(
-    #     x=[1, 2, 3, 4, 5],
-    #     y=[1, 2, 3, 4, 5],
-    #     annotations=["A1", "B2", "C3", "4D", "E5"],
-    #     title="Facet C:  d=2, 1X2",
-    #     legend=legend * 15,
-    #     geoms=geoms3
-    # )
-    # graph_data_4 = dict(
-    #     x=[100, 200, 300, 400, 500],
-    #     y=[160, 240, 330, 420, 510],
-    #     annotations=["A1", "B2", "C3", "4D", "E5"],
-    #     title="Facet C:  d=2, 1*2",
-    #     legend=legend * 2,
-    #     geoms=geoms3
-    # )
-    # gui.show_diagram_window([
-    #     graph_data_2,
-    #     graph_data_1,
-    #     graph_data_3,
-    #     graph_data_4,
-    # ])
-    # gui.show_help_windw()
-    gui.switch_page(DATA_PAGE_NAME)
+    gui.show_recode_window()
     gui.run_process()

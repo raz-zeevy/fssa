@@ -1,1 +1,1 @@
-venv\Scripts\pythonw.exe app.py
+venv\Scripts\python.exe app.py

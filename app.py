@@ -1,5 +1,5 @@
 # app.py
-from lib.controller import Controller
+from lib.controller.controller import Controller
 
 if __name__ == '__main__':
     controller = Controller()

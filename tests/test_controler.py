@@ -1,11 +1,8 @@
-import time
-
 import pytest
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 from app import App
 from contextlib import contextmanager
-import os
-from lib.controller import *
+from lib.controller.controller import *
 
 @contextmanager
 def change_dir(new_dir):

@@ -2,7 +2,8 @@ from tkinter import filedialog, Menu
 import ttkbootstrap as ttk
 from lib.utils import *
 import tkinter as tk
-from ttkbootstrap import Canvas, Frame, Scrollbar, Label
+from ttkbootstrap import Canvas, Frame, Scrollbar
+from lib.components.form import *
 
 # Constants for the layout
 TABLE_PADX = 20
@@ -24,7 +25,7 @@ class FacetDimPage(ttk.Frame):
         frame_correlation_combo.pack(fill='x', padx=ENTRIES_PADX, pady=(20,
                                                                         20))
 
-        correlation_label = ttk.Label(frame_correlation_combo,
+        correlation_label = Label(frame_correlation_combo,
                                       text="Mark the dimensionalities for "
                                            "which facet diagrams will be "
                                            "created")
@@ -87,7 +88,7 @@ class FacetDimPage(ttk.Frame):
     def update_checkbutton_text(self, var, btn):
         btn.config(text="Yes" if var.get() else "No")
 
-    def get_facets_dim(self):
+    def get_facets_dim(self) -> dict:
         facet_dim = {}
         for dim, facets in self.facets_dim_check_buttons.items():
             facet_dim[dim] = [facet+1 for facet, btn in

@@ -1,6 +1,6 @@
 from tkinter import filedialog, Menu
 from typing import List
-
+from lib.components.form import *
 import ttkbootstrap as ttk
 from lib.utils import *
 
@@ -31,7 +31,7 @@ class FacetPage(ttk.Frame):
         frame_correlation_combo = ttk.Frame(self)
         frame_correlation_combo.pack(fill='x', padx=ENTRIES_PADX, pady=(20, 0))
 
-        facet_label = ttk.Label(frame_correlation_combo,
+        facet_label = Label(frame_correlation_combo,
                                 text="How many facets (if any) do you want to define ?")
         facet_label.pack(side=ttk.LEFT)
 
@@ -67,7 +67,7 @@ class FacetPage(ttk.Frame):
                                                              element_count_var.get(),
                                                              facet_index))
         self.facets_elements_combo.append(element_count_combo)
-        ttk.Label(header_frame, text="Elm.\nNo.",
+        Label(header_frame, text="Elm.\nNo.",
                   background=self.colors.light,
                   padding=(10, 0)). \
             grid(row=0, column=0, padx=(0, 10), pady=(0, 5))
@@ -90,7 +90,7 @@ class FacetPage(ttk.Frame):
         self.facets_entries[facet_index - 1] = []
         # Create the table
         for i in range(int(element_count)):
-            ttk.Label(parent.table_container, text=f"{i + 1}",
+            Label(parent.table_container, text=f"{i + 1}",
                       background=self.colors.light,
                       padding=(10, 0)).grid(row=i, column=0, padx=(5, 10),
                                             pady=(0, 5))
