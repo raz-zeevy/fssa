@@ -1,21 +1,17 @@
 # controller.py
 import warnings
 import pandas as pd
-from lib.components.shapes import ShapeFactory
 from lib.controller.graph_generator import generate_graphs
 from lib.controller.navigator import Navigator
 from lib.controller.validator import Validator
 from lib.gui import GUI
-from lib.fss.fss_module import get_random_data, load_recordad_data, \
+from lib.fss.fss_module import load_recordad_data, \
     load_matrix_data, create_matrix_running_files, run_matrix_fortran
 from lib.fss.fss_module import create_running_files, run_fortran
 from lib.utils import *
-from lib.fss.recoding import needs_recoding
 import pynput.keyboard
 
 SUPPORTED_RECORDED_DATA_FORMATS = ['.csv', '.xlsx', '.xls', 'tsv']
-SET_MODE_PRODUCTION()
-
 
 class Controller:
     def __init__(self):

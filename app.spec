@@ -25,6 +25,7 @@ exe = EXE(pyz,
           name='fssa',
           debug=False,
           bootloader_ignore_signals=False,
+		  uac_admin=True,
           strip=False,
           upx=True,
           console=False, icon='lib\\assets\\icon.ico' )

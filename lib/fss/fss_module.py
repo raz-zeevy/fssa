@@ -1,14 +1,13 @@
 # Python code to run the specified command using subprocess
 
 import subprocess
-
+from typing import List
+import numpy as np
 import pandas as pd
 from contextlib import contextmanager
 from lib.fss.fss_corr_input_writer import CorrelationInputWriter
 from lib.fss.fss_input_writer import FssInputWriter
-from tests.fss_input_parser import *
 from lib.utils import *
-
 
 def validate_input(i, var, lines):
     if i + var["line"] - 1 > len(lines):
@@ -55,7 +54,7 @@ def load_recordad_data(path, delimiter=None, lines_per_var=1, manual_format: Lis
         elif extension == ".tsv":
             df = pd.read_csv(path, sep="\t", header=header)
         elif extension == ".xls" or extension == ".xlsx":
-            df = pd.read_excel(path, header=header)
+            df = pd.read_excel(path, header=header, engine="openpyxl")
         else:
             raise Exception(f"Invalid extension: {extension}")
         if header is None:

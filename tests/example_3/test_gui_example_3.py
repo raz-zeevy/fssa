@@ -1,6 +1,6 @@
 from lib.controller.controller import *
 from lib.controller.controller import Controller
-from tests.fss_input_parser import *
+from lib.fss.fss_input_parser import *
 from const import *
 
 SET_MODE_TEST()
