@@ -117,12 +117,13 @@ class DataPage(ttk.Frame):
                                         command=self.select_variables)
         self.button_recode.pack(side=tk.LEFT, padx=5)
 
-    def select_variables(self):
+    def select_variables(self, selected_vars : set = None ):
         # open a string dialog to select variable columns
-        selected_vars = askstring("Select Variables",
-                                  "Enter variable indices:\n"
-                                  "e.g. 1-5, 8, 11-13\n")
-        selected_vars = self.parse_indices_string(selected_vars)
+        if not selected_vars:
+            selected_vars = askstring("Select Variables",
+                                      "Enter variable indices:\n"
+                                      "e.g. 1-5, 8, 11-13\n")
+            selected_vars = self.parse_indices_string(selected_vars)
         if selected_vars:
             # reset table
             self.button_reload.invoke()
@@ -157,19 +158,33 @@ class DataPage(ttk.Frame):
             parsed_indices = set(itertools.chain(*parsed_indices))
             for i in parsed_indices:
                 if i < 1 or i > len(self.data.columns):
-                    raise ValueError("Invalid column index")
+                    raise ValueError(f"Invalid column index {i}. not in range "
+                                    f"of 1..{len(self.data.columns)}")
             return parsed_indices
-        except ValueError:
-            raise ValueError("Invalid indices string")
+        except Exception as e:
+            if type(e) != ValueError:
+                raise ValueError("Invalid indices string")
 
-    def recode_variables(self, recode_window):
-        recoding_details = recode_window.get_recoding_details()
+    def recode_variables(self, recode_window, recoding_details :dict = None):
+        """
+        :param recode_window:
+        :param recoding_details: {
+            "indices_string": self.get_indices() -> indiceString,
+            # indices of the columns
+            "grouping": int(self.get_grouping()) -> int, # number of groups
+            "grouping_type": self.get_grouping_type(),  # ["Percentile", "Equal Intervals", "By Rank"]
+            "inverting": self.get_inverting() -> bool  # True or False
+        }
+        :return:
+        """
+        if not recoding_details:
+            recoding_details = recode_window.get_recoding_details()
         col_indices = self.parse_indices_string(recoding_details[
                                                     'indices_string'])
         recoded = False
         recoded_df = self.data
         for col in [i-1 for i in col_indices]:
-            rec_col = recoded_df.iloc[:,col].to_numpy(dtype=int)
+            rec_col = recoded_df.iloc[:,col]
             if recoding_details['grouping']:
                 if recoding_details['grouping_type'] == GROUPING_TYPES[0]:
                     rec_col = group_by_precentile(rec_col,
@@ -189,7 +204,8 @@ class DataPage(ttk.Frame):
             recoded_df.iloc[:,col] = rec_col
         if recoded:
             self.show_data(recoded_df)
-        recode_window.exit()
+        if recode_window:
+            recode_window.exit()
 
     def get_selected_rows(self):
         selected_items = self.data_table.selection()

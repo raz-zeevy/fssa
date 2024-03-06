@@ -5,13 +5,14 @@ from lib.controller.graph_generator import generate_graphs
 from lib.controller.navigator import Navigator
 from lib.controller.validator import Validator
 from lib.gui import GUI
-from lib.fss.fss_module import load_recordad_data, \
+from lib.fss.fss_module import load_recorded_data, \
     load_matrix_data, create_matrix_running_files, run_matrix_fortran
 from lib.fss.fss_module import create_running_files, run_fortran
 from lib.utils import *
 import pynput.keyboard
 
 SUPPORTED_RECORDED_DATA_FORMATS = ['.csv', '.xlsx', '.xls', 'tsv']
+
 
 class Controller:
     def __init__(self):
@@ -43,12 +44,16 @@ class Controller:
         # Assuming you have a GUI instance available as `self.gui`
         self.gui.show_warning("Warning", warning_msg)
 
+    def reset_session(self):
+        pass
+
     def init_controller_attributes(self):
         self.delimiter = None
         self.data_file_path = None
         self.data_file_extension = None
         self.var_labels = None
         self.has_header = False
+        self.locality_weight = [2]
         self.facet_var_details = []
         self.facet_details = []
         self.facet_dim_details = {}
@@ -147,33 +152,38 @@ class Controller:
                                                  MANUAL_FORMAT_PAGE_NAME))
         ### FSSA Menu
         self.gui.FSSA_menu.entryconfig("Dimensions & Coeffs",
-                                       command=lambda : self.slide_to_page(
+                                       command=lambda: self.slide_to_page(
                                            DIMENSIONS_PAGE_NAME))
+        self.gui.FSSA_menu.entryconfig("Technical Options",
+                                       command=lambda:
+                                       self.gui.show_technical_options_window(
+                                           self.locality_weight))
         self.gui.facet_menu.entryconfig("Element Labels",
-                                        command=lambda : self.slide_to_page(
+                                        command=lambda: self.slide_to_page(
                                             FACET_PAGE_NAME))
         self.gui.facet_menu.entryconfig("Variable Elements",
-                                        command=lambda : self.slide_to_page(
+                                        command=lambda: self.slide_to_page(
                                             FACET_VAR_PAGE_NAME))
         self.gui.facet_menu.entryconfig("Hypotheses",
-                                        command=lambda : self.slide_to_page(
+                                        command=lambda: self.slide_to_page(
                                             HYPOTHESIS_PAGE_NAME))
         self.gui.facet_menu.entryconfig("Diagrams",
-                                        command=lambda : self.slide_to_page(
+                                        command=lambda: self.slide_to_page(
                                             FACET_DIM_PAGE_NAME))
         ### View Menu
         self.gui.view_menu.entryconfig("Next", command=self.next_page)
         self.gui.view_menu.entryconfig("Previous", command=self.previous_page)
         keyboard = pynput.keyboard.Controller()
         ### Help Menu
-        self.gui.help_menu.entryconfig("Contents", command=lambda: self.show_help())
+        self.gui.help_menu.entryconfig("Contents",
+                                       command=lambda: self.show_help())
         self.gui.help_menu.entryconfig("Help on current screen",
                                        command=lambda: keyboard.press(
                                            pynput.keyboard.Key.f1))
         self.gui.help_menu.entryconfig("Open Readme.txt", command=lambda:
-            os.startfile(os.path.join(get_path("readme.txt"))))
+        os.startfile(os.path.join(get_path("readme.txt"))))
         self.gui.help_menu.entryconfig("About", command=lambda:
-            self.show_help("what_is_fssa"))
+        self.show_help("what_is_fssa"))
         #### Diamgrams Menu
         self.gui.diagram_2d_menu.entryconfig("No Facet", command=lambda:
         self.show_diagram_window(2, None))
@@ -260,19 +270,19 @@ class Controller:
         if self.navigator.get_prev():
             self.gui.button_previous_config(state="normal")
             self.gui.view_menu.entryconfig('Previous',
-                state="normal")
+                                           state="normal")
         else:
             self.gui.button_previous_config(state="disabled")
             self.gui.view_menu.entryconfig('Previous',
-                state="disabled")
+                                           state="disabled")
         if self.navigator.get_next():
             self.gui.button_next_config(state="normal")
             self.gui.view_menu.entryconfig('Next',
-                state="normal")
+                                           state="normal")
         else:
             self.gui.button_next_config(state="disabled")
             self.gui.view_menu.entryconfig('Next',
-                state="disabled")
+                                           state="disabled")
 
     def navigate_page(self, page_name: str):
         # switch page on gui
@@ -283,7 +293,8 @@ class Controller:
         self.update_navigation_buttons()
 
         # change the state of the run button
-        if page_name in [INPUT_PAGE_NAME,MATRIX_INPUT_PAGE_NAME,MANUAL_FORMAT_PAGE_NAME,
+        if page_name in [INPUT_PAGE_NAME, MATRIX_INPUT_PAGE_NAME,
+                         MANUAL_FORMAT_PAGE_NAME,
                          DATA_PAGE_NAME, DIMENSIONS_PAGE_NAME]:
             self.disable_run()
         else:
@@ -415,7 +426,7 @@ class Controller:
         if self.manual_input:
             data_format = self.gui.pages[
                 MANUAL_FORMAT_PAGE_NAME].get_data_format()
-            data = load_recordad_data(self.data_file_path,
+            data = load_recorded_data(self.data_file_path,
                                       lines_per_var=self.lines_per_var,
                                       manual_format=data_format,
                                       extension=self.data_file_extension,
@@ -423,7 +434,7 @@ class Controller:
             data.columns = [row["label"] for row in data_format]
         else:
             try:
-                data = load_recordad_data(self.data_file_path,
+                data = load_recorded_data(self.data_file_path,
                                           lines_per_var=self.lines_per_var,
                                           delimiter=self.delimiter,
                                           extension=self.data_file_extension,
@@ -512,6 +523,7 @@ class Controller:
             job_name=os.path.basename(self.output_path.split(".")[0]),
             matrix_details=self.gui.pages[
                 MATRIX_INPUT_PAGE_NAME].get_matrix_details(),
+            iweigh=self.locality_weight[0],
             matrix_path=self.data_file_path,
             correlation_type=self.gui.pages[
                 DIMENSIONS_PAGE_NAME].get_correlation_type(),
@@ -564,6 +576,7 @@ class Controller:
             job_name=os.path.basename(self.output_path.split(".")[0]),
             nfacet=self.facets_num,
             variables_labels=variables_labels,
+            iweigh=self.locality_weight[0],
             correlation_type=corr_type,
             data_matrix=data,
             min_dim=self.min_dim, max_dim=self.max_dim,

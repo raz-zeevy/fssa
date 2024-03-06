@@ -18,6 +18,8 @@ from lib.pages.start_page import StartPage
 from lib.utils import *
 from ttkbootstrap.dialogs.dialogs import Messagebox
 
+from lib.windows.technical_options_window import TOWindow
+
 THEME_NAME = 'sandstone'
 p_ICON = 'icon.ico'
 
@@ -123,14 +125,7 @@ class GUI():
 
         # File Menu
         self.file_menu = Menu(self.menu_bar, tearoff=0)
-        self.file_menu.add_command(label="New", accelerator="Ctrl+N", )
-        self.file_menu.add_command(label="Open...", accelerator="Ctrl+O")
-        self.file_menu.add_command(label="Save", accelerator="Ctrl+S", )
-        self.file_menu.add_command(label="Save As...")
-        self.file_menu.add_separator()  # Adds a separator line between menu
-        # items
         self.file_menu.add_command(label="Run")
-        self.file_menu.add_command(label="Recent File", state="disabled")
         self.file_menu.add_separator()
         self.file_menu.add_command(label="Exit")
         self.menu_bar.add_cascade(label="File", menu=self.file_menu)
@@ -263,6 +258,9 @@ class GUI():
         recode_func(self.recode_window))
         self.recode_window.bind("<F1>", lambda x: self.show_help_windw())
 
+    def show_technical_options_window(self, locality_list : list):
+        self.technical_options = TOWindow(self, locality_list)
+
     def show_error(self, title, msg):
         # Handle the error if your data contains non-ASCII characters
         Messagebox.show_error(msg, title=title)
@@ -319,5 +317,5 @@ class GUI():
 
 if __name__ == '__main__':
     gui = GUI()
-    gui.show_recode_window()
+    gui.show_technical_options_window()
     gui.run_process()

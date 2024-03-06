@@ -7,7 +7,7 @@ WINDOW_WIDTH = 820
 DELIMITER_1_D = "1-digit"
 DELIMITER_2_D = "2-digit"
 
-GROUPING_TYPES = ["Percentile", "Equal Intervals", "By Rank"]
+GROUPING_TYPES = ["percentile", "intervals", "rank"]
 
 DISSIMILARITY = "Dissimilarity"
 SIMILARITY = "Similarity"

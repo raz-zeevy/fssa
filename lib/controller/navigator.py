@@ -34,11 +34,13 @@ class Navigator():
             self.gui.FSSA_menu.entryconfig("Dimensions & Coeffs",
                                            state="normal")
             self.gui.menu_bar.entryconfig("Facet", state="normal")
-        if self.index >= self.get_index(DATA_PAGE_NAME) and self.get_page(
-            DATA_PAGE_NAME).show:
-            self.gui.input_data_menu.entryconfig("Data", state="normal")
-        else:
-            self.gui.input_data_menu.entryconfig("Data", state="disabled")
+        try:
+            if self.index >= self.get_index(DATA_PAGE_NAME) and self.get_page(
+                DATA_PAGE_NAME).show:
+                self.gui.input_data_menu.entryconfig("Data", state="normal")
+            else:
+                self.gui.input_data_menu.entryconfig("Data", state="disabled")
+        except: pass
         if self.get_page(MANUAL_FORMAT_PAGE_NAME).show:
             self.gui.input_data_menu.entryconfig('Variables', state="normal")
         else:

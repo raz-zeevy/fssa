@@ -41,7 +41,7 @@ class SelectionBox(ttk.Combobox):
     def __init__(self, parent, **kwargs):
         default_index = None
         if 'default' in kwargs:
-            default_index = kwargs['default'].index(kwargs['default'])
+            default_index = kwargs['values'].index(kwargs['default'])
             del kwargs['default']
         if 'width' not in kwargs:
             kwargs['width'] = 10

@@ -35,7 +35,7 @@ def validate_input(i, var, lines):
                         "file")
 
 
-def load_recordad_data(path, delimiter=None, lines_per_var=1, manual_format: List[
+def load_recorded_data(path, delimiter=None, lines_per_var=1, manual_format: List[
     dict] = None, safe_mode=False, extension=None,
                        has_header=False):
     """
@@ -50,15 +50,17 @@ def load_recordad_data(path, delimiter=None, lines_per_var=1, manual_format: Lis
     def load_supported_formats(extension):
         header = 0 if has_header else None
         if extension == ".csv":
-            df = pd.read_csv(path, sep=",", header=header)
+            df = pd.read_csv(path, sep=",", header=header, dtype=str)
         elif extension == ".tsv":
-            df = pd.read_csv(path, sep="\t", header=header)
+            df = pd.read_csv(path, sep="\t", header=header, dtype=str)
         elif extension == ".xls" or extension == ".xlsx":
-            df = pd.read_excel(path, header=header, engine="openpyxl")
+            df = pd.read_excel(path, header=header, engine="openpyxl",
+                               dtype=str)
         else:
             raise Exception(f"Invalid extension: {extension}")
         if header is None:
             df.columns = [f"var{i + 1}" for i in df.columns]
+        df.fillna("", inplace=True)
         return df
 
     def load_other_formats():
@@ -85,18 +87,18 @@ def load_recordad_data(path, delimiter=None, lines_per_var=1, manual_format: Lis
                         rrow = "".join(
                             lines[i:i + lines_per_var]).strip().replace(
                             "\n", "")
-                        row = list(map(int, str(rrow)))
+                        row = list(rrow)
                     elif delimiter == DELIMITER_2_D:
                         rrow = "".join(
                             lines[i:i + lines_per_var]).strip().replace(
                             "\n", "")
-                        row = [int(rrow[i:i + 2]) for i in
+                        row = [rrow[i:i + 2] for i in
                                range(0, len(rrow), 2)]
                     else:
                         rrow = "".join(
                             lines[i:i + lines_per_var]).strip().replace(
                             "\n", "")
-                        row = [int(i) for i in rrow.split(delimiter)]
+                        row = rrow.split(delimiter)
                 except:
                     failed_rows.append(i + 1)
                 if row:
@@ -115,8 +117,10 @@ def load_recordad_data(path, delimiter=None, lines_per_var=1, manual_format: Lis
             else:
                 warnings.warn("Failed to load the following rows: "
                               f"{failed_rows}")
-        df = pd.DataFrame(data, columns=[f"var{i + 1}" for i in range(len(data[
-                                                                      0]))])
+        longest_row = max([len(row) for row in data])
+        df = pd.DataFrame(data, columns=[f"var{i + 1}" for i in
+                                         range(longest_row)])
+        df.fillna("", inplace=True)
         return df
 
     if manual_format:
@@ -400,7 +404,7 @@ def create_fssa_data_file(data_matrix: List[List[int]]):
     def parse_item_2d(item):
         try:
             if len(str(item)) < 2:
-                return str(item) + " "
+                return str(item) + " "*(2-len(str(item)))
             return str(item)
         except ValueError:
             return " "

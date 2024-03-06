@@ -2,6 +2,25 @@ from lib.fss.recoding import needs_recoding
 from lib.utils import *
 
 
+def invalid_fields(data):
+    for row in data:
+        for entry in row:
+            try:
+                if entry.strip() != "":
+                    if int(entry) != eval(entry) or \
+                            not 0 <= int(entry) <= 99:
+                        return True
+            except ValueError:
+                # This is the case when the entry can't be converted to int
+                return True
+            except SyntaxError:
+                # This is the case when the entry has a starting zero
+                # e.g 01, 02, 03, etc...
+                if not 0 <= int(entry) <= 99:
+                    return True
+    return False
+
+
 class Validator():
     def __init__(self, gui):
         self.gui = gui
@@ -48,6 +67,10 @@ class Validator():
     @staticmethod
     @mode_dependent
     def validate_data_page(data, labels):
+        if invalid_fields(data):
+            raise Exception(
+                "Usage Error:\nThe data fields must be numeric and in the "
+                "range of 0-99.")
         if needs_recoding(data):
             raise Exception(
                 "Usage Error:\nRecorded data values must be between 1-99."

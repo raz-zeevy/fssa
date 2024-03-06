@@ -1,8 +1,14 @@
+"""
+this file is a test for the kedar example which contains:
+- bad line that str omitted from the data (with no warning)
+- lines not in the same length so variables should be selected
+"""
+
 from lib.controller.controller import *
 from lib.controller.controller import Controller
 
 DATA_PATH = 'DJKEDAR2.DAT'
-SET_MODE_PRODUCTION()
+SET_MODE_TEST()
 
 ###
 test_facets = [
@@ -28,6 +34,8 @@ class simple_example_gui(Controller):
         self.gui.pages[INPUT_PAGE_NAME].set_entry_lines(1)
         self.gui.pages[INPUT_PAGE_NAME].set_fixed_width("1-digit")
         self.next_page()
+        self.gui.pages[DATA_PAGE_NAME].select_variables({i for i in range(1,
+                                                                          26)})
         self.next_page()
         self.gui.pages[DIMENSIONS_PAGE_NAME].set_dims(2,3)
         self.next_page()
@@ -47,10 +55,7 @@ class simple_example_gui(Controller):
         except Exception as e:
             print(e)
             raise(e)
-        # run_file_path = p_FSS_DRV
-        # true_file_path = os.path.join(test_dir_path, "FSSAINP.DRV")
-        # assert diff_lines_num(run_file_path, true_file_path) == 1
-        # assert os.path.isfile(self.output_path)
+        assert os.path.isfile(self.output_path)
 
 if __name__ == '__main__':
     a = simple_example_gui()
