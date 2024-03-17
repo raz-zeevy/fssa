@@ -18,6 +18,7 @@ class Controller:
     def __init__(self):
         self.gui = GUI()
         self.bind_gui_events()
+        self.keyboard = pynput.keyboard.Controller()
         self.navigator = self.init_navigator()
         ###
         self.init_controller_attributes()
@@ -173,12 +174,11 @@ class Controller:
         ### View Menu
         self.gui.view_menu.entryconfig("Next", command=self.next_page)
         self.gui.view_menu.entryconfig("Previous", command=self.previous_page)
-        keyboard = pynput.keyboard.Controller()
         ### Help Menu
         self.gui.help_menu.entryconfig("Contents",
                                        command=lambda: self.show_help())
         self.gui.help_menu.entryconfig("Help on current screen",
-                                       command=lambda: keyboard.press(
+                                       command=lambda: self.keyboard.press(
                                            pynput.keyboard.Key.f1))
         self.gui.help_menu.entryconfig("Open Readme.txt", command=lambda:
         os.startfile(os.path.join(get_path("readme.txt"))))
@@ -206,6 +206,12 @@ class Controller:
         self.gui.diagram_3d_menu.entryconfig("Facet D", command=lambda:
         self.show_diagram_window(3, 3))
 
+    def bind_icons_menu(self):
+        self.gui.m_button_help.config(command=lambda: self.keyboard.press(
+                                           pynput.keyboard.Key.f1))
+        self.gui.m_button_next.config(command=self.next_page)
+        self.gui.m_button_prev.config(command=self.previous_page)
+
     def start_fss(self, matrix=False):
         self.navigator.pop_page(0)
         self.gui.start_fss()
@@ -220,6 +226,7 @@ class Controller:
             self.gui.set_menu_recorded_data()
         self.bind_menu()
         self.bind_keys()
+        self.bind_icons_menu()
         # bind the navigation buttons
         self.gui.button_run.config(command=lambda: self.run_button_click())
         self.gui.button_next.config(command=self.next_page)
@@ -230,14 +237,6 @@ class Controller:
     ###########################
     # Controls and Navigation #
     ###########################
-
-    def enable_run(self):
-        self.gui.file_menu.entryconfig("Run", state="normal")
-        self.gui.button_run.config(state="normal")
-
-    def disable_run(self):
-        self.gui.file_menu.entryconfig("Run", state="disabled")
-        self.gui.button_run.config(state="disabled")
 
     def open_results(self):
         os.startfile(self.output_path)
@@ -268,19 +267,19 @@ class Controller:
     def update_navigation_buttons(self):
         # change the state of previous and next buttons
         if self.navigator.get_prev():
-            self.gui.button_previous_config(state="normal")
+            self.gui.option_previous_config(state="normal")
             self.gui.view_menu.entryconfig('Previous',
                                            state="normal")
         else:
-            self.gui.button_previous_config(state="disabled")
+            self.gui.option_previous_config(state="disabled")
             self.gui.view_menu.entryconfig('Previous',
                                            state="disabled")
         if self.navigator.get_next():
-            self.gui.button_next_config(state="normal")
+            self.gui.option_next_config(state="normal")
             self.gui.view_menu.entryconfig('Next',
                                            state="normal")
         else:
-            self.gui.button_next_config(state="disabled")
+            self.gui.option_next_config(state="disabled")
             self.gui.view_menu.entryconfig('Next',
                                            state="disabled")
 
@@ -296,9 +295,9 @@ class Controller:
         if page_name in [INPUT_PAGE_NAME, MATRIX_INPUT_PAGE_NAME,
                          MANUAL_FORMAT_PAGE_NAME,
                          DATA_PAGE_NAME, DIMENSIONS_PAGE_NAME]:
-            self.disable_run()
+            self.gui.option_run_config(state="disabled")
         else:
-            self.enable_run()
+            self.gui.option_run_config(state="normal")
 
     def slide_to_page(self, page_name: str):
         while self.navigator.get_index(page_name) > self.navigator.get_index(

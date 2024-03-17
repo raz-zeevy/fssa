@@ -7,8 +7,7 @@ def invalid_fields(data):
         for entry in row:
             try:
                 if entry.strip() != "":
-                    if int(entry) != eval(entry) or \
-                            not 0 <= int(entry) <= 99:
+                    if int(entry) != eval(entry):
                         return True
             except ValueError:
                 # This is the case when the entry can't be converted to int
@@ -16,8 +15,7 @@ def invalid_fields(data):
             except SyntaxError:
                 # This is the case when the entry has a starting zero
                 # e.g 01, 02, 03, etc...
-                if not 0 <= int(entry) <= 99:
-                    return True
+                return True
     return False
 
 

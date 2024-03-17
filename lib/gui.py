@@ -1,5 +1,6 @@
+import os.path
 import tkinter as tk
-from lib.windows.help_window import HelpWindow
+from lib.windows.help.help_window import HelpWindow
 from tkinter import filedialog, Menu
 import ttkbootstrap as ttk
 from lib.components.form import NavigationButton
@@ -23,6 +24,7 @@ from lib.windows.technical_options_window import TOWindow
 THEME_NAME = 'sandstone'
 p_ICON = 'icon.ico'
 
+
 def gui_only(func, *args, **kwargs):
     def wrapper(self, *args, **kwargs):
         if IS_PRODUCTION():
@@ -40,12 +42,19 @@ class GUI():
         # set the icon
         self.root.iconbitmap(get_resource(p_ICON))
 
-        # Initialize an attribute to store images
-        self.image_references = []
+        # # Initialize an attribute to store images
+        self.image_references = {}
+        #
+        # # load all png files from ./assets/toolbar to image_references
+        # for file in os.listdir(get_path("assets/toolbar")):
+        #     if file.endswith(".png"):
+        #         self.image_references.append(get_resource(f"toolbar/{file}"))
 
         # Set the window to be square
         self.root.geometry(f'{WINDOW_WIDTH}x{WINDOW_HEIGHT}')
         self.root.resizable(False, False)
+        # set the window to be always on top
+        # self.root.attributes("-topmost", True)
 
         # init pages
         self.current_page = None
@@ -61,23 +70,23 @@ class GUI():
         # init common gui
         self.center_window()
 
-##################
-#   Functions    #
-##################
+    ##################
+    #   Functions    #
+    ##################
 
     def start_fss(self):
         self.root.geometry(f'{WINDOW_WIDTH}x{WINDOW_HEIGHT}')
         self.create_menu()
+        self.create_icon_menu()
         self.create_help_bar()
         self.create_navigation()
 
     def run_process(self):
         self.root.mainloop()
 
-
-##################
-# Initialization #
-##################
+    ##################
+    # Initialization #
+    ##################
 
     def center_window(self):
         self.root.update_idletasks()  # Update "requested size" from geometry
@@ -98,13 +107,62 @@ class GUI():
         # pack the status bar at the bottom of the screen
         status_bar.pack(side=ttk.BOTTOM, fill='x')
 
+    def create_icon_menu(self):
+        def load_icon_images():
+            icons_dir = get_path("lib/assets/toolbar")
+            # load all png files from ./assets/toolbar to image_references
+            for file in os.listdir(get_path(icons_dir)):
+                if file.endswith(".png"):
+                    image_path = os.path.join(icons_dir, file)
+                    image = Image.open(image_path, "r").resize((16, 16))
+                    self.image_references[file] = ImageTk.PhotoImage(image)
+
+        def add_button(image: str, command=None, **kwargs):
+            if not "width" in kwargs:
+                kwargs["width"] = 25
+            if not "height" in kwargs:
+                kwargs["height"] = 25
+            button = tk.Button(icon_menu_frame,
+                               autostyle=False,
+                               image=self.image_references[image],
+                               bg='white', relief='ridge',
+                               borderwidth=1, **kwargs)
+            button.pack(side=ttk.LEFT)
+            return button
+
+        # Icon Menu
+        from PIL import Image, ImageTk
+        icon_menu_frame = tk.Frame(self.root,
+                                   autostyle=False,
+                                   pady=3, padx=5)
+        icon_menu_frame.pack(side=ttk.TOP, fill='x')
+        load_icon_images()
+        self.m_button_new = add_button("new.png")
+        self.m_button_open = add_button("open.png")
+        self.m_button_save = add_button("save.png")
+        tk.Frame(icon_menu_frame, width=10).pack(side=ttk.LEFT)
+        ###
+        self.m_button_prev = add_button("prev.png")
+        self.m_button_next = add_button("next.png")
+        tk.Frame(icon_menu_frame, width=10).pack(side=ttk.LEFT)
+        ###
+        self.m_button_run = add_button("go.png")
+        self.m_button_help = add_button("help.png")
+        icon_menu_border = tk.Frame(self.root,
+                                    autostyle=False,
+                                    borderwidth=1, relief='flat',
+                                    background='grey', pady=0)
+        icon_menu_border.pack(side=ttk.TOP, fill='x')
+
+        # tk.Label(icon_menu_border, text="asd").pack()
+
     def create_navigation(self):
         # Navigation Buttons Frame
         frame_navigation = ttk.Frame(self.root)
         # pack the navigation at the bottom of the screen but above the help
         # bar
         frame_navigation.pack(side=ttk.BOTTOM, fill='x', padx=10,
-                              pady=(0, 40))
+                              pady=(0, 20))
         center_frame = ttk.Frame(frame_navigation)
         center_frame.pack(pady=5, expand=True)
         self.button_previous = NavigationButton(center_frame,
@@ -115,16 +173,21 @@ class GUI():
         self.button_run = NavigationButton(center_frame, text="Run", )
         self.button_run.pack(side=ttk.LEFT, padx=20)
 
-##################
-#      Menu      #
-##################
+    ##################
+    #      Menu      #
+    ##################
 
     def create_menu(self):
         # Menu
-        self.menu_bar = Menu(self.root)
+        self.menu_bar = Menu(self.root, tearoff=0, background='RED',
+                             foreground='black',
+                             activebackground='#004c99',
+                             activeforeground='white')
+        self.menu_bar.config(bg='lightblue', fg='black',
+                             activebackground='#004c99', )
 
         # File Menu
-        self.file_menu = Menu(self.menu_bar, tearoff=0)
+        self.file_menu = Menu(self.menu_bar, background='lightblue')
         self.file_menu.add_command(label="Run")
         self.file_menu.add_separator()
         self.file_menu.add_command(label="Exit")
@@ -206,22 +269,23 @@ class GUI():
     def set_menu_recorded_data(self):
         self.input_data_radio.set(1)
         self.input_data_menu.entryconfig("Recorded Data", state="disabled")
-        self.input_data_menu.entryconfig("Coefficient Matrix", state="disabled")
+        self.input_data_menu.entryconfig("Coefficient Matrix",
+                                         state="disabled")
         self.input_data_menu.entryconfig("Data", state="disabled")
         self.input_data_menu.entryconfig("Variables", state="disabled")
 
     def set_menu_matrix_data(self):
         self.input_data_radio.set(2)
         self.input_data_menu.entryconfig("Recorded Data", state="disabled")
-        self.input_data_menu.entryconfig("Coefficient Matrix", state="disabled")
+        self.input_data_menu.entryconfig("Coefficient Matrix",
+                                         state="disabled")
         # delete the entry data from the input data menu
         self.input_data_menu.delete(3)
         self.input_data_menu.entryconfig("Variables", state="disabled")
 
-
-##################
-#   Navigation   #
-##################
+    ##################
+    #   Navigation   #
+    ##################
 
     def show_page(self, page):
         self.current_page = page
@@ -232,17 +296,24 @@ class GUI():
         self.show_page(self.pages[page_name])
         self.current_page = self.pages[page_name]
 
-    def button_next_config(self, **kwargs):
+    def option_next_config(self, **kwargs):
         self.button_next.config(**kwargs)
         self.view_menu.entryconfig("Next", **kwargs)
+        self.m_button_next.config(**kwargs)
 
-    def button_previous_config(self, **kwargs):
+    def option_previous_config(self, **kwargs):
         self.button_previous.config(**kwargs)
         self.view_menu.entryconfig("Previous", **kwargs)
+        self.m_button_prev.config(**kwargs)
 
-#########################
-# Dialogues and Windows #
-#########################
+    def option_run_config(self, **kwargs):
+        self.button_run.config(**kwargs)
+        self.file_menu.entryconfig("Run", **kwargs)
+        self.m_button_run.config(**kwargs)
+
+    #########################
+    # Dialogues and Windows #
+    #########################
 
     def show_diagram_window(self, graph_data_lst):
         self.diagram_window = DiagramWindow(self, graph_data_lst)
@@ -258,7 +329,7 @@ class GUI():
         recode_func(self.recode_window))
         self.recode_window.bind("<F1>", lambda x: self.show_help_windw())
 
-    def show_technical_options_window(self, locality_list : list):
+    def show_technical_options_window(self, locality_list: list):
         self.technical_options = TOWindow(self, locality_list)
 
     def show_error(self, title, msg):
@@ -287,7 +358,6 @@ class GUI():
         else:
             Messagebox.show_info(msg, title)
 
-
     def save_file_diaglogue(self, file_types=None, default_extension=None,
                             initial_file_name=None, title=None):
         file_name = filedialog.asksaveasfilename(filetypes=file_types,
@@ -308,14 +378,118 @@ class GUI():
     def run_button_dialogue(self):
         default_output_file_name = self.get_input_file_name().split(".")[
                                        0] + ".fss"
-        output_file_path = self.save_file_diaglogue(file_types=[('fss', '*.fss')],
-                                                    default_extension='.fss',
-                                                    initial_file_name=default_output_file_name,
-                                                    title="Save Output File To...")
+        output_file_path = self.save_file_diaglogue(
+            file_types=[('fss', '*.fss')],
+            default_extension='.fss',
+            initial_file_name=default_output_file_name,
+            title="Save Output File To...")
         return output_file_path
 
 
 if __name__ == '__main__':
     gui = GUI()
-    gui.show_technical_options_window()
-    gui.run_process()
+    # gui.show_technical_options_window()
+    # gui.show_help_windw()
+    # Create the main window
+    import tkinter as tk
+    from tkinter import ttk
+
+
+    def toggle_check(event):
+        # Identify the row and column clicked
+        row_id = tree.identify_row(event.y)
+        column = tree.identify_column(event.x)
+
+        # Only toggle if the "Selected" column is clicked
+        if column == "#1":
+            item = tree.item(row_id)
+            current_value = item['values'][0]
+            new_value = "☐" if current_value == "☑" else "☑"
+
+            # Update the item with the new value
+            tree.item(row_id,
+                      values=(new_value, item['values'][1], item['values'][2]))
+
+
+    # Initialize the main window
+    root = tk.Tk()
+    root.title("Checkbox in Treeview")
+
+    # Define the data
+    data = [("☐", "1", "Variable A"),
+            ("☐", "2", "Variable B"),
+            ("☐", "3", "Variable C")]
+
+    # Setup the Treeview
+    tree = ttk.Treeview(root, columns=("Selected", "ID", "Name"),
+                        show="headings")
+    tree.heading("Selected", text="Selected")
+    tree.heading("ID", text="ID")
+    tree.heading("Name", text="Name")
+    tree.column("Selected", width=60)
+
+    # Insert the data into the treeview
+    for row in data:
+        tree.insert("", tk.END, values=row)
+
+    # Bind click event
+    tree.bind("<Button-1>", toggle_check)
+
+    # Packing the treeview
+    tree.pack(expand=True, fill=tk.BOTH)
+
+    root.mainloop()
+    # gui.run_process()
+
+    # import tkinter as tk
+    # import matplotlib.pyplot as plt
+    #
+    # graphinput = tk.Tk()
+    # # change the size of the window to be bigger
+    # graphinput.geometry("500x500")
+    #
+    # def opentable():
+    #     global total_rows
+    #     global total_columns
+    #     total_rows = int(yaxis.get())
+    #     total_columns = int(xaxis.get())
+    #     table = tk.Toplevel(graphinput)
+    #
+    #     def tcompile():
+    #         masterlines = []
+    #         for entries in my_entries:
+    #             print(cell.get())
+    #             masterlines.append(int(cell.get()))
+    #         plt.plot(masterlines)
+    #         plt.show()
+    #
+    #     my_entries = []
+    #     for i in range(total_rows):
+    #         for j in range(total_columns):
+    #             cell = tk.Entry(table, width=20, font=('Agency FB', 15))
+    #             cell.grid(row=i, column=j)
+    #             my_entries.append(cell)
+    #     tblframe = tk.Frame(table, bd=4)
+    #     tblframe.grid(row=i + 1, column=j)
+    #     compbtn = tk.Button(tblframe, font=("Agency FB", 20), text="Compile",
+    #                         command=tcompile)
+    #     compbtn.grid(row=0, column=0)
+    #
+    #
+    # tablegrid = tk.Frame(graphinput, bd=4)
+    # tablegrid.pack()
+    # xlabel = tk.Label(tablegrid, text="Column Entry")
+    # xlabel.grid(row=0, column=0)
+    # ylabel = tk.Label(tablegrid, text="Row Entry")
+    # ylabel.grid(row=0, column=1)
+    # xaxis = tk.Entry(tablegrid)
+    # xaxis.grid(row=1, column=0)
+    # yaxis = tk.Entry(tablegrid)
+    # yaxis.grid(row=1, column=1)
+    # xaxis = tk.Entry(tablegrid)
+    # xaxis.grid(row=2, column=0)
+    # yaxis = tk.Entry(tablegrid)
+    # yaxis.grid(row=2, column=1)
+    # framebtn = tk.Button(tablegrid, text="Create", command=opentable)
+    # framebtn.grid(row=3, column=0)
+    # graphinput.mainloop()

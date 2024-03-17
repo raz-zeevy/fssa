@@ -1,13 +1,13 @@
 import os
 from lib import config
 
-WINDOW_HEIGHT = 700
-WINDOW_WIDTH = 820
+WINDOW_HEIGHT = 570
+WINDOW_WIDTH = 660
 
 DELIMITER_1_D = "1-digit"
 DELIMITER_2_D = "2-digit"
 
-GROUPING_TYPES = ["percentile", "intervals", "rank"]
+GROUPING_TYPES = ["Percentile", "Equal Intervals", "By Rank"]
 
 DISSIMILARITY = "Dissimilarity"
 SIMILARITY = "Similarity"
@@ -133,7 +133,7 @@ def get_path(relative_path):
     path = os.path.join(script_dir,".." ,relative_path)
     path = os.path.abspath(path)
     # check
-    if not os.path.isfile(path):
+    if not os.path.exists(path):
         raise FileNotFoundError(f"Path not found: {path}")
     return path
 

@@ -104,9 +104,10 @@ class DataPage(ttk.Frame):
         # Pack the frame for data buttons at the bottom of the screen
         frame_data_buttons.pack(side=tk.BOTTOM, fill='x', padx=10, pady=10)
         # Data Buttons
-        self.button_reload = DataButton(frame_data_buttons, text="Reload", )
+        self.button_reload = DataButton(frame_data_buttons, text="Reload "
+                                                                 "Input", )
         self.button_reload.pack(side=tk.LEFT, padx=5)
-        self.button_save = DataButton(frame_data_buttons, text="Save", )
+        self.button_save = DataButton(frame_data_buttons, text="Save To..", )
         self.button_save.pack(side=tk.LEFT, padx=5)
         self.button_select = DataButton(frame_data_buttons, text="Select "
                                                                  "Vars.",
