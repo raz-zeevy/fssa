@@ -37,7 +37,6 @@ class FacetVarPage(ttk.Frame):
         """
         var_num = len(var_labels)
         num_facets = len(facet_details)
-        self.width_facet_combo = int(WIDTH_FACET_COMBO / num_facets)
 
         def on_frame_configure(canvas):
             '''Reset the scroll region to encompass the inner frame'''
@@ -59,19 +58,20 @@ class FacetVarPage(ttk.Frame):
 
         # Create a frame for the header
         self.header_frame = Frame(self.main_table_frame)
-        self.header_frame.pack(fill='x', padx=(TABLE_PADX,75))
+        self.header_frame.pack(fill='x', padx=(TABLE_PADX))
 
         # Create headers
         headers = ["Variable"] + [f"Facet {chr(65 + i)}" for i in range(
             num_facets)]
         # Define a dictionary to keep track of the width of each column based on the header
         header_widgets = []
-        header_colspan = (1, 3, 3, 3, 3)
+        header_colspan = [8] +[19]*num_facets
         for col, text in enumerate(headers):
             header_label = Label(self.header_frame, text=text, borderwidth=1,
+                                 padding = (3,3,3,3),
+                                 width = header_colspan[col],
                                  relief="solid", bootstyle='primary-inverse')
-            header_label.grid(row=0, column=col,
-                              columnspan=header_colspan[col],sticky='ew')
+            header_label.pack(side=tk.LEFT)
             header_widgets.append(header_label)
 
         # Create a frame for the canvas and self.scrollbar
@@ -99,6 +99,17 @@ class FacetVarPage(ttk.Frame):
         combo_canvas.bind_all("<MouseWheel>",
                               lambda event: on_mousewheel(event, combo_canvas))
 
+        #
+        # Adjust column configuration for equal width
+        col_weights = [1] + [16] * num_facets
+        self.table_frame.grid_columnconfigure(0, weight=1)
+        for col in range(num_facets + 1):
+            self.header_frame.grid_columnconfigure(col, weight=col_weights[
+                col])
+            self.table_frame.grid_columnconfigure(col, weight=1)
+        #
+        index_col_width = header_colspan[0] + 1
+        width_facet_combo = header_colspan[1] - 3
         # Table of comboboxes
         for row in range(1, var_num + 1):
             var_label = var_labels[row - 1]
@@ -108,26 +119,21 @@ class FacetVarPage(ttk.Frame):
             else:
                 var_label = f"{row:02d} {var_label}"+ " "*(7-len(var_label))
             Label(self.table_frame, text=var_label,
+                  width=index_col_width,
                   borderwidth=0.5, relief="solid",
                   bootstyle='primary').grid(row=row - 1, column=0, sticky='ew', ipady=7)
             for col in range(1, num_facets + 1):
                 values = ["Undefined"] + facet_details[col - 1]
                 combobox = ttk.Combobox(self.table_frame,
                                         values=values,
-                                        width=self.width_facet_combo,
+                                        width=width_facet_combo,
                                         state="readonly")
                 var_combos.append(combobox)
                 combobox.grid(row=row - 1, column=col, sticky='ew', padx=1, pady=1, ipady=0)
                 combobox.set(values[0])  # Set the first option
                 combobox.unbind_class("TCombobox", "<MouseWheel>")
             self.combo_by_var.append(var_combos)
-        # Adjust column configuration for equal width
-        col_weights = [1] + [16] * num_facets
-        self.table_frame.grid_columnconfigure(0, weight=1)
-        for col in range(num_facets + 1):
-            self.header_frame.grid_columnconfigure(col, weight=col_weights[
-                col])
-            self.table_frame.grid_columnconfigure(col, weight=1)
+
 
     def set_facets_vars(self, facets_vars : List[list]):
         for i, var in enumerate(self.combo_by_var):

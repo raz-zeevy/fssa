@@ -3,19 +3,28 @@ from PIL import Image
 from lib.utils import *
 import ttkbootstrap as ttk
 
+
+MAIN_BTN_FOREGROUND = "#325d88"
+MAIN_BTN_FOCUSED = "#325d88"
+
+SECONDARY_FOCUS_COLOR = "#40aff1"
+
 class StartPage(ttk.Frame):
     def __init__(self, parent):
         self.root = parent.root
         ttk.Frame.__init__(self, parent.root)
         self.colors = parent.root.style.colors
         self.create_widgets()
-        parent.root.geometry("930x740")
+        # parent.root.geometry("930x740")
+        parent.root.geometry("590x493")
 
     def create_widgets(self):
-        side_img_data = Image.open(get_resource("side-img.png"))
+        side_img_data = Image.open(get_resource("side-img5.png"))
 
         side_img = CTkImage(dark_image=side_img_data,
-                            light_image=side_img_data, size=(320, 493))
+                            light_image=side_img_data,
+                            size=(290, 493)
+                            )
 
         CTkLabel(master=self, text="", image=side_img).pack(expand=True,
                                                            side="left")
@@ -55,7 +64,7 @@ class StartPage(ttk.Frame):
 
         self.button_info = CTkButton(master=frame, text="What is FSSA?",
                   fg_color=self.colors.primary,
-                  hover_color="#02CCFE", font=("Arial Bold", 12),
+                  hover_color=SECONDARY_FOCUS_COLOR, font=("Arial Bold", 12),
                   text_color="#ffffff", width=225)
         self.button_info.pack(anchor="w",
                                                         padx=(25, 0),

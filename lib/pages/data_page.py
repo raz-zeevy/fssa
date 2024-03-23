@@ -105,7 +105,8 @@ class DataPage(ttk.Frame):
         frame_data_buttons.pack(side=tk.BOTTOM, fill='x', padx=10, pady=10)
         # Data Buttons
         self.button_reload = DataButton(frame_data_buttons, text="Reload "
-                                                                 "Input", )
+                                                                 "Input",
+                                        width=11)
         self.button_reload.pack(side=tk.LEFT, padx=5)
         self.button_save = DataButton(frame_data_buttons, text="Save To..", )
         self.button_save.pack(side=tk.LEFT, padx=5)
@@ -115,7 +116,8 @@ class DataPage(ttk.Frame):
         self.button_select.pack(side=tk.LEFT, padx=5)
         self.button_recode = DataButton(frame_data_buttons, text="Recode "
                                                                  "Vars.",
-                                        command=self.select_variables)
+                                        command=self.select_variables,
+                                        width=11)
         self.button_recode.pack(side=tk.LEFT, padx=5)
 
     def select_variables(self, selected_vars : set = None ):
@@ -215,6 +217,7 @@ class DataPage(ttk.Frame):
         return selected_data
 
     def get_all_visible_data(self):
+        if not self.data_table: return None
         data = []
         for i, row in enumerate(self.data_table.tablerows):
             cols = self.data_table.tablecolumns_visible
@@ -224,6 +227,7 @@ class DataPage(ttk.Frame):
 
     def get_visible_labels(self):
         """ get the labels from the columns of the datatable"""
+        if not self.data_table: return None
         labels = []
         for i, col in enumerate(self.data_table.tablecolumns_visible):
             labels.append(self.data_table.view.heading(i)['text'])

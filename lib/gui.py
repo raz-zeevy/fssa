@@ -28,7 +28,7 @@ p_ICON = 'icon.ico'
 def gui_only(func, *args, **kwargs):
     def wrapper(self, *args, **kwargs):
         if IS_PRODUCTION():
-            func(self, *args, **kwargs)
+            return func(self, *args, **kwargs)
 
     return wrapper
 
@@ -103,7 +103,8 @@ class GUI():
     def create_help_bar(self):
         # Status Bar
         status_bar = ttk.Label(self.root, text="For Help, press F1",
-                               relief=ttk.SUNKEN, anchor='w')
+                               relief=ttk.SUNKEN, anchor='w',
+                               background='#F0F0F0')
         # pack the status bar at the bottom of the screen
         status_bar.pack(side=ttk.BOTTOM, fill='x')
 
@@ -125,7 +126,7 @@ class GUI():
             button = tk.Button(icon_menu_frame,
                                autostyle=False,
                                image=self.image_references[image],
-                               bg='white', relief='ridge',
+                               bg='white', relief='raised',
                                borderwidth=1, **kwargs)
             button.pack(side=ttk.LEFT)
             return button
@@ -179,15 +180,14 @@ class GUI():
 
     def create_menu(self):
         # Menu
-        self.menu_bar = Menu(self.root, tearoff=0, background='RED',
-                             foreground='black',
-                             activebackground='#004c99',
-                             activeforeground='white')
-        self.menu_bar.config(bg='lightblue', fg='black',
-                             activebackground='#004c99', )
-
+        self.menu_bar = Menu(self.root)
         # File Menu
         self.file_menu = Menu(self.menu_bar, background='lightblue')
+        self.file_menu.add_command(label="New", accelerator="Ctrl+N")
+        self.file_menu.add_command(label="Open", accelerator="Ctrl+O")
+        self.file_menu.add_command(label="Save",  accelerator="Ctrl+S")
+        self.file_menu.add_command(label="Save As...")
+        self.file_menu.add_separator()
         self.file_menu.add_command(label="Run")
         self.file_menu.add_separator()
         self.file_menu.add_command(label="Exit")
@@ -203,9 +203,8 @@ class GUI():
                                              variable=self.input_data_radio,
                                              value=2)
         self.input_data_menu.add_separator()
-        self.input_data_menu.add_command(label="Data")
         self.input_data_menu.add_command(label="Variables")
-        self.menu_bar.add_cascade(label="FSSA Data",
+        self.menu_bar.add_cascade(label="Active Data",
                                   menu=self.input_data_menu)
         # SSA Menu
         self.FSSA_menu = Menu(self.menu_bar, tearoff=0)
@@ -258,7 +257,8 @@ class GUI():
         #
         self.help_menu = Menu(self.menu_bar, tearoff=0)
         self.help_menu.add_command(label="Contents")
-        self.help_menu.add_command(label="Help on current screen")
+        self.help_menu.add_command(label="Help on current screen",
+                                   accelerator="F1")
         self.help_menu.add_command(label="Open Readme.txt")
         self.help_menu.add_separator()
         self.help_menu.add_command(label="About")
@@ -270,17 +270,24 @@ class GUI():
         self.input_data_radio.set(1)
         self.input_data_menu.entryconfig("Recorded Data", state="disabled")
         self.input_data_menu.entryconfig("Coefficient Matrix",
-                                         state="disabled")
-        self.input_data_menu.entryconfig("Data", state="disabled")
+                                         state="normal")
         self.input_data_menu.entryconfig("Variables", state="disabled")
+        try:
+            self.input_data_menu.index("Data")
+        except tk.TclError:
+            self.input_data_menu.insert_command(3, label="Data")
+        self.input_data_menu.entryconfig("Data", state="disabled")
 
     def set_menu_matrix_data(self):
         self.input_data_radio.set(2)
-        self.input_data_menu.entryconfig("Recorded Data", state="disabled")
+        self.input_data_menu.entryconfig("Recorded Data", state="normal")
         self.input_data_menu.entryconfig("Coefficient Matrix",
                                          state="disabled")
         # delete the entry data from the input data menu
-        self.input_data_menu.delete(3)
+        try:
+            self.input_data_menu.index("Data")
+            self.input_data_menu.delete(3)
+        except tk.TclError: pass
         self.input_data_menu.entryconfig("Variables", state="disabled")
 
     ##################
@@ -345,19 +352,19 @@ class GUI():
         # messagebox.showerror("Save Error", "The file contains non-ASCII characters.")
 
     @gui_only
-    def show_msg(self, msg, title=None, yes_commend=None,
-                 no_commend=None,
+    def show_msg(self, msg, title=None, yes_command=None,
+                 no_command=None,
                  buttons=['Yes:primary', 'No:secondary']):
-        if yes_commend:
+        if yes_command:
             clicked_yes = Messagebox.show_question(msg, title, buttons=[
                 buttons[0], buttons[1]])
             if clicked_yes == buttons[0].split(":")[0]:
-                yes_commend()
-            elif no_commend:
-                no_commend()
+                yes_command()
+            elif no_command:
+                no_command()
+            return clicked_yes
         else:
             Messagebox.show_info(msg, title)
-
     def save_file_diaglogue(self, file_types=None, default_extension=None,
                             initial_file_name=None, title=None):
         file_name = filedialog.asksaveasfilename(filetypes=file_types,
@@ -384,6 +391,18 @@ class GUI():
             initial_file_name=default_output_file_name,
             title="Save Output File To...")
         return output_file_path
+
+    def save_session_dialogue(self):
+        file_name = filedialog.asksaveasfilename(filetypes=[('mem', '*.mem')],
+                                                 defaultextension='.mem',
+                                                 title="Save FSSA Session",
+                                                 confirmoverwrite=True)
+        return file_name
+
+    def open_session_dialogue(self):
+        file_name = filedialog.askopenfilename(filetypes=[('mem', '*.mem')],
+                                               title="Open FSSA Session")
+        return file_name
 
 
 if __name__ == '__main__':

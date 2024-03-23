@@ -29,7 +29,7 @@ class NavigationButton(ttk.Button):
 
     def __init__(self, parent, **kwargs):
         if 'width' not in kwargs:
-            kwargs['width'] = 10
+            kwargs['width'] = 15
         if 'bootstyle' not in kwargs:
             kwargs['bootstyle'] = 'primary'
         super().__init__(parent, **kwargs)

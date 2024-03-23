@@ -2,44 +2,30 @@ import tkinter as tk
 from tkinter.simpledialog import askstring
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
-from ttkbootstrap.tableview import Tableview
+from lib.components.editable_tree_view import EditableTreeView
 from dotmap import DotMap
 from lib.components.form import DataButton
+from lib.utils import *
+
+LABEL = "Label"
+VALID_HIGH = "Valid\nHi. "
+VALID_LOW = "Valid\nLo. "
+LINE_NO = "Line\nNo."
+VAR_NO = "Var\nNo."
+SEL_VAR = "Sel.\nVar."
+FIELD_WIDTH = "Field\nWidth"
+START_COL = 'Start\nCol.'
 
 PAGE_SIZE = 12
-COLUMNS = DotMap(dict(
-    index="Var No.",
-    selected="Selected",
-    variable_num="Sel'd Var",
-    line_num="Line No.",
-    field_width="Field Width",
-    start_col="Start Col.",
-    valid_low="Valid Lo.",
-    valid_high="Valid Hi.",
-    label="Label"
-), _dynamic=False)
-
-
-class IndexedTableVIew(Tableview):
-    def __init__(self, master=None, **kw):
-        Tableview.__init__(self, master=master, **kw)
-
-    def delete_row(self, index=None, iid=None, visible=True):
-        Tableview.delete_row(self, index=index, iid=iid, visible=visible)
-        self.reindex()
-
-    def delete_rows(self, indices=None, iids=None, visible=True):
-        Tableview.delete_rows(self, indices=indices, iids=iids,
-                              visible=visible)
-        self.reindex()
-
-    def reindex(self):
-        for i, row in enumerate(self.tablerows):
-            item = self.iidmap[row.iid].iid
-            # todo: Maybe should be uncommented not clear
-            # row.values[0] = i
-            self.view.set(item, column=0, value=i + 1)
-        self.load_table_data()
+COLUMNS = [
+    VAR_NO,
+    LINE_NO,
+    START_COL,
+    FIELD_WIDTH,
+    VALID_LOW,
+    VALID_HIGH,
+    LABEL
+]
 
 class ManualFormatPage(ttk.Frame):
     def __init__(self, parent):
@@ -51,15 +37,19 @@ class ManualFormatPage(ttk.Frame):
         self.create_data_buttons()
         self.matrix_edit_mode = False
         self.selected_rows = {}
+        # create entry before the table:
+        entry = ttk.Label(self, text="Specify where in the data file the "
+                                "variables are located: ")
+        entry.pack(side=tk.TOP, fill='x', padx=40, pady=(10, 0))
 
     def pack(self, kwargs=None, **kw):
-        if self.data_table:
-            self.data_table.view.bind_all("<Double-1>", self.on_double_click)
+        # if self.data_table:
+        #     self.data_table.view.bind_all("<Double-1>", self.on_double_click)
         super().pack(kwargs, **kw)
 
     def pack_forget(self) -> None:
-        if self.data_table:
-            self.data_table.bind_all("<Double-1>", lambda x: None)
+        # if self.data_table:
+        #     self.data_table.bind_all("<Double-1>", lambda x: None)
         super().pack_forget()
 
     ###################
@@ -67,29 +57,34 @@ class ManualFormatPage(ttk.Frame):
     ###################
 
     def create_data_table(self):
-        if self.data_table:
+        if self.data_table is not None:
             self.data_table.destroy()
-        self.coldata = list(COLUMNS.values())
-        rowdata = []
-        self.data_table = IndexedTableVIew(
-            master=self,
-            coldata=self.coldata,
-            rowdata=rowdata,
-            paginated=True,
-            searchable=False,
-            autofit=True,
-            autoalign=True,
-            bootstyle=PRIMARY,
-            stripecolor=(self.colors.light, None),
-            pagesize=12,
+        self.coldata = COLUMNS
+        self.data_table = EditableTreeView(
+            self,
+            index_col_name=SEL_VAR,
+            add_check_box=True,
+            columns=self.coldata
         )
-        self.data_table.pack(fill=BOTH, expand=YES, padx=10, pady=10)
-        self.data_table.bind_all("<Double-1>", self.on_double_click)
-        self.data_table.bind_all("<Button-1>", self.on_click)
-        self.data_table.align_column_center(cid=0)
-        for i in range(len(self.coldata)):
-            self.data_table.align_heading_center(cid=i)
-            self.data_table.align_column_center(cid=i)
+        self.data_table.column("Label", stretch=True)
+        # self.data_table.place(relx=.5, rely=.49, anchor="center")
+        self.data_table.pack(side=tk.TOP, fill=BOTH, expand=True,
+                             pady=(10, 10), padx=40)
+        self._configure_columns()
+        # add default variable
+        if IS_PRODUCTION():
+            self.add_variable()
+
+    def _configure_columns(self):
+        self.data_table.heading("#0", anchor='c')
+        self.data_table.column("#0", width=50, anchor='w')
+        self.data_table.column(VAR_NO, anchor='c', width=45)
+        self.data_table.column(LINE_NO, anchor='c', width=45)
+        self.data_table.column(START_COL, anchor='c', width=45)
+        self.data_table.column(FIELD_WIDTH, anchor='c', width=50)
+        for col in [VALID_LOW, VALID_HIGH,]:
+            self.data_table.heading(col, anchor="c")
+            self.data_table.column(col, width=45, anchor='c')
 
     def create_data_buttons(self):
         # Data Buttons Frame
@@ -118,58 +113,49 @@ class ManualFormatPage(ttk.Frame):
         :return: in format of [{line: 1, col: 1, width: 10, label: "Name"}, ...}]
         """
         data_format = []
-        for i, row in enumerate(self.data_table.tablerows):
-            width = int(row.values[3])
-            valid_low = int(row.values[4])
-            valid_high = int(row.values[5])
-            label = row.values[6]
+        for i, row in enumerate(self.data_table.checked_rows()):
+            width = int(row[FIELD_WIDTH])
+            valid_low = int(row[VALID_LOW])
+            valid_high = int(row[VALID_HIGH])
+            label = row[LABEL]
             if not self.are_missing_values and width == 2:
                 valid_high = 99
             if width not in [1, 2]:
-                raise ValueError(f"Field width of {width} is not valid. "
+                raise ValueError(f"Row {i+1}: Field width of {width} is not "
+                                 f"valid. "
                                  f"Field width must be 1 or 2.")
             if valid_low > valid_high:
-                raise ValueError(f"Valid low of {valid_low} is greater than "
+                raise ValueError(f"Row {i+1}: Valid low of {valid_low} is "
+                                 f"greater than "
                                  f"valid high of {valid_high}.")
             if valid_low < 0 or valid_high > 99:
-                raise ValueError(f"Valid low of {valid_low} or valid high of "
+                raise ValueError(f"Row {i+1}: Valid low of {valid_low} or "
+                                 f"valid high of "
                                  f"{valid_high} is not between 0 and 99.")
             if not label.isascii():
-                raise ValueError(f'Label: "{label}" is not in ASCII.')
-            data_format.append(dict(line=int(row.values[1]),
-                                    col=int(row.values[2]),
+                raise ValueError(f'Row {i+1}: Label: "{label}" is not in '
+                                 f'ASCII.')
+            data_format.append(dict(line=int(row[LINE_NO]),
+                                    col=int(row[START_COL]),
                                     width=width,
                                     valid_low=valid_low,
                                     valid_high=valid_high,
-                                    label=row.values[6]))
+                                    label=label))
         return data_format
 
-    def get_selected_rows(self):
-        selected_items = self.data_table.selection()
-        selected_data = [self.data_table.item(item, 'values') for item in
-                         selected_items]
-        return selected_data
-
-    def get_all_visible_data(self):
-        data = []
-        for i, row in enumerate(self.data_table.tablerows):
-            if i == 0: continue
-            cols = self.data_table.tablecolumns_visible
-            cols = list(map(lambda x: x.cid, cols))[1:]
-            data.append([row.values[int(x)] for x in cols])
-        return data
-
     def set_matrix_edit_mode(self) -> None:
-        if not self.matrix_edit_mode:
-            self.matrix_edit_mode = True
-            self.button_add_variable.config(state="disabled")
-            self.button_remove_variable.config(state="disabled")
-            for i in range(1, len(self.coldata) - 1):
-                self.data_table.tablecolumns[i].hide()
+        self.matrix_edit_mode = True
+        self.button_add_variable.config(state="disabled")
+        self.button_remove_variable.config(state="disabled")
+        for col in COLUMNS:
+            if col not in [VAR_NO, LABEL]:
+                self.data_table.hide_column(col)
 
     def get_labels(self) -> list:
-        return [row.values[len(self.coldata) - 1] for row in
-                self.data_table.tablerows]
+        return [row[LABEL] for row in self.data_table.rows()]
+
+    def get_len_selected_vars(self):
+        return len(self.data_table.get_checked_rows())
 
     def set_labels(self, list):
         """
@@ -178,9 +164,9 @@ class ManualFormatPage(ttk.Frame):
         :param list:
         :return:
         """
-        assert len(list) == len(self.data_table.tablerows)
-        for i, row in enumerate(self.data_table.tablerows):
-            row.values[len(self.coldata) - 1] = list[i]
+        assert len(list) == len(self.data_table)
+        for i, row in enumerate(self.data_table.row_ids()):
+            self.data_table.set(row, LABEL, list[i])
 
     def get_vars_valid_values(self):
         all_format = self.get_data_format()
@@ -192,50 +178,17 @@ class ManualFormatPage(ttk.Frame):
     ## Data Table Utils ##
     ######################
 
-    def get_col_index_string(self, col_name) -> str:
-        """ returns: a column index string in the format of "#<index>"""
-        return "#" + str(self.coldata.index(col_name) + 1)
-
-    def get_col_index(self, col_name) -> int:
-        """ returns: a column index in the format of "#<index>"""
-        return list(COLUMNS.keys()).index(col_name)
-
     def get_row(self, index) -> dict:
-        if index < 0 :
-            index = len(self.data_table.tablerows) + index
-        if index < 0 or index >= len(self.data_table.tablerows):
-            raise IndexError(f"Index {index} is out of range."
-                             f"table length is {len(self.data_table.tablerows)}.")
-        visible_columns = self.data_table.tablecolumns_visible
-        row_data = self.data_table.tablerows[index].values
-        row = {}
-        for i, col in enumerate(visible_columns):
-            key = list(COLUMNS.keys())[int(col.cid)]
-            row[key] = row_data[i]
-        row['selected'] = row['selected'] == "☑"
-        return row
-
-    def set_row(self, index, **kwargs):
-        row = self.get_row(index)
-        for key in kwargs:
-            if key == "selected":
-                row[key] = "☑" if kwargs[key] else "☐"
-            else:
-                row[key] = kwargs[key]
-        self.data_table.tablerows[index].values = self.row_dict_to_list(row)
-        self.data_table.load_table_data()
+        return self.data_table.get_row(index)
 
     def row_dict_to_list(self, row_dict):
-        return [row_dict.get(col) for col in COLUMNS.keys() if
+        return [row_dict.get(col) for col in COLUMNS if
                     row_dict.get(col) is not None]
 
     def add_row_from_dict(self, row_dict):
         # convert the row_dict to a list of values in the order of the columns
         row_values = self.row_dict_to_list(row_dict)
-        row_values[self.get_col_index('selected')] = "☑" if row_dict[
-            'selected'] else "☐"
-        self.data_table.insert_row(index='end', values=row_values)
-        self.data_table.load_table_data()
+        self.data_table.add_row(values=row_values)
 
     #################
     #### Methods ####
@@ -247,35 +200,29 @@ class ManualFormatPage(ttk.Frame):
         self.create_data_table()
         self.are_missing_values = are_missing_values
         if self.are_missing_values:
-            self.data_table.tablecolumns[-2].show()
-            self.data_table.tablecolumns[-3].show()
+            self.data_table.show_column(VALID_LOW)
+            self.data_table.show_column(VALID_HIGH)
         else:
-            self.data_table.tablecolumns[-2].hide()
-            self.data_table.tablecolumns[-3].hide()
+            self.data_table.hide_column(VALID_LOW)
+            self.data_table.hide_column(VALID_HIGH)
 
     def remove_variable(self):
         # removes the last row from the table
-        if self.data_table.tablerows:
-            self.data_table.delete_row(iid=
-                                       self.data_table.tablerows[-1].iid,
-                                       visible=False)
-            # it is mandatory to check both because the interface is bugged
-            if len(self.data_table.tablerows) == PAGE_SIZE:
-                self.data_table.goto_first_page()
-            elif len(self.data_table.tablerows) % PAGE_SIZE == 0:
-                self.data_table.goto_prev_page()
+        self.data_table.remove_row(-1)
 
-    def add_variable(self, line_num=None, start_col=None,
-                     field_width=None,
-                     valid_low=None, valid_high=None, label=None,
-                     selected=True):
+    def add_variable(self, line=None, col=None,
+                     width=None,
+                     valid_low=None, valid_high=None, label=None):
+
+        default_values = {LINE_NO: line, START_COL: col,
+                          FIELD_WIDTH: width, VALID_LOW: valid_low,
+                          VALID_HIGH: valid_high, LABEL: label}
+
         def new_row_from_last(**kwargs):
             row_data : dict = self.get_row(-1).copy()
             try:
-                row_data['start_col'] = int(row_data['start_col']) + int(
-                    row_data['field_width'])
-                row_data['variable_num'] = int(row_data['variable_num']) + 1
-                row_data['index'] = int(row_data['index']) + 1
+                row_data[START_COL] = int(row_data[START_COL]) + int(
+                    row_data[FIELD_WIDTH])
             except ValueError: pass
             for field in kwargs:
                 if kwargs[field] is not None:
@@ -283,62 +230,21 @@ class ManualFormatPage(ttk.Frame):
             return row_data
 
         def new_row_from_default(**kwargs):
-            default_var = dict(index="1", line_num="1", start_col="1",
-                               field_width="1", variable_num="1",
-                               valid_low="1", valid_high="9", label="var1",
-                               selected=True)
+            default_var = {LINE_NO : "1", START_COL : "1",
+                               FIELD_WIDTH : "1", VAR_NO : "1",
+                               VALID_HIGH : "9", VALID_LOW :"1",
+                           LABEL : "var1",}
             for field in kwargs:
                 if kwargs[field] is not None:
                     default_var[field] = kwargs[field]
             return default_var
 
-        index = len(self.data_table.iidmap) + 1
+        index = len(self.data_table) + 1
         label = f"var{index}" if not label else label
         #
-        if self.data_table.tablerows and self.data_table.tablerows[-1].values:
-            new_row : dict = new_row_from_last(line_num=line_num,
-                                               start_col=start_col, field_width=field_width,
-                     valid_low=valid_low, valid_high=valid_high, label=label,
-                     selected=selected)
+        if self.data_table.loc(-1):
+            new_row : dict = new_row_from_last(**default_values)
         else:
-            new_row = new_row_from_default(line_num=line_num, start_col=start_col, field_width=field_width,
-                     valid_low=valid_low, valid_high=valid_high, label=label,
-                     selected=selected)
+            new_row = new_row_from_default(**default_values)
+        new_row[LABEL] = label
         self.add_row_from_dict(new_row)
-        # create a new checkbutton for the new row, set it to be selected and
-        # pack it in the "selected" column in the new row
-        if len(self.data_table.tablerows) > PAGE_SIZE:
-            self.data_table.goto_next_page()
-
-    def on_double_click(self, event):
-        item = self.data_table.view.identify('item', event.x, event.y)
-        column_key = self.data_table.view.identify_column(event.x)
-        column_i = int(column_key[1:])
-        if column_i == 1: return
-        if self.matrix_edit_mode:
-            if column_i != 2:
-                return
-            column_i = len(self.coldata)
-        if not self.are_missing_values and column_i > 4:
-            column_i += 2
-        try:
-            value = self.data_table.view.item(item, 'values')[column_i - 1]
-        except IndexError:
-            return
-        new_value = askstring("Edit Value", "Edit the value:",
-                              initialvalue=value)
-        if new_value is not None:
-            self.data_table.view.set(item, column=column_key, value=new_value)
-            self.data_table.iidmap[item].values[column_i - 1] = new_value
-
-    def on_click(self, event):
-        # Identify the row and column clicked
-        row_id_string = self.data_table.view.identify_row(event.y)
-        column = self.data_table.view.identify_column(event.x)
-        region = self.data_table.view.identify("region", event.x, event.y)
-        if region != "cell" or column != self.get_col_index_string(
-                COLUMNS['selected']):
-            return
-        row_id = int(row_id_string[1:]) - 1
-        row_data = self.get_row(int(row_id))
-        self.set_row(row_id, selected=not row_data['selected'])

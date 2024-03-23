@@ -86,7 +86,6 @@ class example_3_gui(Controller):
             raise(e)
         run_file_path = p_FSS_DRV
         true_file_path = os.path.join(test_dir_path, "FSSAINP.DRV")
-        # assert diff_lines_num(run_file_path, true_file_path) == 1
         assert os.path.isfile(self.output_path)
 
 

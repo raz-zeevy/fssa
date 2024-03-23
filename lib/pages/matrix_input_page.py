@@ -47,7 +47,7 @@ class MatrixInputPage(ttk.Frame):
         label_data_file = Label(frame_data_file, text="Matrix File:")
         label_data_file.pack(side=ttk.LEFT, padx=(0, 10))
         data_file_path = ttk.StringVar()
-        self.entry_data_file = ttk.Entry(frame_data_file, width=45,
+        self.entry_data_file = ttk.Entry(frame_data_file, width=65,
                                          validate="focusout",
                                          textvariable=data_file_path, )
         self.entry_data_file.pack(side=ttk.LEFT, fill='x', expand=False,
@@ -99,7 +99,6 @@ class MatrixInputPage(ttk.Frame):
     def set_data_file_path(self, path):
         self.entry_data_file.delete(0, ttk.END)
         self.entry_data_file.insert(0, path)
-
     @validate_conversion
     def get_entries_num_in_row(self):
         return int(self.entry_entries_num_in_row.get())

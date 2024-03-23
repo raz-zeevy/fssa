@@ -66,8 +66,8 @@ def simulate_manual_format(format_txt: str, add_variable: callable,
     missing_values = parse_missing_values(missing_values_txt)
     var_format = parse_var_format(format_txt)
     for i, var in enumerate(var_format):
-        add_variable(line_num=var["line_num"], start_col=var["start_col"],
-                     field_width=var["field_width"],
+        add_variable(line=var["line_num"], col=var["start_col"],
+                     width=var["field_width"],
                      valid_low=missing_values[i]['low'],
                      valid_high=missing_values[i]['high'],
                      label=labels[i])

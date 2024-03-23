@@ -152,6 +152,11 @@ class FacetPage(ttk.Frame):
                           facet_index)
 
     def set_facets_details(self, facet_values : List[List]):
+        """
+        set the values for the facets
+        :param facet_values: list of lists representing the facet values
+                             eg. [["A1", "A2", "A3"], ["B1", "B2", "B3"]]
+        """
         self.set_facets_num(len(facet_values))
         for facet_i, facet in enumerate(facet_values):
             self.set_facets_elements(facet_i+1, len(facet))

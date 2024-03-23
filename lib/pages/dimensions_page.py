@@ -107,6 +107,9 @@ class DimensionsPage(ttk.Frame):
     def get_correlation_type(self):
         return self.correlation_combo.get()
 
+    def set_correlation_type(self, type):
+        self.correlation_combo.set(type)
+
     def create_dim_selection_box(self, master, text):
         """Create and pack an equalizer band"""
         frame_band = ttk.Frame(master)

@@ -3,20 +3,30 @@ from lib.utils import *
 
 
 def invalid_fields(data):
-    for row in data:
+    res = dict(
+        passed=True,
+        row_num=None,
+    )
+    for i, row in enumerate(data):
         for entry in row:
             try:
                 if entry.strip() != "":
                     if int(entry) != eval(entry):
-                        return True
+                        res['passed'] = True
+                        res['row_num'] = i
+                        return res
             except ValueError:
                 # This is the case when the entry can't be converted to int
-                return True
+                res['passed'] = True
+                res['row_num'] = i
+                return res
             except SyntaxError:
                 # This is the case when the entry has a starting zero
                 # e.g 01, 02, 03, etc...
-                return True
-    return False
+                res['passed'] = True
+                res['row_num'] = i
+                return res
+    return res
 
 
 class Validator():
@@ -65,25 +75,31 @@ class Validator():
     @staticmethod
     @mode_dependent
     def validate_data_page(data, labels):
-        if invalid_fields(data):
+        res = invalid_fields(data)
+        if not res["passed"]:
             raise Exception(
-                "Usage Error:\nThe data fields must be numeric and in the "
+                f"Usage Error Row {res['row_num']}:\nThe data fields must "
+                f"be "
+                f"numeric "
+                "and in the "
                 "range of 0-99.")
+        res = needs_recoding(data)
         if needs_recoding(data):
             raise Exception(
-                "Usage Error:\nRecorded data values must be between 1-99."
+                f"Usage Error Row {res['row_num']}:\nRecorded data values "
+                "must be between 1-99."
                 " You can use the recoding option to recode the data to "
                 "this values range.")
         if len(labels) < 3:
             raise Exception(
-                "Usage Error:\nAt least three variable must be"
+                f"Usage Error:\nAt least three variable must be"
                 " inserted in order for the fssa to run.")
-        for label in labels:
+        for i, label in enumerate(labels):
             if not label.isascii():
                 raise Exception(
-                    "Usage Error:\nAll variable labels must be entirely "
+                    f"Usage Error :\nAll variable labels must be entirely "
                     "ASCII characters and"
-                    f' "{label}" contains non-ASCII characters.')
+                    f' label {i} : "{label}" contains non-ASCII characters.')
 
     @staticmethod
     @mode_dependent

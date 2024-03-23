@@ -134,6 +134,10 @@ class InputPage(ttk.Frame):
         self.entry_data_file.delete(0, ttk.END)
         self.entry_data_file.insert(0, path)
 
+    def set_missing_value(self, state : bool):
+        if state:
+            self.checkbox_missing_value.invoke()
+
     def get_auto_parsing_format(self):
         """
         :return: the delimiter or the fixed width or None if the user didn't
@@ -169,6 +173,7 @@ class InputPage(ttk.Frame):
         return 0
 
     def reset_entries(self):
+        self.entry_data_file.delete(0, 'end')
         self.entry_lines.delete(0, 'end')
         self.entry_delimiter.delete(0, 'end')
         self.selection_box_fixed_width.current(0)

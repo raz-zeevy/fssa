@@ -6,6 +6,7 @@ from lib.components.window import Window
 from lib.utils import get_resource
 from lib.windows.help.screens import ScreensGenerator
 
+
 ###################################
 ############ SECTIONS #############
 ###################################
@@ -95,6 +96,8 @@ h2_font = (FONT, 12, "bold")
 text_font = (FONT, 11)
 text_small_font = (FONT, 10)
 link_font = (FONT, 11, "underline")
+TXT_FOREGROUND = "black"
+LINK_FOREGROUND = "black"
 
 TABLE_PRE_PAD = " " * 3
 
@@ -155,9 +158,13 @@ class HelpWindow(Window):
                                    highlightthickness=0, bg=default_bg)
         self.text_widget.pack(expand=True, fill='both')
         self.text_widget.tag_config(H1, font=h1_font)
+        self.text_widget.tag_config(H1, foreground=TXT_FOREGROUND)
         self.text_widget.tag_config(TEXT_SMALL, font=text_small_font)
+        self.text_widget.tag_config(TEXT_SMALL, foreground=TXT_FOREGROUND)
         self.text_widget.tag_config(H2, font=h2_font)
+        self.text_widget.tag_config(H2, foreground=TXT_FOREGROUND)
         self.text_widget.tag_config(TEXT, font=text_font)
+        self.text_widget.tag_config(TEXT, foreground=TXT_FOREGROUND)
 
     def init_menu(self):
         self.menu = tk.Menu(self)
@@ -264,6 +271,7 @@ class HelpWindow(Window):
         for tag in self.text_widget.tag_names():
             if tag.startswith("clickable_"):
                 self.text_widget.tag_config(tag, font=link_font)
+                self.text_widget.tag_config(tag, foreground=LINK_FOREGROUND)
                 self.text_widget.tag_bind(tag, '<Button-1>',
                                           self.on_click)  # Bind left mouse click
                 # Bind mouse events to the tag

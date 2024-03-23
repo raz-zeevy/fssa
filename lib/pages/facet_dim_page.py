@@ -70,8 +70,8 @@ class FacetDimPage(ttk.Frame):
                                                    bootstyle="dark-outline-toolbutton")
                 dim_facet_button.configure(command=lambda
                     var=check_var,
-                    btn=dim_facet_button: self.update_checkbutton_text(var,
-                                                                       btn))
+                    btn=dim_facet_button: self._update_checkbutton_text(var,
+                                                                        btn))
                 dim_buttons.append(dim_facet_button)
                 dim_facet_button.grid(row=1 + dim, column=col + 1,
                                       sticky='ew',
@@ -85,7 +85,7 @@ class FacetDimPage(ttk.Frame):
         for col in range(num_facets + 1):
             self.table_frame.grid_columnconfigure(col, weight=col_weights[col])
 
-    def update_checkbutton_text(self, var, btn):
+    def _update_checkbutton_text(self, var, btn):
         btn.config(text="Yes" if var.get() else "No")
 
     def get_facets_dim(self) -> dict:
@@ -94,6 +94,16 @@ class FacetDimPage(ttk.Frame):
             facet_dim[dim] = [facet+1 for facet, btn in
                               enumerate(facets) if btn.cget("text") == "Yes"]
         return facet_dim
+
+    def set_facets_dim(self, facet_dim_details):
+        """
+        :param facet_dim_details: eg. {2: [1, 2], 3: [1, 2, 3]}
+        :return:
+        """
+        for dim, facets in self.facets_dim_check_buttons.items():
+            for i, btn in enumerate(facets):
+                if i + 1 not in facet_dim_details[str(dim)]:
+                    btn.invoke()
 
     def validate_input(self, num_facets, max_dim, min_dim):
         if num_facets > 4:

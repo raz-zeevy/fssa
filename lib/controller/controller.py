@@ -3,6 +3,7 @@ import warnings
 import pandas as pd
 from lib.controller.graph_generator import generate_graphs
 from lib.controller.navigator import Navigator
+from lib.controller.session import Session
 from lib.controller.validator import Validator
 from lib.gui import GUI
 from lib.fss.fss_module import load_recorded_data, \
@@ -12,7 +13,6 @@ from lib.utils import *
 import pynput.keyboard
 
 SUPPORTED_RECORDED_DATA_FORMATS = ['.csv', '.xlsx', '.xls', 'tsv']
-
 
 class Controller:
     def __init__(self):
@@ -45,12 +45,11 @@ class Controller:
         # Assuming you have a GUI instance available as `self.gui`
         self.gui.show_warning("Warning", warning_msg)
 
-    def reset_session(self):
-        pass
 
     def init_controller_attributes(self):
         self.delimiter = None
         self.data_file_path = None
+        self.save_path = None
         self.data_file_extension = None
         self.var_labels = None
         self.has_header = False
@@ -100,12 +99,77 @@ class Controller:
             # Assuming your GUI class has a root Tkinter window
             self.gui.root.destroy()  # This will close the Tkinter window without exiting Python
 
+    #############
+    # User Flow #
+    #############
+    def reset_session(self, matrix):
+        while self.navigator.get_prev():
+            self.previous_page()
+        self.init_controller_attributes()
+        self.on_facet_num_change(None)
+        self.disable_view_input()
+        if matrix:
+            self.navigator.show_page(MATRIX_INPUT_PAGE_NAME)
+            self.navigator.hide_page(INPUT_PAGE_NAME)
+            self.gui.switch_page(MATRIX_INPUT_PAGE_NAME)
+            self.matrix_input = True
+            self.navigator.hide_page(DATA_PAGE_NAME)
+            self.navigator.show_page(MANUAL_FORMAT_PAGE_NAME)
+            self.gui.set_menu_matrix_data()
+        else:
+            self.navigator.hide_page(MATRIX_INPUT_PAGE_NAME)
+            self.navigator.show_page(INPUT_PAGE_NAME)
+            self.gui.switch_page(INPUT_PAGE_NAME)
+            self.matrix_input = False
+            self.navigator.show_page(DATA_PAGE_NAME)
+            self.navigator.hide_page(MANUAL_FORMAT_PAGE_NAME)
+            self.gui.set_menu_recorded_data()
+
+    def open_session(self):
+        self.reset_session()
+
+    def save_session(self, path):
+        session = Session(self)
+        session.save(path)
+        # current page
+        print("done")
+        # all screens data:
+
+    def load_session(self, path):
+        session = Session(path=path)
+        session.load_to_controller(self)
+
+    def start_fss(self, matrix=False):
+        self.navigator.pop_page(0)
+        self.gui.start_fss()
+        if matrix:
+            self.matrix_input = True
+            self.navigator.hide_page(INPUT_PAGE_NAME)
+            self.navigator.hide_page(DATA_PAGE_NAME)
+            self.navigator.show_page(MANUAL_FORMAT_PAGE_NAME)
+            self.gui.set_menu_matrix_data()
+        else:
+            self.navigator.hide_page(MATRIX_INPUT_PAGE_NAME)
+            self.gui.set_menu_recorded_data()
+        self.bind_menu()
+        self.bind_keys()
+        self.bind_icons_menu()
+        # bind the navigation buttons
+        self.gui.button_run.config(command=lambda: self.run_button_click())
+        self.gui.button_next.config(command=self.next_page)
+        self.gui.button_previous.config(command=self.previous_page)
+        # start
+        self.navigate_page(self.navigator.get_current())
+
     ##############
     #  Bindings  #
     ##############
 
     def bind_keys(self):
         self.gui.root.bind("<F1>", lambda x: self.show_help())
+        self.gui.root.bind("<Control-n>", lambda x: self.new_session_click())
+        self.gui.root.bind("<Control-o>", lambda x: self.open_session_click())
+        self.gui.root.bind("<Control-s>", lambda x: self.save_session_click())
 
     def bind_gui_events(self):
         # Matrix page
@@ -142,7 +206,18 @@ class Controller:
 
     def bind_menu(self):
         self.gui.file_menu.entryconfig("Run", command=self.run_button_click)
+        self.gui.file_menu.entryconfig("New", command=self.new_session_click)
+        self.gui.file_menu.entryconfig("Save", command=self.save_session_click)
+        self.gui.file_menu.entryconfig("Save As...",
+                                       command=self.save_as_session_click)
+        self.gui.file_menu.entryconfig("Open", command=self.open_session_click)
         self.gui.file_menu.entryconfig("Exit", command=self.shutdown)
+        self.gui.input_data_menu.entryconfig("Recorded Data",
+                                                command=lambda: self.new_session_click(
+                                                    False))
+        self.gui.input_data_menu.entryconfig("Coefficient Matrix",
+                                                command=lambda: self.new_session_click(
+                                                    True))
         ### Input Menu
         if not self.matrix_input:
             self.gui.input_data_menu.entryconfig("Data",
@@ -209,30 +284,14 @@ class Controller:
     def bind_icons_menu(self):
         self.gui.m_button_help.config(command=lambda: self.keyboard.press(
                                            pynput.keyboard.Key.f1))
+        self.gui.m_button_new.config(command=lambda : self.reset_session(
+            matrix=self.matrix_input))
+        self.gui.m_button_new.config(command=self.new_session_click)
+        self.gui.m_button_save.config(command=self.save_session_click)
+        self.gui.m_button_open.config(command=self.open_session_click)
         self.gui.m_button_next.config(command=self.next_page)
         self.gui.m_button_prev.config(command=self.previous_page)
-
-    def start_fss(self, matrix=False):
-        self.navigator.pop_page(0)
-        self.gui.start_fss()
-        if matrix:
-            self.matrix_input = True
-            self.navigator.hide_page(INPUT_PAGE_NAME)
-            self.navigator.hide_page(DATA_PAGE_NAME)
-            self.navigator.show_page(MANUAL_FORMAT_PAGE_NAME)
-            self.gui.set_menu_matrix_data()
-        else:
-            self.navigator.hide_page(MATRIX_INPUT_PAGE_NAME)
-            self.gui.set_menu_recorded_data()
-        self.bind_menu()
-        self.bind_keys()
-        self.bind_icons_menu()
-        # bind the navigation buttons
-        self.gui.button_run.config(command=lambda: self.run_button_click())
-        self.gui.button_next.config(command=self.next_page)
-        self.gui.button_previous.config(command=self.previous_page)
-        # start
-        self.navigate_page(self.navigator.get_current())
+        self.gui.m_button_run.config(command=self.run_button_click)
 
     ###########################
     # Controls and Navigation #
@@ -259,6 +318,9 @@ class Controller:
 
         self.gui.view_menu.entryconfig("Input File", state="normal")
         self.gui.view_menu.entryconfig("Input File", command=view_input)
+
+    def disable_view_input(self):
+        self.gui.view_menu.entryconfig("Input File", state="disabled")
 
     def previous_page(self):
         previous_page = self.navigator.get_prev()
@@ -336,11 +398,15 @@ class Controller:
         if cur_page == MATRIX_INPUT_PAGE_NAME:
             self.load_matrix()
         # Manual Format Page
-        if cur_page == MANUAL_FORMAT_PAGE_NAME and \
-                next_page == DATA_PAGE_NAME:
-            Validator.validate_manual_input(self.gui.pages[
-                                                MANUAL_FORMAT_PAGE_NAME].get_data_format())
-            self.manual_input = True
+        if cur_page == MANUAL_FORMAT_PAGE_NAME:
+            if next_page == DATA_PAGE_NAME:
+                Validator.validate_manual_input(self.gui.pages[
+                                                    MANUAL_FORMAT_PAGE_NAME].get_data_format())
+                self.manual_input = True
+            elif next_page == DIMENSIONS_PAGE_NAME:
+                self.gui.pages[DIMENSIONS_PAGE_NAME].set_number_of_variables(
+                    self.gui.pages[MANUAL_FORMAT_PAGE_NAME]
+                    .get_len_selected_vars())
         # Data Page
         if cur_page == DATA_PAGE_NAME:
             Validator.validate_data_page(
@@ -409,6 +475,35 @@ class Controller:
                 self.run_matrix_fss()
             else:
                 self.run_fss()
+
+    def save_session_click(self):
+        if not self.save_path:
+            self.save_path = self.gui.save_session_dialogue()
+        if self.save_path:
+            self.save_session(self.save_path)
+
+    def save_as_session_click(self):
+        save_path = self.gui.save_session_dialogue()
+        if save_path:
+            self.save_path = save_path
+            self.save_session(self.save_path)
+
+    def open_session_click(self):
+        open_path = self.gui.open_session_dialogue()
+        if open_path:
+            self.load_session(open_path)
+
+    def new_session_click(self, matrix=None):
+        print("hello")
+        res = self.gui.show_msg("Do you want to save the "
+                                              "current "
+                                         "session before starting a new "
+                                "one?", title="New Session",
+                          yes_command=self.save_session_click,)
+        if res in ['Yes', 'No']:
+            if matrix is None: matrix = self.matrix_input
+            self.reset_session(matrix=matrix)
+
 
     def load_data_page(self):
         # load data
@@ -506,33 +601,67 @@ class Controller:
         manual_input.set_matrix_edit_mode()
         self.gui.pages[DIMENSIONS_PAGE_NAME].set_matrix_mode()
 
+    def init_fss_attributes(self):
+        # Input Page
+        self.additional_options = self.gui.pages[
+            INPUT_PAGE_NAME].additional_options
+        self.fixed_width = self.gui.pages[INPUT_PAGE_NAME].get_fixed_width()
+        self.lines_per_var = self.gui.pages[
+            INPUT_PAGE_NAME].get_lines_per_var()
+        # Dim Page
+        self.correlation_type = self.gui.pages[
+            DIMENSIONS_PAGE_NAME].get_correlation_type()
+        self.iweigh = self.locality_weight[0]
+        self.hypotheses_details = self.gui.pages[
+            HYPOTHESIS_PAGE_NAME].get_hypotheses()
+        self.facet_details = self.gui.pages[
+            FACET_PAGE_NAME].get_facets_details()
+        self.facet_var_details = self.gui.pages[
+            FACET_VAR_PAGE_NAME].get_all_var_facets_indices()
+        self.facet_dim_details = self.gui.pages[
+            FACET_DIM_PAGE_NAME].get_facets_dim()
+        # Manual Format Page
+        if self.manual_input:
+            self.manual_format_details = self.gui.pages[
+                MANUAL_FORMAT_PAGE_NAME].get_data_format()
+        if self.matrix_input:
+            self.data_file_path = self.gui.pages[
+                MATRIX_INPUT_PAGE_NAME].get_data_file_path()
+            self.matrix_details = self.gui.pages[MATRIX_INPUT_PAGE_NAME]. \
+                get_matrix_details()
+        else:
+            self.fss_data = self.gui.pages[
+                DATA_PAGE_NAME].get_all_visible_data()
+            self.valid_values_range = self.gui.pages[
+                MANUAL_FORMAT_PAGE_NAME].get_vars_valid_values()
+        self.fss_labels = []
+        self.get_labels()
+        if self.var_labels:
+            for i, label in enumerate(self.var_labels):
+                if label == f"var{i + 1}":
+                    self.fss_labels.append("")
+                else:
+                    self.fss_labels.append(label)
+            self.fss_var_labels = [{'index': i + 1, 'label': label} for i, label in
+                                enumerate(self.fss_labels)]
+        else:
+            self.fss_labels = None
+
     @error_handler
     def run_matrix_fss(self):
-        labels = []
-        # remove the labels that are default
-        all_labels = self.gui.pages[MANUAL_FORMAT_PAGE_NAME].get_labels()
-        for i, label in enumerate(all_labels):
-            if label == f"var{i + 1}":
-                labels.append("")
-            else:
-                labels.append(label)
-        variables_labels = [{'index': i + 1, 'label': label} for i, label in
-                            enumerate(labels)]
+        self.init_fss_attributes()
         create_matrix_running_files(
             job_name=os.path.basename(self.output_path.split(".")[0]),
-            matrix_details=self.gui.pages[
-                MATRIX_INPUT_PAGE_NAME].get_matrix_details(),
+            matrix_details=self.matrix_details,
             iweigh=self.locality_weight[0],
             matrix_path=self.data_file_path,
-            correlation_type=self.gui.pages[
-                DIMENSIONS_PAGE_NAME].get_correlation_type(),
+            correlation_type=self.correlation_type,
             min_dim=self.min_dim, max_dim=self.max_dim,
             nfacet=self.facets_num,
-            variables_labels=variables_labels,
+            variables_labels=self.fss_var_labels,
             facet_details=self.facet_details,
             facet_var_details=self.facet_var_details,
-            hypotheses_details=self.gui.pages[
-                HYPOTHESIS_PAGE_NAME].get_hypotheses(),
+            hypotheses_details=self.hypotheses_details,
             facet_dim_details=self.facet_dim_details)
         try:
             run_matrix_fortran(self.output_path)
@@ -544,49 +673,27 @@ class Controller:
                               'Click on "Open" to view results',
                               title="Job Finished Successfully",
                               buttons=["Open:primary", "Close:secondary"],
-                              yes_commend=self.open_results)
+                              yes_command=self.open_results)
 
     @error_handler
     def run_fss(self):
-        # get parameters for fss
-        corr_type = self.gui.pages[
-            DIMENSIONS_PAGE_NAME].get_correlation_type()
-        data = self.gui.pages[DATA_PAGE_NAME].get_all_visible_data()
-        labels = []
-        # remove the labels that are default
-        for i, label in enumerate(self.gui.pages[
-                                      DATA_PAGE_NAME].get_visible_labels()):
-            if label == f"var{i + 1}":
-                labels.append("")
-            else:
-                labels.append(label)
-        variables_labels = [{'index': i + 1, 'label': label} for i, label in
-                            enumerate(labels)]
-        self.facet_var_details = self.gui.pages[
-            FACET_VAR_PAGE_NAME].get_all_var_facets_indices()
-        self.facet_dim_details = self.gui.pages[
-            FACET_DIM_PAGE_NAME].get_facets_dim()
-        hypotheses_details = self.gui.pages[
-            HYPOTHESIS_PAGE_NAME].get_hypotheses()
-
-        valid_values_range = self.gui.pages[
-            MANUAL_FORMAT_PAGE_NAME].get_vars_valid_values()
+        self.init_fss_attributes()
         create_running_files(
             job_name=os.path.basename(self.output_path.split(".")[0]),
             nfacet=self.facets_num,
-            variables_labels=variables_labels,
+            variables_labels=self.fss_var_labels,
             iweigh=self.locality_weight[0],
-            correlation_type=corr_type,
-            data_matrix=data,
+            correlation_type=self.correlation_type,
+            data_matrix=self.fss_data,
             min_dim=self.min_dim, max_dim=self.max_dim,
             facet_details=self.facet_details,
             facet_var_details=self.facet_var_details,
-            hypotheses_details=hypotheses_details,
+            hypotheses_details=self.hypotheses_details,
             facet_dim_details=self.facet_dim_details,
-            valid_values_range=valid_values_range
+            valid_values_range=self.valid_values_range
         )
         try:
-            run_fortran(corr_type, self.output_path)
+            run_fortran(self.correlation_type, self.output_path)
         except Exception as e:
             raise e
         else:
@@ -595,11 +702,12 @@ class Controller:
                               'Click on "Open" to view results',
                               title="Job Finished Successfully",
                               buttons=["Open:primary", "Close:secondary"],
-                              yes_commend=self.open_results)
+                              yes_command=self.open_results)
 
     @error_handler
     def run_process(self):
         self.gui.run_process()
+
 
     def load_matrix_file(self):
         self.gui.pages[MATRIX_INPUT_PAGE_NAME].browse_file()
@@ -623,8 +731,8 @@ class Controller:
                     "Do you want to treat the first row as a header?",
                     title="Header",
                     buttons=["Yes:primary", "No:primary"],
-                    yes_commend=lambda: self.set_header(True),
-                    no_commend=lambda: self.set_header(False))
+                    yes_command=lambda: self.set_header(True),
+                    no_command=lambda: self.set_header(False))
             else:
                 self.gui.pages[INPUT_PAGE_NAME].enable_additional_options()
                 self.gui.pages[INPUT_PAGE_NAME].automatic_parsable = False
@@ -635,6 +743,7 @@ class Controller:
             self.init_controller_attributes()
             self.data_file_path = data_file_path
         if self.data_file_path:
+            self.gui.pages[INPUT_PAGE_NAME].set_data_file_path(data_file_path)
             self.gui.pages[INPUT_PAGE_NAME].default_entry_lines()
             suggest_parsing(self.data_file_path)
 
@@ -670,6 +779,8 @@ class Controller:
         self.gui.diagram_window.bind("<F1>",
                                      lambda e: controller.show_help(
                                          "facet_diagrams_screen"))
+
+
 
 
 if __name__ == '__main__':

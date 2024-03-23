@@ -8,8 +8,8 @@ from lib.components.window import Window
 from lib.components.shapes import Line, Circle, DivideAxis
 from lib.utils import get_resource
 
+G_COLOR = '#a4aab3'
 DPI_SAVE = 300
-
 matplotlib.use('TkAgg')
 
 from matplotlib.figure import Figure
@@ -29,7 +29,7 @@ class DiagramWindow(Window):
         should contain "x", "y", "annotations", "title", "legend",
          "captions", "geom" keys
         """
-        super().__init__(**kwargs, geometry="800x700")
+        super().__init__(**kwargs, geometry="800x600")
         self.title("FSS Solution")
         self.iconbitmap(get_resource("icon.ico"))
         # sets the geometry of toplevel
@@ -202,20 +202,20 @@ class DiagramWindow(Window):
 
                 # Plot each line
                 x_values, y_values = line.get_points(start, end)
-                axes.plot(x_values, y_values)
+                axes.plot(x_values, y_values, color=G_COLOR)
 
             def add_circle(axes, circle: Circle):
                 # Create a circle patch
                 circle_plot = matplotlib.patches.Circle(circle.center,
                                                         circle.radius,
-                                                        edgecolor='r',
+                                                        edgecolor=G_COLOR,
                                                         facecolor='none')
                 # Add the circle to the plot
                 axes.add_patch(circle_plot)
 
             def add_divide_axis(axes, divide_axis: DivideAxis):
                 x_values, y_values = divide_axis.get_points(1000)
-                axes.plot(x_values, y_values,)
+                axes.plot(x_values, y_values, color=G_COLOR)
 
             if 'geoms' not in graph_data:
                 return

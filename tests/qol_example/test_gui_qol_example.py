@@ -5,6 +5,7 @@ from const import *
 
 DATA_PATH = 'qolstu20.dat'
 SET_MODE_TEST()
+# SET_MODE_PRODUCTION()
 VARS_LABELS = [f"v{i}" for i in range(1,17)]
 
 ###
@@ -18,10 +19,9 @@ test_facets = [
 class simple_example_gui(Controller):
     def __init__(self):
         super().__init__()
-        self.test_simple_example()
-
-    def test_simple_example(self):
         self.gui.pages[START_PAGE_NAME].button_recorded_data.invoke()
+
+    def test_simple_example(self, i):
         # get the absoult path of the data file
         test_dir_path = os.path.dirname(os.path.abspath(__file__))
         data_file_path = os.path.join(test_dir_path,
@@ -29,6 +29,7 @@ class simple_example_gui(Controller):
         self.gui.pages[INPUT_PAGE_NAME].set_data_file_path(
             data_file_path)
         self.gui.pages[INPUT_PAGE_NAME].set_entry_lines(1)
+        self.gui.pages[INPUT_PAGE_NAME].set_missing_value(True)
         self.next_page()
         for _ in range(16):
             self.gui.pages[MANUAL_FORMAT_PAGE_NAME].add_variable()
@@ -42,6 +43,7 @@ class simple_example_gui(Controller):
         simulate_facets_details(FACET_VALUES, self.gui.pages[
             FACET_PAGE_NAME].set_facets_details)
         self.next_page()
+        if i == 1: return
         simulate_facets_var_data(FACET_VAR_DATA,
                         self.gui.pages[FACET_VAR_PAGE_NAME].combo_by_var)
         try:
@@ -53,11 +55,15 @@ class simple_example_gui(Controller):
         except Exception as e:
             print(e)
             raise(e)
-        # run_file_path = p_FSS_DRV
-        # true_file_path = os.path.join(test_dir_path, "FSSAINP.DRV")
-        # assert diff_lines_num(run_file_path, true_file_path) == 1
-        # assert os.path.isfile(self.output_path)
+        assert os.path.isfile(self.output_path)
+        self.show_diagram_window(2,2)
+
+    def reset_test(self, itrs):
+        for i in range(itrs):
+            self.reset_session(False)
+            self.test_simple_example(i)
 
 if __name__ == '__main__':
     a = simple_example_gui()
+    a.reset_test(1)
     a.run_process()

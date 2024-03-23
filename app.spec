@@ -6,8 +6,10 @@ block_cipher = None
 a = Analysis(['app.py'],
              pathex=['C:\\Users\\Raz_Z\\Projects\\Shmuel\\fssaDist\fssa'],
              binaries=[],
-             datas=[('lib/assets/*','lib/assets'), ('lib/scripts/fssa-21/*','lib/scripts/fssa-21/'),
-			 ('README.txt', '.')],
+             datas=[('lib/assets', 'lib/assets'), ('lib/assets/toolbar', 'lib/assets/toolbar'),
+			 ('lib/scripts/fssa-21/*','lib/scripts/fssa-21/'),
+			 ('README.txt', '.')
+			 ],
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],
@@ -28,7 +30,8 @@ exe = EXE(pyz,
 		  uac_admin=True,
           strip=False,
           upx=True,
-          console=False, icon='lib\\assets\\icon.ico' )
+          console=False,
+		  icon='lib\\assets\\icon.ico' )
 coll = COLLECT(exe,
                a.binaries,
                a.zipfiles,

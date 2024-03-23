@@ -55,6 +55,19 @@ class HypothesisPage(ttk.Frame):
                                 padx=(0,10))
             self.models.append(facet_models)
 
+    def set_hypotheses(self, hypo_details):
+        """
+        Set the hypotheses for the facets
+        :param hypo_details: eg. [[0, 1, 2, 3], [0, 1, 2, 3]]
+        :return:
+        """
+        for i, facet in enumerate(hypo_details):
+            for j, model in enumerate(self.models[i]):
+                if j in facet:
+                    model.state(['selected'])
+                else:
+                    model.state(['!selected'])
+
     def get_hypotheses(self):
         """
         Returns the list of lists of hypotheses per facets
