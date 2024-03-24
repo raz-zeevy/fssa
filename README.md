@@ -3,11 +3,12 @@
 [![Website](https://img.shields.io/website?url=https://raz-zeevy.github.io/fssa/)](https://raz-zeevy.github.io/fssa/)
 
 
+
 ## Introduction
 
 Welcome to the `fssa` application! This desktop application is dedicated to providing a robust and user-friendly framework for facilitating the analysis and visualization of statistical data. Our goal is to make data analysis more accessible and efficient for researchers, data scientists, and statisticians.
 
-[**Visit the FSSA Website**](https://raz-zeevy.github.io/fssa/) for more details.
+for more details [🌐 Visit the FSSA Website](https://raz-zeevy.github.io/fssa/)
 
 ## About the Project
 
