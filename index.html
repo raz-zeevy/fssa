@@ -377,6 +377,34 @@
     </div>
 </footer>
 
+<div id="adblock-detection" style="display:none;">
+    <p>We've detected that you are using an ad blocker. Our website requires ads to be disabled to function properly. Please disable your ad blocker to continue.</p>
+</div>
+<script>
+  // This function checks if the fake ad element has been hidden by an ad blocker
+  function checkAdBlocker() {
+    // Try to create a fake ad banner
+    let fakeAd = document.createElement('div');
+    fakeAd.innerHTML = '&nbsp;';
+    fakeAd.className = 'adsbox';
+    document.body.appendChild(fakeAd);
+
+    // Wait for the page to load
+    window.addEventListener('load', () => {
+      // Check if the fake ad has been hidden
+      let isAdBlockerActive = fakeAd.offsetHeight === 0;
+      document.body.removeChild(fakeAd);
+
+      // If the ad is hidden, assume an ad blocker is active
+      if (isAdBlockerActive) {
+        document.getElementById('adblock-detection').style.display = 'block';
+      }
+    });
+  }
+
+  checkAdBlocker();
+</script>
+
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
