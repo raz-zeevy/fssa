@@ -17,7 +17,6 @@ test_facets = [
     ["creativity", "torrance"],
 ]
 
-
 class simple_example_gui(Controller):
     def __init__(self):
         super().__init__()

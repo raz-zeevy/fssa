@@ -2,7 +2,8 @@ from customtkinter import *
 from PIL import Image
 from lib.utils import *
 import ttkbootstrap as ttk
-
+from lib.components.form import HelpButton
+import tkinter as tk
 
 MAIN_BTN_FOREGROUND = "#325d88"
 MAIN_BTN_FOCUSED = "#325d88"
@@ -43,15 +44,20 @@ class StartPage(ttk.Frame):
                       "process.", text_color="#7E7E7E", anchor="w",
                  justify="left", font=("Arial Bold", 12)).pack(anchor="w",
                                                                padx=(25, 0))
-
-        self.button_recorded_data = CTkButton(master=frame, text="Recorded "
+        rec_data_frame = tk.Frame(master=frame, background="#ffffff")
+        rec_data_frame.pack(anchor="w", padx=(25, 0), pady=(20, 0))
+        self.button_recorded_data = CTkButton(master=rec_data_frame, text="Recorded "
                                                                "Data",
                          fg_color="#601E88",
                   hover_color="#E44982", font=("Arial Bold", 12),
                   text_color="#ffffff", width=225)
-        self.button_recorded_data.pack(anchor="w",padx=(25, 0),
-                                                        pady=(38, 0))
-
+        self.button_recorded_data.pack(side="left")
+        rec_hlp_btn = HelpButton(frame, "Press here if your input file "
+                                        "consists of a list of cases (e.g., "
+                                        "subjects), that are scored with "
+                                        "respect to a set of variables to be "
+                                        "mapped by FSSA.")
+        rec_hlp_btn.place(x=257, y=135)
         self.button_matrix_data = CTkButton(master=frame,
                                             text="Dis/similarity Matrix",
                            fg_color="#601E88",
@@ -61,7 +67,13 @@ class StartPage(ttk.Frame):
         self.button_matrix_data.pack(anchor="w",
                                                         padx=(25, 0),
                                                         pady=(38, 0))
-
+        mat_hlp_btn = HelpButton(frame, "Press here if your input file "
+                                        "consists of a symmetric matrix of "
+                                        "similarity coefficients (e.g., "
+                                        "correlations) or dissimilarity "
+                                        "coefficients (distances) between "
+                                        "objects to be mapped by FSSA.")
+        mat_hlp_btn.place(x=257, y=200)
         self.button_info = CTkButton(master=frame, text="What is FSSA?",
                   fg_color=self.colors.primary,
                   hover_color=SECONDARY_FOCUS_COLOR, font=("Arial Bold", 12),

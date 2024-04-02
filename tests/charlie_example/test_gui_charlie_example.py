@@ -30,6 +30,7 @@ class simple_example_gui(Controller):
         self.gui.pages[INPUT_PAGE_NAME].set_entry_lines(1)
         self.gui.pages[INPUT_PAGE_NAME].set_fixed_width('1-digit')
         self.next_page()
+        self.next_page()
         self.gui.pages[DATA_PAGE_NAME].set_labels(VARS_LABELS)
         self.next_page()
         self.next_page()

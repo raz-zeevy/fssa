@@ -56,7 +56,7 @@ class simple_example_gui(Controller):
             print(e)
             raise(e)
         assert os.path.isfile(self.output_path)
-        self.show_diagram_window(2,2)
+        # self.show_diagram_window(2,2)
 
     def reset_test(self, itrs):
         for i in range(itrs):

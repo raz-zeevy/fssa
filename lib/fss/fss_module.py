@@ -312,7 +312,8 @@ def run_fortran(corr_type,
         # Print the output and error, if any
         if result.returncode != 0:
             raise Exception(f"FSSA script failed : {result.stderr}")
-        if result.stderr != RESULTS_SUCCESS_STDERR:
+        if result.stderr not in [RESULTS_SUCCESS_STDERR,
+                                 RESULTS_SUCCESS_STDERR2]:
             if len(result.stderr.split("\n")) >= 3:
                 if result.stderr.split("\n")[2] == 'Fortran runtime error: ' \
                                                    'Cannot write to file opened for READ':

@@ -7,12 +7,15 @@ from dotmap import DotMap
 from lib.components.form import DataButton
 from lib.utils import *
 
+
+# todo: there is a mixup between the sel_var and the var_no
+# all works well rn but should be switched in future
 LABEL = "Label"
 VALID_HIGH = "Valid\nHi. "
 VALID_LOW = "Valid\nLo. "
 LINE_NO = "Line\nNo."
-VAR_NO = "Var\nNo."
-SEL_VAR = "Sel.\nVar."
+VAR_NO = "Sel.\nVar."
+SEL_VAR = "Var.\nNo."
 FIELD_WIDTH = "Field\nWidth"
 START_COL = 'Start\nCol.'
 
@@ -35,8 +38,7 @@ class ManualFormatPage(ttk.Frame):
         self.are_missing_values = True
         self.colors = parent.root.style.colors
         self.create_data_buttons()
-        self.matrix_edit_mode = False
-        self.selected_rows = {}
+        self.limited_edit_mode = False
         # create entry before the table:
         entry = ttk.Label(self, text="Specify where in the data file the "
                                 "variables are located: ")
@@ -57,6 +59,7 @@ class ManualFormatPage(ttk.Frame):
     ###################
 
     def create_data_table(self):
+        self.limited_edit_mode = False
         if self.data_table is not None:
             self.data_table.destroy()
         self.coldata = COLUMNS
@@ -143,16 +146,26 @@ class ManualFormatPage(ttk.Frame):
                                     label=label))
         return data_format
 
-    def set_matrix_edit_mode(self) -> None:
-        self.matrix_edit_mode = True
+    def set_limited_edit_mode(self) -> None:
+        self.limited_edit_mode = True
         self.button_add_variable.config(state="disabled")
         self.button_remove_variable.config(state="disabled")
         for col in COLUMNS:
-            if col not in [VAR_NO, LABEL]:
+            if col not in [VAR_NO, LABEL, VALID_LOW, VALID_HIGH]:
                 self.data_table.hide_column(col)
+
+    def unset_limited_edit_mode(self):
+        self.limited_edit_mode = False
+        self.button_add_variable.config(state="normal")
+        self.button_remove_variable.config(state="normal")
+        for col in COLUMNS:
+            self.data_table.show_column(col)
 
     def get_labels(self) -> list:
         return [row[LABEL] for row in self.data_table.rows()]
+
+    def get_selected_var_labels(self):
+        return [var['Label'] for var in self.data_table.get_checked_rows()]
 
     def get_len_selected_vars(self):
         return len(self.data_table.get_checked_rows())
@@ -167,6 +180,10 @@ class ManualFormatPage(ttk.Frame):
         assert len(list) == len(self.data_table)
         for i, row in enumerate(self.data_table.row_ids()):
             self.data_table.set(row, LABEL, list[i])
+
+    def select_variables(self, var_indices):
+        self.data_table.toggle_all()
+        self.data_table.toggle_rows(var_indices)
 
     def get_vars_valid_values(self):
         all_format = self.get_data_format()
@@ -213,6 +230,8 @@ class ManualFormatPage(ttk.Frame):
     def add_variable(self, line=None, col=None,
                      width=None,
                      valid_low=None, valid_high=None, label=None):
+
+        if self.limited_edit_mode: return
 
         default_values = {LINE_NO: line, START_COL: col,
                           FIELD_WIDTH: width, VALID_LOW: valid_low,

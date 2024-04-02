@@ -120,10 +120,12 @@ class EditableTreeView(ttk.Treeview):
         self._checkbox_on_image = ImageTk.PhotoImage(checkbox_on_image)
         self.insert = self._insert_with_checkbox
 
-    def _on_check_click(self, event):
-        row_id = self.identify_row(event.y)
-        column_id = self.identify_column(event.x)
+    def _on_check_click(self, event, row_id = None):
+        if row_id is None:
+            row_id = self.identify_row(event.y)
+            column_id = self.identify_column(event.x)
         # If the click is on the checkbox column and on a valid row
+        else: column_id = '#0'
         if column_id == '#0' and row_id:
             # Toggle the checkbox state
             self._checkboxes_states[row_id] = not self._checkboxes_states.get(
@@ -319,15 +321,6 @@ class EditableTreeView(ttk.Treeview):
     def get_checked_rows(self):
         return [self.set(iid) for iid in self.get_children() if self._checkboxes_states.get(iid, True)]
 
-    # def set(self, row_id, column=None, value=None):
-    #     if isinstance(column, str):
-    #         column = self._col_names.index(column)
-    #     if column and value:
-    #         self.item(row_id, values=(self.item(row_id, "values")[:column] +
-    #                                   [value] +
-    #                                   self.item(row_id, "values")[column + 1:]))
-    #     return self.item(row_id, "values")
-
     def row_ids(self):
         for iid in self.get_children():
             yield iid
@@ -342,6 +335,19 @@ class EditableTreeView(ttk.Treeview):
     def set_row(self, index, values):
         iid = self.get_children()[index]
         self.item(iid, values=values)
+
+    def toggle_rows(self, rows):
+        """ index starts in 0"""
+        for row in rows:
+            self.toggle_row(row)
+
+    def toggle_row(self, row):
+        """index start in 0"""
+        self._on_check_click(None, row_id=f"I00{row+1}")
+
+    def toggle_all(self):
+        for row in range(len(self.get_children())):
+            self.toggle_row(row)
 
     #####################
     # Add/Remove/Insert #
@@ -390,6 +396,8 @@ class EditableTreeView(ttk.Treeview):
             col_name = self._col_names[identifier]
         else:
             col_name = identifier
+        if col_name not in self._display_columns:
+            return
         self._display_columns.remove(col_name)
         self["displaycolumns"] = self._display_columns
 

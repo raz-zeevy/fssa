@@ -82,6 +82,7 @@ INPUT_MATRIX_FORMAT = "(8F10.7)"
 # Results
 
 RESULTS_SUCCESS_STDERR = "STOP SSA terminated successfully."
+RESULTS_SUCCESS_STDERR2 = 'STOP NEWMON terminated successfully\n'
 
 ### Gui
 

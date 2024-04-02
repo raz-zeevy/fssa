@@ -1,4 +1,6 @@
+import ctypes
 import os.path
+import sys
 import tkinter as tk
 from lib.windows.help.help_window import HelpWindow
 from tkinter import filedialog, Menu
@@ -35,6 +37,10 @@ def gui_only(func, *args, **kwargs):
 
 class GUI():
     def __init__(self):
+        #
+        # if 'win' in sys.platform:
+        ctypes.windll.shcore.SetProcessDpiAwareness(1)
+
         # Main window
         self.root = ttk.Window(themename=THEME_NAME)
         self.root.title("FSSAWIN - Faceted Smallest Space Analysis for "
@@ -112,13 +118,18 @@ class GUI():
         def load_icon_images():
             icons_dir = get_path("lib/assets/toolbar")
             # load all png files from ./assets/toolbar to image_references
+            sizes_dict = {'go.png' : (21, 21), 'help.png' : (20, 20),
+                          'open.png' : (20,20), 'save.jpg' : (23,23),
+                          'next.jpg' : (23,18), 'prev.jpg' : (23,18)}
             for file in os.listdir(get_path(icons_dir)):
-                if file.endswith(".png"):
+                if file.endswith(".png") or file.endswith(".gif") or \
+                        file.endswith('.jpg'):
                     image_path = os.path.join(icons_dir, file)
-                    image = Image.open(image_path, "r").resize((16, 16))
+                    size = sizes_dict.get(file, (17, 17))
+                    image = Image.open(image_path, "r").resize(size)
                     self.image_references[file] = ImageTk.PhotoImage(image)
 
-        def add_button(image: str, command=None, **kwargs):
+        def add_button(image: str, **kwargs):
             if not "width" in kwargs:
                 kwargs["width"] = 25
             if not "height" in kwargs:
@@ -140,11 +151,11 @@ class GUI():
         load_icon_images()
         self.m_button_new = add_button("new.png")
         self.m_button_open = add_button("open.png")
-        self.m_button_save = add_button("save.png")
+        self.m_button_save = add_button("save.jpg")
         tk.Frame(icon_menu_frame, width=10).pack(side=ttk.LEFT)
         ###
-        self.m_button_prev = add_button("prev.png")
-        self.m_button_next = add_button("next.png")
+        self.m_button_prev = add_button("prev.jpg")
+        self.m_button_next = add_button("next.jpg")
         tk.Frame(icon_menu_frame, width=10).pack(side=ttk.LEFT)
         ###
         self.m_button_run = add_button("go.png")
