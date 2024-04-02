@@ -130,3 +130,8 @@ class DimensionsPage(ttk.Frame):
         self.correlation_combo.set(SIMILARITY)
         self.correlation_combo.config(values=[SIMILARITY, DISSIMILARITY])
         self.correlation_label.config(text="Coefficients in matrix designate:")
+
+    def set_default(self):
+        self.dimension_combo.current(0)
+        self.dimension_combo_selected(None)
+        self.correlation_combo.current(0)

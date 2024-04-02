@@ -58,13 +58,11 @@ class simple_example_gui(Controller):
 
     def test_load(self):
         self.load_session('sessions.mem')
-        # assert self.gui.pages[INPUT_PAGE_NAME].get_data_file_path() == \
-        #        r"C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\tests\save_qol_example\qolstu20.dat"
-        # assert self.gui.pages[INPUT_PAGE_NAME].get_entry_lines() == 1
-        # assert self.gui.pages[MANUAL_FORMAT_PAGE_NAME].get_labels() == VARS_LABELS
-        # assert self.gui.pages[FACET_PAGE_NAME].get_facets_num() == 2
-        # assert self.gui.pages[FACET_PAGE_NAME].get_facets_details() == FACET_VALUES
-        # assert self.gui.pages[FACET_VAR_PAGE_NAME].combo_by_var == FACET_VAR_DATA
+        assert self.gui.pages[INPUT_PAGE_NAME].get_data_file_path() == \
+               r"C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\tests\save_qol_example\qolstu20.dat"
+        assert self.gui.pages[INPUT_PAGE_NAME].get_lines_per_var() == 1
+        assert self.gui.pages[MANUAL_FORMAT_PAGE_NAME].get_labels() == VARS_LABELS
+        assert self.gui.pages[FACET_PAGE_NAME].get_facets_num() == 2
 
 
 if __name__ == '__main__':

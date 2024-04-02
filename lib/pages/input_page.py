@@ -53,8 +53,6 @@ class InputPage(ttk.Frame):
         self.checkbox_missing_value = ttk.Checkbutton(frame_missing_value,
                                                       bootstyle="round-toggle",
                                                       variable=self.missing_value_var,
-                                                      command=
-                                                      self.on_missing_value_change,
                                                       onvalue=True,
                                                       offvalue=False)
         self.checkbox_missing_value.pack(side=ttk.RIGHT, padx=(0, 27))
@@ -114,8 +112,6 @@ class InputPage(ttk.Frame):
     #######################
 
     def is_manual_input(self):
-        if self.missing_value_var.get():
-            return True
         if self.additional_options and self.get_auto_parsing_format() is None:
             return True
         return False
@@ -135,7 +131,7 @@ class InputPage(ttk.Frame):
         self.entry_data_file.insert(0, path)
 
     def set_missing_value(self, state : bool):
-        if state:
+        if state != self.missing_value_var:
             self.checkbox_missing_value.invoke()
 
     def get_auto_parsing_format(self):
@@ -216,16 +212,6 @@ class InputPage(ttk.Frame):
         self.entry_lines.delete(0, ttk.END)
         self.entry_lines.insert(0, "1")
         self.additional_options = True
-
-    def on_missing_value_change(self):
-        if self.missing_value_var.get():
-            self.disable_additional_options()
-            self.enable_entry_lines()
-        else:
-            if self.automatic_parsable:
-                self.disable_additional_options()
-            else:
-                self.enable_additional_options()
 
     def browse_file(self):
         filename = filedialog.askopenfilename()

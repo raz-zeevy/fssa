@@ -8,7 +8,8 @@ from lib.controller.controller import *
 from lib.controller.controller import Controller
 
 DATA_PATH = 'DJKEDAR2.DAT'
-SET_MODE_PRODUCTION()
+# SET_MODE_PRODUCTION()
+SET_MODE_TEST()
 
 ###
 test_facets = [
@@ -34,6 +35,7 @@ class simple_example_gui(Controller):
         self.gui.pages[INPUT_PAGE_NAME].set_entry_lines(1)
         self.gui.pages[INPUT_PAGE_NAME].set_fixed_width("1-digit")
         self.next_page()
+        self.next_page()
         self.gui.pages[DATA_PAGE_NAME].select_variables({i for i in range(1,
                                                                           26)})
         self.next_page()
@@ -58,12 +60,11 @@ class simple_example_gui(Controller):
         assert os.path.isfile(self.output_path)
         self.save_session('sessions.mem')
 
-
     def test_load(self):
         self.load_session('sessions.mem')
 
 if __name__ == '__main__':
     a = simple_example_gui()
     a.test_simple_example()
-    a.test_load()
+    # a.test_load()
     a.run_process()

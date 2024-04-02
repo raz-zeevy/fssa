@@ -48,6 +48,7 @@ class Controller:
 
     def init_controller_attributes(self):
         self.delimiter = None
+        self.data = None
         self.data_file_path = None
         self.save_path = None
         self.data_file_extension = None
@@ -59,11 +60,12 @@ class Controller:
         self.facet_dim_details = {}
         #
         self.gui.pages[MANUAL_FORMAT_PAGE_NAME].create_data_table()
+        self.gui.pages[MANUAL_FORMAT_PAGE_NAME].unset_limited_edit_mode()
         self.gui.pages[INPUT_PAGE_NAME].reset_entries()
+        self.gui.pages[DIMENSIONS_PAGE_NAME].set_default()
 
     def init_navigator(self):
         navigator = Navigator(self.gui)
-        navigator.hide_page(MANUAL_FORMAT_PAGE_NAME)
         navigator.add_block(FACET_PAGE_NAME)
         return navigator
 
@@ -114,7 +116,6 @@ class Controller:
             self.gui.switch_page(MATRIX_INPUT_PAGE_NAME)
             self.matrix_input = True
             self.navigator.hide_page(DATA_PAGE_NAME)
-            self.navigator.show_page(MANUAL_FORMAT_PAGE_NAME)
             self.gui.set_menu_matrix_data()
         else:
             self.navigator.hide_page(MATRIX_INPUT_PAGE_NAME)
@@ -122,7 +123,6 @@ class Controller:
             self.gui.switch_page(INPUT_PAGE_NAME)
             self.matrix_input = False
             self.navigator.show_page(DATA_PAGE_NAME)
-            self.navigator.hide_page(MANUAL_FORMAT_PAGE_NAME)
             self.gui.set_menu_recorded_data()
 
     def open_session(self):
@@ -185,7 +185,7 @@ class Controller:
             button_save.bind("<Button-1>",
                              lambda x: self.save_data())
         self.gui.pages[DATA_PAGE_NAME]. \
-            button_reload.configure(command=self.load_data_page)
+            button_reload.configure(command=self.load_data)
         self.gui.pages[DATA_PAGE_NAME].button_recode.config(
             command=lambda: self.gui.show_recode_window()
         )
@@ -388,21 +388,31 @@ class Controller:
                     INPUT_PAGE_NAME].additional_options)
             self.are_missing_values = self.gui.pages[
                 INPUT_PAGE_NAME].missing_value_var.get()
-            if self.manual_input:
-                self.gui.pages[MANUAL_FORMAT_PAGE_NAME].load_missing_values(
-                    self.are_missing_values)
-                self.navigator.show_page(MANUAL_FORMAT_PAGE_NAME)
-            else:
-                self.navigator.hide_page(MANUAL_FORMAT_PAGE_NAME)
+            self.gui.pages[MANUAL_FORMAT_PAGE_NAME].load_missing_values(
+                self.are_missing_values)
+            if not self.manual_input:
+                self.load_data()
         # Matrix Input page
         if cur_page == MATRIX_INPUT_PAGE_NAME:
             self.load_matrix()
         # Manual Format Page
         if cur_page == MANUAL_FORMAT_PAGE_NAME:
+            # for recorded data
             if next_page == DATA_PAGE_NAME:
                 Validator.validate_manual_input(self.gui.pages[
                                                     MANUAL_FORMAT_PAGE_NAME].get_data_format())
-                self.manual_input = True
+                self.manual_input = not self.gui.pages[
+                    MANUAL_FORMAT_PAGE_NAME].limited_edit_mode
+                if self.manual_input:
+                    self.load_data()
+                    data = self.data
+                else:
+                    self.data.columns = self.gui.pages[
+                        MANUAL_FORMAT_PAGE_NAME].get_labels()
+                    data = self.data[self.gui.pages[
+                        MANUAL_FORMAT_PAGE_NAME].get_selected_var_labels()]
+                self.load_data_page(data)
+            # for matrix data
             elif next_page == DIMENSIONS_PAGE_NAME:
                 self.gui.pages[DIMENSIONS_PAGE_NAME].set_number_of_variables(
                     self.gui.pages[MANUAL_FORMAT_PAGE_NAME]
@@ -443,9 +453,6 @@ class Controller:
         if cur_page == FACET_VAR_PAGE_NAME:
             Validator.validate_facet_var_page(self.gui.pages[
                                                   FACET_VAR_PAGE_NAME].get_all_var_facets_indices())
-
-        if self.navigator.get_next() == DATA_PAGE_NAME:
-            self.load_data_page()
         self.navigate_page(self.navigator.get_next())
         return True
 
@@ -504,8 +511,10 @@ class Controller:
             if matrix is None: matrix = self.matrix_input
             self.reset_session(matrix=matrix)
 
+    def load_data_page(self, data):
+        self.gui.pages[DATA_PAGE_NAME].show_data(data)
 
-    def load_data_page(self):
+    def load_data(self):
         # load data
         self.data_file_path = self.gui.pages[
             INPUT_PAGE_NAME].get_data_file_path()
@@ -533,13 +542,17 @@ class Controller:
                                           delimiter=self.delimiter,
                                           extension=self.data_file_extension,
                                           has_header=self.has_header)
+                for col in data:
+                    self.gui.pages[MANUAL_FORMAT_PAGE_NAME].add_variable(
+                        label=col)
+                self.gui.pages[MANUAL_FORMAT_PAGE_NAME].set_limited_edit_mode()
             except Exception as e:
                 if IS_PRODUCTION():
                     raise DataLoadingException(e)
                 else:
                     raise e
         ##########
-        self.gui.pages[DATA_PAGE_NAME].show_data(data)
+        self.data = data
 
     def load_facet_var_page(self):
         facets_details = self.gui.pages[FACET_PAGE_NAME].get_facets_details()
@@ -568,11 +581,6 @@ class Controller:
             num_facets=len(
                 self.gui.pages[FACET_PAGE_NAME].get_facets_details()))
 
-    def switch_to_manual_format_page(self):
-        self.manual_input = True
-        self.navigator.show_page(MANUAL_FORMAT_PAGE_NAME)
-        self.navigate_page(MANUAL_FORMAT_PAGE_NAME)
-
     def load_hypothesis_page(self):
         self.gui.pages[HYPOTHESIS_PAGE_NAME].create_entries(self.facets_num)
 
@@ -598,7 +606,7 @@ class Controller:
         # insert new variables
         for _ in range(len(self.matrix)):
             manual_input.add_variable("", "", "", "", "")
-        manual_input.set_matrix_edit_mode()
+        manual_input.set_limited_edit_mode()
         self.gui.pages[DIMENSIONS_PAGE_NAME].set_matrix_mode()
 
     def init_fss_attributes(self):
@@ -717,26 +725,28 @@ class Controller:
             self.init_controller_attributes()
             self.data_file_path = data_file_path
 
+    def _suggest_parsing(self):
+        path = self.data_file_path or self.gui.pages[
+            INPUT_PAGE_NAME].get_data_file_path()
+        file_extension = os.path.splitext(path)[
+            1].lower()
+        if file_extension in SUPPORTED_RECORDED_DATA_FORMATS:
+            self.data_file_extension = file_extension
+            self.gui.pages[INPUT_PAGE_NAME].disable_additional_options()
+            self.gui.pages[INPUT_PAGE_NAME].automatic_parsable = True
+            # Ask the user whether to treat the first row as a header
+            self.gui.show_msg(
+                "Do you want to treat the first row as a header?",
+                title="Header",
+                buttons=["Yes:primary", "No:primary"],
+                yes_command=lambda: self.set_header(True),
+                no_command=lambda: self.set_header(False))
+        else:
+            self.gui.pages[INPUT_PAGE_NAME].enable_additional_options()
+            self.gui.pages[INPUT_PAGE_NAME].automatic_parsable = False
+
     @error_handler
     def load_recorded_data_file(self):
-        def suggest_parsing(path):
-            file_extension = os.path.splitext(path)[
-                1].lower()
-            if file_extension in SUPPORTED_RECORDED_DATA_FORMATS:
-                self.data_file_extension = file_extension
-                self.gui.pages[INPUT_PAGE_NAME].disable_additional_options()
-                self.gui.pages[INPUT_PAGE_NAME].automatic_parsable = True
-                # Ask the user whether to treat the first row as a header
-                self.gui.show_msg(
-                    "Do you want to treat the first row as a header?",
-                    title="Header",
-                    buttons=["Yes:primary", "No:primary"],
-                    yes_command=lambda: self.set_header(True),
-                    no_command=lambda: self.set_header(False))
-            else:
-                self.gui.pages[INPUT_PAGE_NAME].enable_additional_options()
-                self.gui.pages[INPUT_PAGE_NAME].automatic_parsable = False
-
         self.gui.pages[INPUT_PAGE_NAME].browse_file()
         data_file_path = self.gui.pages[INPUT_PAGE_NAME].entry_data_file.get()
         if self.data_file_path != data_file_path:
@@ -745,7 +755,7 @@ class Controller:
         if self.data_file_path:
             self.gui.pages[INPUT_PAGE_NAME].set_data_file_path(data_file_path)
             self.gui.pages[INPUT_PAGE_NAME].default_entry_lines()
-            suggest_parsing(self.data_file_path)
+            self._suggest_parsing()
 
     @error_handler
     def save_data(self):

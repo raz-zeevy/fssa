@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FSSA - Faceted Smallest Space Analysis Program for Windows</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!--    // font-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <link rel="icon" href="/lib/assets/icon.ico">
+	<style>
+        body, h1, h2, h3, p, a { /* Apply the font to all text elements */
+          font-family: "Raleway", sans-serif;
+          font-optical-sizing: auto;
+          font-weight:400;
+          font-style: normal;
+        }
+
+        body {
+            background: #f4f4f4;
+            margin-top: 75px;
+        }
+
+        .sticky-top {
+            z-index: 1020;
+        }
+        .hero-section {
+            background-color: #5D576B; /* Adjust the color to match your branding */
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+        }
+        .section {
+            padding: 60px 0;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .footer {
+            background-color: #5D576B;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+        .contact-email {
+            word-break: break-all;
+            color: #E6EBE0;
+        }
+        .contact-email:hover {
+            color: white;
+        }
+        .alternate-bg-2 {
+            background-color: #E6EBE0; /* Lighter gray */
+            color:black;
+        }
+        .alternate-bg-1 {
+            background-color: #FFFFFF;
+        }
+
+        /* Ensure full width on smaller screens */
+        @media (max-width: 576px) {
+            .section {
+                padding: 50px 15px;
+            }
+        }
+
+
+
+
+    /* ###############  */
+    /*  Navigate Bar    */
+    /* ###############  */
+
+        /* Adjust the navbar right padding to be 30 */
+        .navbar-brand {
+            font-size: 1.5rem;
+            padding-left: 15px;
+
+        }
+        .nav-section {
+            background-color: #222;
+            color: white;
+        }
+
+
+    /* ###############  */
+    /*  Introduction    */
+    /* ###############  */
+
+    .card {
+        background-color: #FFFFFF; /* Card background color */
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .card-title {
+        color: #5D576B; /* Card title text color */
+        font-weight: bold;
+    }
+
+    .card-text {
+        color: #333; /* Card text color */
+    }
+
+    .card-body {
+        transition: transform 0.3s;
+    }
+
+    .card-body:hover {
+        transform: translateY(-10px);
+    }
+
+    /* Icon colors and other styles */
+    .fas {
+        color: #5D576B;
+    }
+
+    /* ###############  */
+    /*  Gallery         */
+    /* ###############  */
+
+        #screenshots .carousel {
+            margin-top: 30px;
+        }
+        #screenshots .carousel-item {
+            text-align: center;
+        }
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            filter: invert(100%);
+        }
+
+        #screenshotCarousel .carousel-item img {
+            height: 400px; /* Adjust this value to suit your needs */
+            max-width: 480px; /* Adjust this value to suit your needs */
+            margin: auto; /* This will center the image in case it's smaller than the container */
+       }
+
+    /* ###############  */
+    /*  install content */
+    /* ###############  */
+
+        .section-title {
+            font-size: 1.75rem; /* Adjust the size as needed */
+            font-weight: bold;
+        }
+
+        .install-content h3 {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .install-content ul {
+            list-style: none;
+            list-style-type: none; /* Remove bullets */
+            padding-left: 0;
+        }
+
+        .install-content ul li {
+            text-indent: -1.2em;
+            padding: 10px 0px 10px 20px; /* Increase padding between items */
+
+        }
+
+        .btn-sm {
+            padding: .25rem .5rem;
+            font-size: .875rem;
+            line-height: 1.5;
+            border-radius: .2rem;
+        }
+
+        .download-table .btn-primary {
+            margin-top: 0px;
+        }
+
+        .download-table tr:nth-child(even) {
+            background-color: #E7E7E7;
+            border-bottom: 1px solid #ccc;
+        }
+
+        /* Brighten the first row of the download table */
+        #install .download-table tr:first-child {
+            background-color: #f8f9fa; /* Brighter background color for the first row */
+        }
+
+        /* Decrease the size and font size of the download button */
+        #install .download-table .btn-dark {
+            padding: .25rem .5rem; /* Smaller padding */
+            font-size: .875rem; /* Smaller font size */
+            line-height: 1.5;
+            border-radius: .2rem;
+        }
+
+    </style>
+<meta name="google-site-verification" content="_T_OsVQze-Nny-QO_SKUIpITbuSuOgce52jTBX9evfM" />
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container">
+        <img src="lib/assets/session_icon.png" alt="FSSA Logo"
+             style="height: 50px;border-radius: 50%">
+        <a class="navbar-brand" href="#">FSSA</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item"><a class="nav-link" href="#introduction">Introduction</a></li>
+                <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+                <li class="nav-item"><a class="nav-link" href="#install">Download</a></li>
+                <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<header class="hero-section" data-aos="fade-up" >
+    <div class="container">
+        <h1>FSSA (Faceted SSA)</h1>
+        <p>A robust framework for statistical data analysis and visualization.</p>
+        <a href="#install" class="btn btn-lg btn-light">Download Now</a>
+    </div>
+</header>
+
+<section id="introduction" class="section alternate-bg-1" data-aos="fade-up">
+  <div class="container">
+    <div class="row">
+      <!-- Card 1 -->
+      <div class="col-md-4 d-flex align-items-stretch">
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-body text-center">
+            <div class="mb-3">
+              <i class="fas fa-chart-pie fa-3x"></i>
+            </div>
+            <h5 class="card-title">Robust Framework</h5>
+            <p class="card-text">Supports a wide variety of data files including CSV, EXCEL, TSV.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="col-md-4 d-flex align-items-stretch">
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-body text-center">
+            <div class="mb-3">
+              <i class="fas fa-user-friends fa-3x"></i> <!-- Replace with an appropriate icon or image -->
+            </div>
+            <h5 class="card-title">User-Friendly</h5>
+            <p class="card-text">Features such as built-in recoding
+                within the program, and automatic variable parsing, eliminating the need to switch to other statistical software.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="col-md-4 d-flex align-items-stretch">
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-body text-center">
+            <div class="mb-3">
+              <i class="fas fa-database fa-3x"></i> <!-- Replace with an appropriate icon or image -->
+            </div>
+            <h5 class="card-title">Data Visualization</h5>
+            <p class="card-text">Facilitating the facet analysis and facets visualization
+                of experimental data.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section id="about" class="section alternate-bg-2" data-aos="fade-up">
+    <div class="container">
+        <h2>About FSSA</h2>
+        <p>The Fssa program, inspired by the original Faceted SSA for Windows
+            (FSSAWIN), is designed to streamline the process of statistical
+            data analysis. It includes a variety of tools and
+            functionalities, such as data parsing, statistical modeling, and
+            graphical representation of data, with a focus on ease of use
+            without compromising the depth of analysis.</p>
+        <h3>Faceted Smallest Space Analysis (FSSA)</h3>
+        <p>Faceted Smallest Space Analysis (FSSA) is a Multidimensional
+            Scaling (MDS) procedure that optionally allows for the incorporation of content classifications
+            (=facets) of the mapped objects into the analysis and testing their validity. FSSA maps objects
+            (typically variables) in a space of prespecified dimensionality to represent pairwise similarity or
+            dissimilarity observed between them. The (dis)similarity measures are either precomputed or computed
+            by the program from data files.
+            <span class="learn-more-btn-wrapper">
+       <a href="https://en.wikipedia.org/wiki/Facet_theory"
+          class="btn btn-danger btn-sm" role="button"
+          aria-pressed="true" style = "margin-left: 10px;">Learn More</a>
+   </span>
+        </p>
+    </div>
+        <div class="container" style="padding-top: 50px;">
+        <div id="screenshotCarousel" class="carousel slide" data-ride="carousel">
+            <div class="carousel-inner" id="carousel-inner-container">
+            </div>
+            <a class="carousel-control-prev" href="#screenshotCarousel" role="button" data-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="sr-only">Previous</span>
+            </a>
+            <a class="carousel-control-next" href="#screenshotCarousel" role="button" data-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="sr-only">Next</span>
+            </a>
+        </div>
+    </div>
+</section>
+
+<section id="install" class="section" data-aos="fade-up">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <h2 class="section-title">Installation & Usage</h2>
+                <p class="font-italic">Installing Fssa only requires a few
+                    simple steps:</p>
+            </div>
+            <div class="col-md-8">
+                <div class="install-content">
+                    <h3>Installation</h3>
+                    <ul>
+                        <li>Download the installation package:</li>
+                            <table class="table download-table">
+                                <tr>
+                                    <td></td>
+                                    <td>Version</td>
+                                    <td>Date</td>
+                                    <td>Download</td>
+                                </tr>
+                                <tr>
+                                    <td><img
+                   src="lib/assets/session_icon.png"
+                               alt="FSSA Logo"
+                         style="height: 40px;border-radius: 50%;"></td>
+                                    <td>Alpha 0.97</td>
+                                    <td>2024-01-25</td>
+                                    <td><a href="https://shorturl.at/hwyA1" class="btn btn-dark btn-sm">Download Setup</a></td>
+                                </tr>
+                            </table>
+                        <li>Run the downloaded <code>FssaSetup.exe</code> file to start the installation wizard.</li>
+                        <li>Follow the on-screen instructions provided by the installation wizard to complete the setup.</li>
+                        <li>Once installed, Fssa is ready to
+                            use on
+                        your system.</li>
+                    </ul>
+                    <h3>Usage</h3>
+                    <ul>
+                        <li>Run the application by double-clicking on Fssa
+                            .</li>
+                        <li>Follow the on-screen instructions to input your data and configure the analysis parameters.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+    <section id="license" class="section alternate-bg-2" data-aos="fade-up">
+    <div class="container">
+        <h2>License</h2>
+        <p>This project is licensed under the MIT License - see the <a href="LICENSE">LICENSE</a> file for details.</p>
+    </div>
+    </section>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <p>- Contact -<br>For any queries or suggestions, feel free to contact
+            us at
+            <a href="mailto:raz3zeevy@gmail.com" class="contact-email">raz3zeevy@gmail.com</a>.</p>
+           <p><span style="padding-right: 10px;"><img
+                   src="lib/assets/session_icon.png"
+                               alt="FSSA Logo"
+                         style="height: 35px;border-radius: 50%;filter: grayscale(100%);opacity: 0.7;"></span>© 2024 FSSA Program.
+               All Rights Reserved.</p>
+    </div>
+</footer>
+
+<div id="adblock-detection" style="display:none;">
+    <p>We've detected that you are using an ad blocker. Our website requires ads to be disabled to function properly. Please disable your ad blocker to continue.</p>
+</div>
+<script>
+  // This function checks if the fake ad element has been hidden by an ad blocker
+  function checkAdBlocker() {
+    // Try to create a fake ad banner
+    let fakeAd = document.createElement('div');
+    fakeAd.innerHTML = '&nbsp;';
+    fakeAd.className = 'adsbox';
+    document.body.appendChild(fakeAd);
+
+    // Wait for the page to load
+    window.addEventListener('load', () => {
+      // Check if the fake ad has been hidden
+      let isAdBlockerActive = fakeAd.offsetHeight === 0;
+      document.body.removeChild(fakeAd);
+
+      // If the ad is hidden, assume an ad blocker is active
+      if (isAdBlockerActive) {
+        document.getElementById('adblock-detection').style.display = 'block';
+      }
+    });
+  }
+
+  checkAdBlocker();
+</script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+  AOS.init({
+    duration: 1200, // values from 0 to 3000, with step 50ms
+    once: true, // whether animation should happen only once - while scrolling down
+  });
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var carouselInner = document.getElementById('carousel-inner-container');
+    var images = [
+      { src: 'lib/assets/media/data_screen.jpg', alt: 'Data Screen' },
+      { src: 'lib/assets/media/facets_screen.jpg', alt: 'Facets Screen' },
+      { src: 'lib/assets/media/fssa_graph.jpg', alt: 'Graph 1' },
+      { src: 'lib/assets/media/fssa_graph_2.jpg', alt: 'Graph 2' },
+      { src: 'lib/assets/media/start_screen.jpg', alt: 'Start Screen' },
+      // Add more image paths and alts here
+    ];
+
+    var carouselItemsHtml = images.map(function (image, index) {
+      return '<div class="carousel-item' + (index === 0 ? ' active' : '') + '">' +
+             '<img src="' + image.src + '" class="d-block w-100" alt="' + image.alt + '">' +
+             '</div>';
+    }).join('');
+
+    carouselInner.innerHTML = carouselItemsHtml;
+  });
+</script>
+</body>
+</html>

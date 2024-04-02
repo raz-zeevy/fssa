@@ -67,10 +67,10 @@ class FacetPage(ttk.Frame):
                                                              element_count_var.get(),
                                                              facet_index))
         self.facets_elements_combo.append(element_count_combo)
-        Label(header_frame, text="Elm.\nNo.",
+        Label(header_frame, text="No. of elements\nin this facet:",
                   background=self.colors.light,
-                  padding=(10, 0)). \
-            grid(row=0, column=0, padx=(0, 10), pady=(0, 5))
+                  padding=(5, 0)). \
+            grid(row=0, column=0, padx=(0, 5), pady=(0, 5))
         # Table for the labels
         parent.table_container = ttk.Frame(parent)
         parent.table_container.pack(fill='both', expand=True)
@@ -134,6 +134,9 @@ class FacetPage(ttk.Frame):
                 facet.append(entry.get())
             facets.append(facet)
         return facets
+
+    def get_facets_num(self):
+        return len(self.facets_entries)
 
     def set_facets_num(self, num : int):
         self.facets_combo.current(num)

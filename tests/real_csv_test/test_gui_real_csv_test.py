@@ -32,6 +32,7 @@ class simple_example_gui(Controller):
         self.data_file_extension = ".csv"
         self.gui.pages[INPUT_PAGE_NAME].disable_additional_options()
         self.next_page()
+        self.next_page()
         self.gui.pages[DATA_PAGE_NAME].select_variables({i for i in range(3,
                                                                           21)})
         self.gui.pages[DATA_PAGE_NAME].recode_variables(None, dict(
