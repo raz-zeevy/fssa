@@ -20,7 +20,6 @@ from lib.pages.matrix_input_page import MatrixInputPage
 from lib.pages.start_page import StartPage
 from lib.utils import *
 from ttkbootstrap.dialogs.dialogs import Messagebox
-
 from lib.windows.technical_options_window import TOWindow
 
 THEME_NAME = 'sandstone'
