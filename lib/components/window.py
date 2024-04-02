@@ -19,6 +19,5 @@ class Window(ttk.Toplevel):
         x = (screen_width / 2) - (size[0] / 2)
         y = 20
         self.geometry("+%d+%d" % (x, y))
-
     def on_closing(self):
         self.destroy()
