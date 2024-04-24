@@ -74,9 +74,6 @@ class ManualFormatPage(ttk.Frame):
         self.data_table.pack(side=tk.TOP, fill=BOTH, expand=True,
                              pady=(10, 10), padx=40)
         self._configure_columns()
-        # add default variable
-        if IS_PRODUCTION():
-            self.add_variable()
 
     def _configure_columns(self):
         self.data_table.heading("#0", anchor='c')

@@ -48,7 +48,8 @@ class RecodeWindow(Window):
                                        text="Enter the serial number of "
                                             "the variables you wish to "
                                             "recode: (e.g. 1-5, 8, 11-13)",
-                                       justify="left", wraplength=300)
+                                       justify="left", wraplength=real_size(
+                300))
         self.indices_label.pack(side=tk.LEFT, padx=5)
         self.indices_entry = ttk.Entry(indices_frame, width=20)
         self.indices_entry.pack(side=tk.RIGHT, padx=(0,20), pady=(10,0))
@@ -58,7 +59,8 @@ class RecodeWindow(Window):
                                         text="Would you like to recode the "
                                              "data into groups? If yes, "
                                              "to how many groups?",
-                                        wraplength=400, justify="left")
+                                        wraplength=real_size(400),
+                                        justify="left")
         self.grouping_label.pack(side=tk.LEFT, padx=5, fill="x")
         grouping_values = [str(i) for i in range(1,100)]
         grouping_values.insert(0, "No")
@@ -75,7 +77,8 @@ class RecodeWindow(Window):
         self.grouping_type_label = ttk.Label(grouping_type_frame,
                                                 text="How would you like to "
                                                      "group the data?",
-                                                wraplength=400, justify="left")
+                                                wraplength=real_size(400),
+                                             justify="left")
         self.grouping_type_label.pack(side=tk.LEFT, padx=5, fill="x")
 
         self.grouping_type_entry = SelectionBox(grouping_type_frame,
@@ -90,7 +93,8 @@ class RecodeWindow(Window):
                                              "values of the variable?\n(e.g. "
                                              "[1,"
                                              "2,3] → [3,2,1] )",
-                                        wraplength=400, justify="left")
+                                        wraplength=real_size(400),
+                                         justify="left")
         self.inverting_label.pack(side=tk.LEFT, padx=5, fill="x")
         self.inverting_var = ttk.BooleanVar(value=False)
         self.inverting_check_box = ttk.Checkbutton(inverting_frame,

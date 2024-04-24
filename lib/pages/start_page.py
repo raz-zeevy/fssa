@@ -16,20 +16,19 @@ class StartPage(ttk.Frame):
         ttk.Frame.__init__(self, parent.root)
         self.colors = parent.root.style.colors
         self.create_widgets()
+        self.root.update()
         # parent.root.geometry("930x740")
-        parent.root.geometry("590x493")
+        # parent.root.geometry("590x493")
+        # parent.root.geometry("500x420")
 
     def create_widgets(self):
         side_img_data = Image.open(get_resource("side-img5.png"))
-
         side_img = CTkImage(dark_image=side_img_data,
                             light_image=side_img_data,
-                            size=(290, 493)
-                            )
+                            size=(WINDOW_WIDTH/2,WINDOW_HEIGHT))
 
         CTkLabel(master=self, text="", image=side_img).pack(expand=True,
                                                            side="left")
-
         frame = CTkFrame(master=self, width=300, height=480,
                          fg_color="#ffffff")
         frame.pack_propagate(0)
@@ -44,36 +43,36 @@ class StartPage(ttk.Frame):
                       "process.", text_color="#7E7E7E", anchor="w",
                  justify="left", font=("Arial Bold", 12)).pack(anchor="w",
                                                                padx=(25, 0))
-        rec_data_frame = tk.Frame(master=frame, background="#ffffff")
-        rec_data_frame.pack(anchor="w", padx=(25, 0), pady=(20, 0))
-        self.button_recorded_data = CTkButton(master=rec_data_frame, text="Recorded "
+        #
+        self.button_recorded_data = CTkButton(master=frame, text="Recorded "
                                                                "Data",
                          fg_color="#601E88",
                   hover_color="#E44982", font=("Arial Bold", 12),
-                  text_color="#ffffff", width=225)
-        self.button_recorded_data.pack(side="left")
+                  text_color="#ffffff", width=225,)
+        self.button_recorded_data.pack(anchor="w",
+                                       padx=(19, 0),
+                                       pady=(38, 0))
         rec_hlp_btn = HelpButton(frame, "Press here if your input file "
                                         "consists of a list of cases (e.g., "
                                         "subjects), that are scored with "
                                         "respect to a set of variables to be "
                                         "mapped by FSSA.")
-        rec_hlp_btn.place(x=257, y=135)
+        rec_hlp_btn.place(x=real_size(257), y=real_size(155))
         self.button_matrix_data = CTkButton(master=frame,
                                             text="Dis/similarity Matrix",
                            fg_color="#601E88",
                   hover_color="#E44982", font=("Arial Bold", 12),
-                  text_color="#ffffff", width=225)
-
+                  text_color="#ffffff", width=225,)
         self.button_matrix_data.pack(anchor="w",
-                                                        padx=(25, 0),
-                                                        pady=(38, 0))
+                                     padx=(19,0),
+                                     pady=(38,0))
         mat_hlp_btn = HelpButton(frame, "Press here if your input file "
                                         "consists of a symmetric matrix of "
                                         "similarity coefficients (e.g., "
                                         "correlations) or dissimilarity "
                                         "coefficients (distances) between "
                                         "objects to be mapped by FSSA.")
-        mat_hlp_btn.place(x=257, y=200)
+        mat_hlp_btn.place(x=real_size(257), y=real_size(220))
         self.button_info = CTkButton(master=frame, text="What is FSSA?",
                   fg_color=self.colors.primary,
                   hover_color=SECONDARY_FOCUS_COLOR, font=("Arial Bold", 12),

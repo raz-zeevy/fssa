@@ -38,8 +38,9 @@ class GUI():
     def __init__(self):
         #
         # if 'win' in sys.platform:
-        ctypes.windll.shcore.SetProcessDpiAwareness(1)
-
+        # ctypes.windll.shcore.SetProcessDpiAwareness(0)
+        # ctypes.windll.user32.SetProcessDPI    Aware()
+        # os.system("xrandr  | grep \* | cut -d' ' -f4")
         # Main window
         self.root = ttk.Window(themename=THEME_NAME)
         self.root.title("FSSAWIN - Faceted Smallest Space Analysis for "
@@ -56,7 +57,15 @@ class GUI():
         #         self.image_references.append(get_resource(f"toolbar/{file}"))
 
         # Set the window to be square
-        self.root.geometry(f'{WINDOW_WIDTH}x{WINDOW_HEIGHT}')
+        self.config_dpi_ratio()
+        # WINDOW_HEIGHT = 570
+        # WINDOW_HEIGHT = 800
+        # WINDOW_WIDTH = 660
+        # dpi+++ -> widht ++
+        # dpi+++ -> height ++
+        self.root.minsize(*real_size((WINDOW_WIDTH, WINDOW_HEIGHT),
+                                    _round = True))
+        self.root.pack_propagate(0)
         self.root.resizable(False, False)
         # set the window to be always on top
         # self.root.attributes("-topmost", True)
@@ -73,14 +82,19 @@ class GUI():
             self.pages[page_name] = Page(self)
 
         # init common gui
-        self.center_window()
+        # self.center_window()
 
     ##################
     #   Functions    #
     ##################
 
+    def config_dpi_ratio(self):
+        dpi = self.root.winfo_fpixels("1i")
+        dpi_ratio = dpi / 96
+        os.environ["DPI_RATIO"] = str(dpi_ratio)
+
     def start_fss(self):
-        self.root.geometry(f'{WINDOW_WIDTH}x{WINDOW_HEIGHT}')
+        # self.root.geometry(f'{WINDOW_WIDTH}x{WINDOW_HEIGHT}')
         self.create_menu()
         self.create_icon_menu()
         self.create_help_bar()
@@ -117,22 +131,26 @@ class GUI():
         def load_icon_images():
             icons_dir = get_path("lib/assets/toolbar")
             # load all png files from ./assets/toolbar to image_references
-            sizes_dict = {'go.png' : (21, 21), 'help.png' : (20, 20),
-                          'open.png' : (20,20), 'save.jpg' : (23,23),
-                          'next.jpg' : (23,18), 'prev.jpg' : (23,18)}
+            sizes_dict = {'go.png' : real_size((21, 21),_round=True),
+                          'help.png' : real_size((20,20),_round=True),
+                          'new.png' : real_size((19,19),_round=True),
+                          'open.png' : real_size((20,20),_round=True),
+                          'save.jpg' : real_size((23,23),_round=True),
+                          'next.jpg' : real_size((23,18),_round=True),
+                          'prev.jpg' : real_size((23,18),_round=True)}
             for file in os.listdir(get_path(icons_dir)):
                 if file.endswith(".png") or file.endswith(".gif") or \
                         file.endswith('.jpg'):
                     image_path = os.path.join(icons_dir, file)
-                    size = sizes_dict.get(file, (17, 17))
+                    size = sizes_dict.get(file, real_size((25, 25),_round=True))
                     image = Image.open(image_path, "r").resize(size)
                     self.image_references[file] = ImageTk.PhotoImage(image)
 
         def add_button(image: str, **kwargs):
             if not "width" in kwargs:
-                kwargs["width"] = 25
+                kwargs["width"] = real_size(25)
             if not "height" in kwargs:
-                kwargs["height"] = 25
+                kwargs["height"] = real_size(25)
             button = tk.Button(icon_menu_frame,
                                autostyle=False,
                                image=self.image_references[image],
@@ -420,105 +438,5 @@ if __name__ == '__main__':
     # gui.show_technical_options_window()
     # gui.show_help_windw()
     # Create the main window
-    import tkinter as tk
-    from tkinter import ttk
-
-
-    def toggle_check(event):
-        # Identify the row and column clicked
-        row_id = tree.identify_row(event.y)
-        column = tree.identify_column(event.x)
-
-        # Only toggle if the "Selected" column is clicked
-        if column == "#1":
-            item = tree.item(row_id)
-            current_value = item['values'][0]
-            new_value = "☐" if current_value == "☑" else "☑"
-
-            # Update the item with the new value
-            tree.item(row_id,
-                      values=(new_value, item['values'][1], item['values'][2]))
-
-
-    # Initialize the main window
-    root = tk.Tk()
-    root.title("Checkbox in Treeview")
-
-    # Define the data
-    data = [("☐", "1", "Variable A"),
-            ("☐", "2", "Variable B"),
-            ("☐", "3", "Variable C")]
-
-    # Setup the Treeview
-    tree = ttk.Treeview(root, columns=("Selected", "ID", "Name"),
-                        show="headings")
-    tree.heading("Selected", text="Selected")
-    tree.heading("ID", text="ID")
-    tree.heading("Name", text="Name")
-    tree.column("Selected", width=60)
-
-    # Insert the data into the treeview
-    for row in data:
-        tree.insert("", tk.END, values=row)
-
-    # Bind click event
-    tree.bind("<Button-1>", toggle_check)
-
-    # Packing the treeview
-    tree.pack(expand=True, fill=tk.BOTH)
-
-    root.mainloop()
-    # gui.run_process()
-
-    # import tkinter as tk
-    # import matplotlib.pyplot as plt
-    #
-    # graphinput = tk.Tk()
-    # # change the size of the window to be bigger
-    # graphinput.geometry("500x500")
-    #
-    # def opentable():
-    #     global total_rows
-    #     global total_columns
-    #     total_rows = int(yaxis.get())
-    #     total_columns = int(xaxis.get())
-    #     table = tk.Toplevel(graphinput)
-    #
-    #     def tcompile():
-    #         masterlines = []
-    #         for entries in my_entries:
-    #             print(cell.get())
-    #             masterlines.append(int(cell.get()))
-    #         plt.plot(masterlines)
-    #         plt.show()
-    #
-    #     my_entries = []
-    #     for i in range(total_rows):
-    #         for j in range(total_columns):
-    #             cell = tk.Entry(table, width=20, font=('Agency FB', 15))
-    #             cell.grid(row=i, column=j)
-    #             my_entries.append(cell)
-    #     tblframe = tk.Frame(table, bd=4)
-    #     tblframe.grid(row=i + 1, column=j)
-    #     compbtn = tk.Button(tblframe, font=("Agency FB", 20), text="Compile",
-    #                         command=tcompile)
-    #     compbtn.grid(row=0, column=0)
-    #
-    #
-    # tablegrid = tk.Frame(graphinput, bd=4)
-    # tablegrid.pack()
-    # xlabel = tk.Label(tablegrid, text="Column Entry")
-    # xlabel.grid(row=0, column=0)
-    # ylabel = tk.Label(tablegrid, text="Row Entry")
-    # ylabel.grid(row=0, column=1)
-    # xaxis = tk.Entry(tablegrid)
-    # xaxis.grid(row=1, column=0)
-    # yaxis = tk.Entry(tablegrid)
-    # yaxis.grid(row=1, column=1)
-    # xaxis = tk.Entry(tablegrid)
-    # xaxis.grid(row=2, column=0)
-    # yaxis = tk.Entry(tablegrid)
-    # yaxis.grid(row=2, column=1)
-    # framebtn = tk.Button(tablegrid, text="Create", command=opentable)
-    # framebtn.grid(row=3, column=0)
-    # graphinput.mainloop()
+    gui.run_process()
+    gui.start_fss()

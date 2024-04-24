@@ -2,7 +2,39 @@ import os
 from lib import config
 
 WINDOW_HEIGHT = 570
+# WINDOW_HEIGHT = 800
 WINDOW_WIDTH = 660
+
+# WINDOW_WIDTH = 950
+def get_window_width():
+    return real_size(WINDOW_WIDTH)
+
+def get_window_height():
+    return real_size(WINDOW_HEIGHT)
+def real_size(args, _round=False):
+    """
+    This function is used to calculate the real size of the GUI elements
+    :param args:
+    :param _round:
+    :return:
+    """
+    # get the dpi_ratio from the enviroment
+    dpi_ratio = float(os.environ.get('DPI_RATIO', 0))
+    if not dpi_ratio:
+        if _round:
+            return round(args)
+        return args
+    elif isinstance(args, tuple):
+        if _round:
+            return tuple([round(arg * dpi_ratio) for arg in args])
+        return tuple([arg * dpi_ratio for arg in args])
+    elif isinstance(args, (int, float)):
+        if _round:
+            return round(args * dpi_ratio)
+        return args * dpi_ratio
+    else:
+        raise ValueError(f"Invalid type: {type(args)}")
+
 
 DELIMITER_1_D = "1-digit"
 DELIMITER_2_D = "2-digit"
@@ -128,15 +160,17 @@ def get_resource(asset_name):
         raise FileNotFoundError(f"Resource not found: {path}")
     return path
 
+
 def get_path(relative_path):
     # Get the directory of the current script file
     script_dir = os.path.dirname(os.path.realpath(__file__))
-    path = os.path.join(script_dir,".." ,relative_path)
+    path = os.path.join(script_dir, "..", relative_path)
     path = os.path.abspath(path)
     # check
     if not os.path.exists(path):
         raise FileNotFoundError(f"Path not found: {path}")
     return path
+
 
 ##################
 #   Exceptions   #

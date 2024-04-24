@@ -64,7 +64,6 @@ class simple_example_gui(Controller):
         assert self.gui.pages[MANUAL_FORMAT_PAGE_NAME].get_labels() == VARS_LABELS
         assert self.gui.pages[FACET_PAGE_NAME].get_facets_num() == 2
 
-
 if __name__ == '__main__':
     a = simple_example_gui()
     a.test_simple_example()

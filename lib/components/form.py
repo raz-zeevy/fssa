@@ -1,25 +1,13 @@
 import ttkbootstrap as ttk
 import tkinter as tk
 from PIL import ImageTk, Image
-
+from lib.utils import real_size
 from lib.utils import get_resource
 
 
 CALIBRI_FONT = ('Calibri', 10)
 SEGOE_UI_FONT = ('Segoe UI', 9)
 
-
-def absolute_x(widget):
-    if widget == widget.winfo_toplevel():
-        # top of the widget hierarchy for this window
-        return 0
-    return widget.winfo_x() + absolute_x(widget.nametowidget(widget.winfo_parent()))
-
-def absolute_y(widget):
-    if widget == widget.winfo_toplevel():
-        # top of the widget hierarchy for this window
-        return 0
-    return widget.winfo_y() + absolute_y(widget.nametowidget(widget.winfo_parent()))
 
 class Label(ttk.Label):
     """A label that can be used to display text."""
@@ -70,7 +58,7 @@ class SelectionBox(ttk.Combobox):
 
 def create_labeled_selection_box(master, label_text, values, default,
                                  width=10, label_padx=10, box_pad_x=0, pady=10,
-                                 wraplength=500):
+                                 wraplength=real_size(500)):
     # Delimiter Frame
     frame = ttk.Frame(master)
     frame.pack(fill='x', padx=label_padx, pady=pady)
@@ -98,7 +86,8 @@ class HelpButton(tk.Button):
 
     def __init__(self, parent, msg, **kwargs):
         if HelpButton.img is None:
-            img = Image.open(HelpButton.img_path, "r").resize((19,19))
+            img = Image.open(HelpButton.img_path, "r").\
+                resize(real_size((19,19),_round=True))
             HelpButton.img = ImageTk.PhotoImage(img)
 
         kwargs['text'] = "?"

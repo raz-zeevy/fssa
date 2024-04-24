@@ -46,7 +46,7 @@ class InputPage(ttk.Frame):
                                     "values, switch this option on.",
                                anchor='w',  # Aligns text to the west (left)
                                justify=ttk.LEFT,
-                               wraplength=WINDOW_WIDTH - 200)
+                               wraplength=real_size(WINDOW_WIDTH - 200))
         label_text.pack(side=ttk.LEFT, fill='x', expand=True)
         # Checkbox, without text, aligned to the right
         self.missing_value_var = ttk.BooleanVar(value=False)
@@ -64,7 +64,8 @@ class InputPage(ttk.Frame):
                                                     "or tsv, please fill the "
                                                     "additional data options to "
                                                     "parse the variables.",
-                                         wraplength=WINDOW_WIDTH - 200, )
+                                         wraplength=real_size(WINDOW_WIDTH -
+                                                    200) )
         self.label_data_type.pack(fill='x', padx=ENTRIES_PADX, pady=(20, 0))
         #
         self.additiona_options_frame = ttk.LabelFrame(self, text="Additional "
@@ -93,7 +94,7 @@ class InputPage(ttk.Frame):
                      "None.", width=5, label_padx=ENTRIES_PADX, pady=10,
                 values=AUTO_PARSING_DELIMITER_OPTIONS,
                 default="None",
-                wraplength=WINDOW_WIDTH - 200)
+                wraplength=real_size(WINDOW_WIDTH - 200))
         self.fixed_width_label, self.selection_box_fixed_width = \
             create_labeled_selection_box(
                 self.additiona_options_frame,
@@ -105,7 +106,7 @@ class InputPage(ttk.Frame):
                 pady=10,
                 values=FIXED_WIDTH_OPTIONS,
                 default="No",
-                wraplength=WINDOW_WIDTH - 200)
+                wraplength=real_size(WINDOW_WIDTH - 200))
 
     #######################
     # getters and setters #

@@ -169,7 +169,7 @@ class MatrixInputPage(ttk.Frame):
         var_num_frame = ttk.Frame(frame)
         var_num_frame.pack(fill='x', padx=ENTRIES_PADX, pady=(15, 0))
         label_var_num = Label(var_num_frame, text=label,
-                                  wraplength=600, justify='left')
+                                  wraplength=real_size(600), justify='left')
         label_var_num.pack(side=ttk.LEFT, padx=(0, 10))
         entry = ttk.Entry(var_num_frame, width=8)
         if default: entry.insert(0, default)
@@ -180,7 +180,7 @@ class MatrixInputPage(ttk.Frame):
         var_num_frame = ttk.Frame(frame)
         var_num_frame.pack(fill='x', padx=(ENTRIES_PADX,70), pady=(15, 0))
         label_var_num = Label(var_num_frame, text=label,
-                                  wraplength=600, justify='left')
+                                  wraplength=real_size(600), justify='left')
         label_var_num.pack(side=ttk.LEFT, padx=(0, 5))
         entries = []
         for i in range(n):
