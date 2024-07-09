@@ -749,9 +749,8 @@ class Controller:
     def load_recorded_data_file(self):
         self.gui.pages[INPUT_PAGE_NAME].browse_file()
         data_file_path = self.gui.pages[INPUT_PAGE_NAME].entry_data_file.get()
-        if self.data_file_path != data_file_path:
-            self.init_controller_attributes()
-            self.data_file_path = data_file_path
+        self.init_controller_attributes()
+        self.data_file_path = data_file_path
         if self.data_file_path:
             self.gui.pages[INPUT_PAGE_NAME].set_data_file_path(data_file_path)
             self.gui.pages[INPUT_PAGE_NAME].default_entry_lines()

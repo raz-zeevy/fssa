@@ -1,6 +1,4 @@
 # app.py
-import os
-import sys
 from lib.controller.controller import Controller
 
 

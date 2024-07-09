@@ -14,7 +14,6 @@ from lib.utils import *
 DATA_PATH = 'data.csv'
 SET_MODE_TEST()
 
-
 class simple_example_gui(Controller):
     def __init__(self):
         super().__init__()

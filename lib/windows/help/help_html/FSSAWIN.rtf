@@ -1,0 +1,717 @@
+{\rtf1\ansi\deff0
+{\fonttbl{\f0\fswiss Helv;}{\f1\fnil Times New Roman;}{\f2\fnil Symbol;}{\f3\fnil Arial;}{\f4\froman Tms Rmn;}{\f5\fswiss Helvetica;}{\f6\fnil MS Sans Serif;}}
+{\stylesheet{\fs20 \snext0 Normal;}
+}\pard\plain
+{\up #}
+\pard\sl235 \f4\fs16  \plain\b\fs24 FSSA for Windows Help Index\fs20 
+\par \plain\f5\fs20 {\up K}
+
+\par \uldb What is FSSA ?\plain\f5\fs20 
+\par 
+\par \plain\b\fs20 How To ...
+\par \uldb \plain\f5\uldb\fs20 Move between screens\plain\f5\fs20 \ul 
+\par \plain\f5\uldb\fs20 Use the keyboard\plain\f5\fs20 \ul 
+\par \plain\f5\uldb\fs20 Use facets\plain\f5\fs20 \ul 
+\par \plain\f5\uldb\fs20 Not use facets\plain\f5\fs20 \ul 
+\par 
+\par \plain\b\fs20 Commands
+\par \uldb \plain\uldb\fs20 File menu\plain\fs20 
+\par \uldb Input Data menu\plain\fs20 
+\par \uldb SSA menu\plain\fs20 
+\par \uldb Facets menu\plain\fs20 
+\par \uldb View menu\plain\fs20 
+\par \uldb Help menu\plain\fs20 
+\par \page
+{\up #}
+\pard\sl235 \b What is FSSA ?\plain\fs20 
+\par 
+\par Faceted Smallest Space Analysis (FSSA) is a Multidimensional Scaling (MDS) procedure which optionally allows for the incorporation of content classifications (=facets) of the mapped objects into the analysis.
+\par 
+\par FSSA maps objects (most often the "objects" are observed variables) in a space of prespecified dimensionality, so as to represent pairwise similarity or dissimilarity observed between them. The (dis)similarity measures -- or coefficients -- are created in advance by a statistical package or otherwise conceived and written into a file (e.g., using your editor). Coefficients should be in the form of a symmetric matrix  written into an ASCII file, having a fixed format. Optionally, FSSA first computes a matrix of pearson correlations or a matrix of monotonicity coefficients from an appropriate data file (i.e. an ASCII file where each variable is numerical, and ordered from HIGH to LOW in some sense). Then FSSA goes on to processing the matrix -- interpreting its entries as similarity coefficients -- and to mapping the variables in  2-dimensional projections of the requested spaces. 
+\par \pard\sl235 
+\par Before you start FSSA you must verify that either the matrix file or the data file you wish to process is indeed in your computer. If you are going to process an existing matrix, you should know:
+\par The name of the matrix file, and its full path (e.g. \'5cmydir\'5csimil.mat)
+\par How many objects (e.g. variables) are referred to by that matrix
+\par In what format is the matrix written in the file. I.e.,
+\par \pard\sl235\li275 The number of fields in each (physical) row. (This may be smaller than the number of objects if rows wrap;)
+\par The number of columns in each field;
+\par The number of decimal places used, if any.
+\par Whether coefficients represent pairwise similarity between objects (correlations, confusion coefficients, judged similarity) or pairwise dissimilarity (distance).
+\par \pard\sl235 
+\par If you are going to run a two-stage procedure, where a matrix is first computed from an existing data set, you should know:
+\par \pard\sl235\li275 The name of the data file, and its full path (e.g. \'5cmydir\'5ccoded.dat) ;
+\par How many records (lines) per subject are there in the data file;
+\par How many variables are to be processed and where they are located in  the data file; i.e. the record number and column(s) of each variable;
+\par For each variable, what are its valid values (the range of numerical values over which correlations are computed) and what are its non- valid (including missing) values.
+\par \pard\sl235 
+\par The full power of FSSA for scientific theory construction is attained by identifying a correspondence between a content facet (i.e. a classification of the variables) and a partition of the FSSA solution  space into regions. This is facilitated by the program "facet option". 
+\par 
+\par \b References\plain\fs20 
+\par 
+\par \pard\sl235\li355\fi-355 \tab Guttman, L. A general nonmetric technique for finding the smallest coordinate space for a configuration of points. PSYCHOMETRIKA, 1968. 
+\par \tab Lingoes, J.C. The Guttman-Lingoes Nonmetric Program Series. Ann Arbor:  Mathesis, 1973.                                                          
+\par \tab Shye, S. (ed.) Theory Construction and Data Analysis in the Behavioral Sciences. San Francisco: Jossey-Bass, 1978.                              
+\par \tab Shye, S. Achievement motive: a faceted definition and structural analysis .  MULTIVARIATE BEHAVIORAL RESEARCH, 1978.
+\par \pard\sl235\li355\fi-355 \tab Shye, S. Smallest Space Analysis. In T. Husen & T.N. Postlethwaite (eds.) INTERNATIONAL ENCYCLOPEDIA OF EDUCATION. Oxford: Pergamon, 1985.
+\par \tab Shye, S. Multiple Scaling. Amsterdam: North Holland. 1985.
+\par \tab Borg, T. and Shye, S. Facet Theory: Form and Content. Thousand Oaks, CA: Sage, 1995.
+\par \tab Shye, S. and Elizur, D. Intriduction to Facet Theory. Thousand Oaks, CA: Sage, 1994.
+\par \page
+{\up $}
+{\up #}
+\pard\sl235 \b How to move between screens\plain\fs20 
+\par 
+\par There are two ways to navigate the screens:
+\par 
+\par You can use the menu bar to choose commands from the \uldb Input Data\plain\fs20 , \uldb SSA\plain\fs20  & \uldb Facets\plain\fs20  menus that will get you immediately where you are going.
+\par 
+\par Or, you can use the \uldb Next\plain\fs20  and \uldb Previous\plain\fs20  commands to move serially from one screen to the next. These commands are available through the \uldb View menu\plain\fs20 , through the toolbar, and through buttons on the bottom of the screen.
+\par 
+\par \page
+{\up #}
+\pard\sl235 \b How to use the keyboard\plain\fs20 
+\par 
+\par There are a few tricks to using the keyboard, all except one of them standard to the Windows operating system.
+\par 
+\par The Tab key moves between fields on the screen; the Shift-Tab key combination moves backwards.
+\par 
+\par The field you are in is said to 'have the focus', and it will usually have a caret to show it. This caret's appearance differs by field (control) type. In an editable text field, it is usually a text cursor; in most other types (buttons, check-boxes, list-boxes) it is a dotted frame around a piece of text.
+\par 
+\par You can use the space-bar to push buttons or mark check-boxes, when they have the focus.
+\par \pard\sl235 
+\par The Enter key may cause surprises to the unwary: In most screens and dialogs there is a 'default' button, marked by a thick black frame. If no button has the focus, the Enter key will push the default button. But if the dotted-frame caret is on another button, then Enter will press the button that has the focus.
+\par 
+\par The one exception to Windows standards is in the \uldb Variable Elements in Facets screen\plain\fs20  where selecting a combo-box element also moves you to the next field.
+\par 
+\par \page
+{\up $}
+{\up #}
+\pard\sl235 \b How to use facets\plain\fs20 
+\par 
+\par To use facets, after you have defined and selected your variables, select \uldb Facets\plain\fs20  | \uldb Element Labels\plain\fs20  to go to the \uldb Facet Definition screen\plain\fs20 . In the box in the top right corner, choose the number of facets you want. Fields will show up for facet elements number and element labels, for each facet. Fill those in if you want. In addition, when you choose a number of facets to use, the Next button will be enabled.
+\par 
+\par Push \uldb Next\plain\fs20  to move to the  \uldb Variable Elements in Facets screen\plain\fs20 . In this screen you should classify variables in facets.
+\par 
+\par \pard\sl235 You may go to the \uldb Facet Hypotheses\plain\fs20  and \uldb Facet Diagrams\plain\fs20  screens to fine-tune the output you want. They are the next two screens.
+\par 
+\par \page
+{\up $}
+{\up #}
+\pard\sl235 \b How to NOT use facets\plain\fs20 
+\par 
+\par select \uldb Facets\plain\fs20  | \uldb Element Labels\plain\fs20  to go to the \uldb Facet Definition screen\plain\fs20 . In the box in the top right corner, choose 'No facets'. The Next command, along with all other commands on the Facets menu will be disabled, and no facets will be used in the process.
+\par 
+\par \page
+{\up $}
+{\up #}
+\pard\sl235 \b File menu commands\plain\fs20 
+\par 
+\par The File menu offers the following commands:
+\par 
+\par \trowd\trgaph105\trleft-106 \cellx1295\cellx8615\pard\intbl\sl235 \uldb New\plain\fs20 \cell\pard \pard\intbl\sl235 Creates a new form.\cell\intbl\row
+\trowd\trgaph105\trleft-106 \cellx1295\cellx8615\pard\intbl\sl235 \uldb Open\plain\fs20 \uldb \cell\pard \pard\intbl\sl235 \plain\fs20 Opens an existing form.\cell\intbl\row
+\trowd\trgaph105\trleft-106 \cellx1295\cellx8615\pard\intbl\sl235 \uldb Save\plain\fs20 \uldb \cell\pard \pard\intbl\sl235 \plain\fs20 Saves an opened form using the same file name.\cell\intbl\row
+\trowd\trgaph105\trleft-106 \cellx1295\cellx8615\pard\intbl\sl235 \uldb Save As\plain\fs20 \uldb \cell\pard \pard\intbl\sl235 \plain\fs20 Saves an opened form to a specified file name.\cell\intbl\row
+\trowd\trgaph105\trleft-106 \cellx1295\cellx8615\pard\intbl\sl235 \uldb Run\plain\fs20 \uldb \cell\pard \pard\intbl\sl235 \plain\fs20 Runs FSSA according to current form\cell\intbl\row
+\trowd\trgaph105\trleft-106 \cellx1295\cellx8615\pard\intbl\sl235 \uldb Exit\plain\fs20 
+\par\intbl \uldb \cell\pard \pard\intbl\sl235 \plain\fs20 Exits FSSA for Windows.\cell\intbl\row
+\pard\sl235 
+\par \page
+{\up #}
+\pard\sl235 \b Input Data menu commands\plain\fs20 
+\par 
+\par The Input Data menu offers the following commands:
+\par \pard\sl235\li715\fi-715 
+\par \trowd\trgaph105\trleft-106 \cellx1495\cellx7935\pard\intbl\sl235 \uldb Recorded Data\plain\fs20 \cell\pard \pard\intbl\sl235 Open the recorded data file definitions screen, marking recorded data is to be used.\cell\intbl\row
+\trowd\trgaph105\trleft-106 \cellx1495\cellx7935\pard\intbl\sl235 \uldb Coefficient Matrix\plain\fs20 \uldb \cell\pard \pard\intbl\sl235 \plain\fs20 Open the coefficient matrix file definitions screen, marking a coefficient matrix is to be used.\cell\intbl\row
+\trowd\trgaph105\trleft-106 \cellx1495\cellx7935\pard\intbl\sl235 \uldb Variables\plain\fs20 \uldb \cell\pard \pard\intbl\sl235 \plain\fs20 Open the Variable Definitions screen.\cell\intbl\row
+\pard\sl235\li715\fi-715 
+\par \pard\sl235 Only one type of input can be used in each run; the currently selected type (i.e. Recorded Data or Coefficient Matrix) will be marked with a check-mark in the Input Data menu. 
+\par 
+\par \page
+{\up $}
+{\up #}
+\pard\sl235 \b SSA menu commands\plain\fs20 
+\par 
+\par The SSA menu offers the following comands:
+\par 
+\par \trowd\trgaph105\trleft-106 \cellx1985\cellx7655\pard\intbl\sl235 \uldb Dimensions & Coeffs\plain\fs20 \cell\pard \pard\intbl\sl235 Open the Dimensions and Coefficients screen.\cell\intbl\row
+\trowd\trgaph105\trleft-106 \cellx1985\cellx7655\pard\intbl\sl235 \uldb Technical Options\plain\fs20 \cell\pard \pard\intbl\sl235 Open the Technical Options dialog.\cell\intbl\row
+\pard\sl235 
+\par \page
+{\up $}
+{\up #}
+\pard\sl235 \b Facets menu commands\plain\fs20 
+\par 
+\par The Facets menu offers the following commands:
+\par 
+\par \trowd\trgaph105\trleft-106 \cellx1985\cellx7365\pard\intbl\sl235 \uldb Element Labels\plain\fs20 \cell\pard \pard\intbl\sl235 Open the Facets Definition screen to define number of facets, number of elements in each facet, and facet element labels.\cell\intbl\row
+\trowd\trgaph105\trleft-106 \cellx1985\cellx7365\pard\intbl\sl235 \uldb Variable elements\plain\fs20 \cell\pard \pard\intbl\sl235 Open the Variable Elements in Facets screen to define to which element in each facet each variable belongs.\cell\intbl\row
+\trowd\trgaph105\trleft-106 \cellx1985\cellx7365\pard\intbl\sl235 \uldb Hypotheses\plain\fs20 \cell\pard \pard\intbl\sl235 Open the Regional Hypotheses screen to specify which geometric hypotheses to check for each facet.\cell\intbl\row
+\trowd\trgaph105\trleft-106 \cellx1985\cellx7365\pard\intbl\sl235 \uldb Diagrams\plain\fs20 \cell\pard \pard\intbl\sl235 Open the Facet Diagrams screen to specify which diagrams to draw.\cell\intbl\row
+\pard\sl235 
+\par \page
+{\up #}
+\pard\sl235 \b View menu commands\plain\fs20 
+\par 
+\par The View menu offers the following commands:
+\par 
+\par \trowd\trgaph105\trleft-106 \cellx1675\cellx7855\pard\intbl\sl235 \uldb Next\plain\fs20 \uldb \cell\pard \pard\intbl\sl235 \plain\fs20 Move to next screen\cell\intbl\row
+\trowd\trgaph105\trleft-106 \cellx1675\cellx7855\pard\intbl\sl235 \uldb Previous\plain\fs20 \uldb \cell\pard \pard\intbl\sl235 \plain\fs20 Move to previous screen\cell\intbl\row
+\trowd\trgaph105\trleft-106 \cellx1675\cellx7855\pard\intbl\sl235 \uldb Toolbar\plain\fs20 \uldb \cell\pard \pard\intbl\sl235 \plain\fs20 Shows or hides the toolbar.\cell\intbl\row
+\trowd\trgaph105\trleft-106 \cellx1675\cellx7855\pard\intbl\sl235 \uldb Status Bar\plain\fs20 \uldb \cell\pard \pard\intbl\sl235 \plain\fs20 Shows or hides the status bar.\cell\intbl\row
+\trowd\trgaph105\trleft-106 \cellx1675\cellx7855\pard\intbl\sl235 \uldb Input File\plain\fs20 \uldb \cell\pard \pard\intbl\sl235 \pard\intbl\sl235\li715\fi-715 \plain\fs20 Open input file in a DOS editor.\cell\intbl\row
+\trowd\trgaph105\trleft-106 \cellx1675\cellx7855\pard\intbl\sl235\li715\fi-715 \pard\intbl\sl235 \uldb Output File\plain\fs20 \uldb \cell\pard \pard\intbl\sl235 \pard\intbl\sl235\li715\fi-715 \plain\fs20 Open last output file in a DOS editor.\cell\intbl\row
+\trowd\trgaph105\trleft-106 \cellx1675\cellx7855\pard\intbl\sl235\li715\fi-715 \pard\intbl\sl235 \uldb Diagrams\plain\fs20 \uldb \cell\pard \pard\intbl\sl235 \pard\intbl\sl235\li715\fi-715 \plain\fs20 Show diagrams for last run.\cell\intbl\row
+\pard \page
+{\up #}
+\pard\sl235 \b Help menu commands\plain\fs20 
+\par 
+\par The Help menu offers the following commands, which provide you assistance with this application: 
+\par 
+\par \trowd\trgaph105\trleft-106 \cellx1075\cellx7255\pard\intbl\sl235 \uldb Contents\plain\fs20 \uldb \cell\pard \pard\intbl\sl235 \pard\intbl\sl235\li715\fi-715 \plain\fs20 Opens the help main screen, for general help.\cell\intbl\row
+\trowd\trgaph105\trleft-106 \cellx1075\cellx7255\pard\intbl\sl235\li715\fi-715 \pard\intbl\sl235 Help on current screen\uldb \cell\pard \pard\intbl\sl235 \pard\intbl\sl235\li715\fi-715 \plain\fs20 Provides help on the currently visible screen of the application. \cell\intbl\row
+\trowd\trgaph105\trleft-106 \cellx1075\cellx7255\pard\intbl\sl235\li715\fi-715 \pard\intbl\sl235 Open Readme.txt\uldb \cell\pard \pard\intbl\sl235 \pard\intbl\sl235\li715\fi-715 \plain\fs20 Opens the file Readme.txt (supplied with FSSA for Windows) in notepad for viewing.\cell\intbl\row
+\trowd\trgaph105\trleft-106 \cellx1075\cellx7255\pard\intbl\sl235\li715\fi-715 \pard\intbl\sl235 \uldb Using Help\plain\fs20 \uldb \cell\pard \pard\intbl\sl235 \pard\intbl\sl235\li715\fi-715 \plain\fs20 Provides general instructions on using help.\cell\intbl\row
+\trowd\trgaph105\trleft-106 \cellx1075\cellx7255\pard\intbl\sl235\li715\fi-715 \pard\intbl\sl235 \uldb About\plain\fs20 \uldb \cell\pard \pard\intbl\sl235 \pard\intbl\sl235\li715\fi-715 \plain\fs20 Displays the version number of this application.\cell\intbl\row
+\pard\sl235\li715\fi-715 
+\par 
+\par \page
+{\up $}
+{\up #}
+\pard\sl235 \b New command (File menu)\plain\fs20 
+\par 
+\par Use this command to create a new form in FSSA for Windows.  Select the type of input for the new form you want to create in the \uldb New form dialog box\plain\fs20 \f4 . \plain\fs20 
+\par 
+\par You can open an existing form with the \uldb Open command\plain\fs20 .
+\par 
+\par \b Shortcuts
+\par \pard\sl235\li1435\fi-1075\tx1435 \plain\fs20 Toolbar:\{bmc bm0.bmp\}
+\par Keys:CTRL+N
+\par \pard\sl235 
+\par \page
+{\up #}
+\pard\sl235 \b New form dialog box
+\par \plain\fs20 
+\par Specify the type of input file for the new form you wish to create:
+\par 
+\par The option of Coefficient Matrix processing enables you to run FSSA directly in a single stage. This selection assumes that a file containing the matrix in ASCII code exists in your computer. The path to that file (drive, directory, file name) must be known to you, as well as the exact (fixed) format of the matrix (the field width of each matrix entry, number of decimals, and whether lines are wrapped or not, i.e. the actual number of entries in each line of the file). If you are not sure about the format, you can use the View Input File command to check.
+\par \pard\sl235 
+\par A matrix file may be created, before running FSSA, either by using your editor or by a statistical package using the saved results of a correlation command (e.g. SPSS.PRC).
+\par 
+\par The option of DATA processing results in a two stage operation: FSSA first produces a correlation matrix from an existing data file, and then the variables are mapped. The data file must exist in you computer and its  path (drive, directory, file-name) and structure (records, columns and field-widths of the variables) known to you. Again, use View Input File to check the format.
+\par 
+\par A data file may be created, before running FSSA, either by using an editor or by a statistical package using the saved results of a write command (often after recoding and defining the missing values for raw data).\page
+{\up $}
+{\up #}
+\pard\sl235 \b Open command (File menu)\plain\fs20 
+\par 
+\par Use this command to open an existing form
+\par 
+\par You can create new forms with the \uldb New command\plain\fs20 .
+\par 
+\par \b Shortcuts
+\par \pard\sl235\li1435\fi-1075\tx1435 \plain\fs20 Toolbar:\{bmc bm1.bmp\}
+\par Keys:CTRL+O
+\par \pard\sl235\li355 
+\par \page
+{\up #}
+\pard\sl235 \b File Open dialog box
+\par \plain\fs20 
+\par The following options allow you to specify which file to open:
+\par \pard\sb55\sl235 \b File Name
+\par \pard\sl235\li355 \plain\fs20 Type or select the file name you want to open.  This box lists files with the extension you select in the List Files of Type box. 
+\par \pard\sb55\sl235 \b List Files of Type
+\par \pard\sl235\li355 \plain\fs20 Select the type of file you want to open:
+\par *.mem is the default extension for FSSA for Windows forms.
+\par *.dat may be used when opening Recorded Data files.
+\par *.mat may be used when opening Coefficient Matrix files.
+\par \pard\sb55\sl235 \b Drives
+\par \pard\sl235\li355 \plain\fs20 Select the drive in which FSSA for Windows stores the file that you want to open. 
+\par \pard\sb55\sl235 \b Directories
+\par \pard\sl235\li355 \plain\fs20 Select the directory in which FSSA for Windows stores the file that you want to open.
+\par \pard\sb55\sl235 \b Network...
+\par \pard\sl235\li355 \plain\fs20 If available, choose this button to connect to a network location, assigning it a new drive letter. 
+\par 
+\par \page
+{\up $}
+{\up #}
+\pard\sl235 \b Save command (File menu)\plain\fs20 
+\par 
+\par Use this command to save the active form to its current name and directory.  When you save a form for the first time, FSSA for Windows displays the \uldb Save As dialog box\plain\fs20  so you can name your form.  If you want to change the name and directory of an existing form before you save it, choose the \uldb Save As command\plain\fs20 .
+\par 
+\par \b Shortcuts
+\par \pard\sl235\li1435\fi-1075\tx1435 \plain\fs20 Toolbar:\{bmc bm3.bmp\}
+\par Keys:CTRL+S
+\par \pard\sl235\li355 
+\par \pard\sl235 
+\par \page
+{\up $}
+{\up #}
+\pard\sl235 \b Save As command (File menu)\plain\fs20 
+\par 
+\par Use this command to save and name the active form.  FSSA for Windows displays the \uldb Save As dialog box\plain\fs20  so you can name your form.  
+\par 
+\par To save a form with its existing name and directory, use the \uldb Save command\plain\fs20 .
+\par 
+\par \page
+{\up #}
+\pard\sl235 \b File Save As dialog box
+\par \plain\fs20 
+\par The following options allow you to specify the name and location of the file you're about to save:
+\par \pard\sb55\sl235 \b File Name
+\par \pard\sl235\li355 \plain\fs20 Type a new filename to save a form with a different name.  A filename can contain up to eight characters and an extension of up to three characters.  FSSA for Windows adds the extension you specify in the Save File As Type box.
+\par \pard\sb55\sl235 \b Drives
+\par \pard\sl235\li355 \plain\fs20 Select the drive in which you want to store the form.
+\par \pard\sb55\sl235 \b Directories
+\par \pard\sl235\li355 \plain\fs20 Select the directory in which you want to store the form.
+\par \pard\sb55\sl235 \b Network...
+\par \pard\sl235\li355 \plain\fs20 If available, choose this button to connect to a network location, assigning it a new drive letter. 
+\par \page
+{\up $}
+{\up #}
+\pard\sl235 \b Run command (File menu)
+\par 
+\par \plain\fs20 Use this command to run FSSA according to the form you have filled. FSSA for Windows will then do the following:
+\par 
+\par \pard\sl235\li275\fi-275 1. Check your form for correctness and consistency. If you have failed to supply some information that is needed for FSSA to run correctly, or filled a form that cannot be run, FSSA for Windows will indicate the error and bring you to the screen where you can correct it.
+\par 
+\par 2. Check for old output files. FSSA for Windows places graphics (*.scr) output files in a fixed place, in the directory where it is installed. These files are created when you run a form. When you run another form, without taking measures against it, new files for the same processing will overwrite the old ones, and old files will remain in place where similar processing has not been requested; this may cause old output to be shown for new runs. To prevent this situation, FSSA for Windows offers to delete the old output files, if they exist. If you wish to keep them, you may at that point choose to cancel the run and move them to another directory (e.g. using the Windows File Manager). You may also choose to keep them where they are and run, which is not recommended.
+\par \pard\sl235\li275\fi-275 
+\par 3. Ask for a job name and an output file name. The job name is an arbitrary string that will show up as a headline in the ouput file. The output file will contain the details of the run and analysis in DOS text form.
+\par \page
+{\up $}
+{\up #}
+\pard\sl235\li275\fi-275 \b 1, 2, 3, 4 command (File menu)\plain\fs20 
+\par \pard\sl235 
+\par Use the numbers and filenames listed at the bottom of the File menu to open the last four forms you closed.  Choose the number that corresponds to the form you want to open.
+\par \page
+{\up $}
+{\up #}
+\pard\sl235 \b Exit command (File menu)\plain\fs20 
+\par 
+\par Use this command to end your FSSA for Windows session.  You can also use the Close command on the application Control menu.  FSSA for Windows prompts you to save the current form.
+\par \f4 
+\par \plain\b\fs20 Shortcuts
+\par \pard\sl235\li1435\fi-1075\tx1435 \plain\fs20 Mouse:Double-click the application's Control menu button.
+\par Keys:ALT+F4
+\par \page
+{\up $}
+{\up #}
+\pard\sl235 \b Recorded Data command (Input Data menu)
+\par 
+\par \plain\fs20 Use this command to indicate that you are going to use recorded (variables) data, and to open the \uldb Recorded Data file definition screen\plain\fs20 .\b 
+\par \page
+{\up $}
+{\up #}
+\pard\sl235 Recorded Data file definition screen
+\par 
+\par \plain\fs20 In this screen you are required to define the general properties of your input file. The details of each variable are defined later in the \uldb Variable Definitions Screen\plain\fs20 .
+\par 
+\par \pard\sl235\li275\fi-275 1.  Specify path of data file. You can use the Browse button to open a \uldb file selection box\plain\fs20  to help you find the right path. If the specified data file cannot be read, you will be notified upon finishing the screen (After the FSSA run has been successfully completed, the output file will be directed, by default, to the directory where the data file is).
+\par 
+\par 2.  Specify the number of rows (physical records) per case (logical record) in the data file specified above. This number can have a value from 1 to 10 and depends on how your data is set up.
+\par 
+\par 3.  If any of the variables have missing values other than zero, or if zero itself is not a missing value, choose 'No' in answer to the question. Otherwise, choose 'Yes'. Pressing the button switches between the two.
+\par \pard\sl235\li275\fi-275 
+\par \page
+{\up $}
+{\up #}
+\pard\sl235\li275\fi-275 \b Coefficient Matrix command (Input Data menu)
+\par 
+\par \pard\sl235 \plain\fs20 Use this command to indicate you are going to use a file containing a matrix of coefficients of similarity (or dissimilarity) between your variables, and open the \uldb Coefficient Matrix file definition screen\plain\fs20 .
+\par \pard\sl235\li275\fi-275 \b 
+\par \page
+{\up $}
+{\up #}
+\pard\sl235\li275\fi-275 Coefficient Matrix file definition screen
+\par \plain\fs20 
+\par \pard\sl235 In this file you are required to fill in the properties of your input file, in case it is a matrix of coefficients. You can define the variable labels in the \uldb Variable Definitions Screen\plain\fs20 . 
+\par 
+\par \pard\sl235\li275\fi-275 1.  Specify path of data file. You can use the Browse button to open a \uldb file selection box\plain\fs20  to help finding the right path. If the specified data file cannot be read, you will be notified upon finishing the screen (After the FSSA run has been successfully completed, the output file will be directed, by default, to the directory where the data file is).
+\par 
+\par 2.  The number of objects (variables, for example) to be mapped. This number must equal the number of logical rows of the matrix. The number of physical rows may be larger - and the number of physical columns correspondingly smaller - if matrix rows are wrapped around; for example, so as to fit into the screen. There should be no spaces between rows; that is, no empty rows.
+\par \pard\sl235\li275\fi-275 
+\par 3.  The number of entries (or fields) that are actually written in each of the file's rows. This number may be smaller than the number of objects (which is the number of entries in each logical row).
+\par 
+\par 4.  Matrix cell (i.e., field) width. All cells must be of equal size. Width specification should include spaces, if there are any, between matrix entries.
+\par 
+\par 5.  Precision, i.e., number of decimal digits used in writing each coefficient (after the decimal point).
+\par 
+\par 6.  Missing value ranges: specify here in pairs the lower & upper bounds of the ranges of entries (coefficients) that are to be considered as missing values. Delete the default option if it does represent a valid value. Any number of field-pairs may be empty.
+\par \pard\sl235\li275\fi-275 
+\par \page
+{\up $}
+{\up #}
+\pard\sl235\li275\fi-275 \b Variables command (Input Data menu)
+\par \plain\fs20 
+\par \pard\sl235 Use this command to open the \uldb Variables screen\plain\fs20 , where you can define variable labels and select variables for a run. If you are working with Recorded Data, you are also required to define the file structure (i.e. where in the file the variables data reside) in this screen.
+\par 
+\par \page
+{\up $}
+{\up #}
+\pard\sl235\li275\fi-275 \b Variables screen
+\par \plain\fs20 
+\par \pard\sl235 In this screen you can define variable labels and select variables for a run. If you are working with Recorded Data, you are also required to define the file structure (i.e. where in the file the variables data reside) in this screen.
+\par \pard\sl235\li275\fi-275 
+\par \pard\sl235 The main attraction in this screen is a list box with a line for every variable. This list box is actually a table with the following columns:
+\par 
+\par \trowd\trgaph105\trleft-106 \cellx1295\cellx8235\pard\intbl\sl235 Var No.\cell\pard \pard\intbl\sl235 Variable serial number.\cell\intbl\row
+\trowd\trgaph105\trleft-106 \cellx1295\cellx8235\pard\intbl\sl235 Sel'd Y/N\cell\pard \pard\intbl\sl235 Y if the variable is selected for this run,  N otherwise.\cell\intbl\row
+\trowd\trgaph105\trleft-106 \cellx1295\cellx8235\pard\intbl\sl235 Sel'd Var\cell\pard \pard\intbl\sl235 If the variable is selected, its serial number for this run (its selected number).\cell\intbl\row
+\trowd\trgaph105\trleft-106 \cellx1295\cellx8235\pard\intbl\sl235 Var Label\cell\pard \pard\intbl\sl235 The label (name) given to this variable.\cell\intbl\row
+\pard\sl235 
+\par If you choose to work with recorded data, the table will also have these columns:
+\par \pard\sl235\li275\fi-275 
+\par \trowd\trgaph105\trleft-106 \cellx1295\cellx8235\pard\intbl\sl235 Rec No.\cell\pard \pard\intbl\sl235 In which record is the variable located. \cell\intbl\row
+\trowd\trgaph105\trleft-106 \cellx1295\cellx8235\pard\intbl\sl235 Field Width\cell\pard \pard\intbl\sl235 Field width of the variable (must be 1 or 2).\cell\intbl\row
+\trowd\trgaph105\trleft-106 \cellx1295\cellx8235\pard\intbl\sl235 Start Col\cell\pard \pard\intbl\sl235 Starting column in the record. If field width is 1 this is simply the column number. If field width is 2 this simply the number of the first column.\cell\intbl\row
+\pard\sl235\li275\fi-275 
+\par \pard\sl235 If you use recorded data and specify that zero is not the only missing value, the table will also have the following columns:
+\par 
+\par \trowd\trgaph105\trleft-106 \cellx1295\cellx8235\pard\intbl\sl235 Valid Hi/Lo.\cell\pard \pard\intbl\sl235 The valid minimum and maximum values of the variable\cell\intbl\row
+\pard\sl235 
+\par \b Editing variables\plain\fs20 
+\par 
+\par One of the variables in the list box is marked with an asterisk next to its serial number. This variable is the 'current' variable. You can edit it by pressing the Edit Variable button. You can also open every variable for editing by double-clicking it. If you press the Add Variable button (enabled only for Recorded Data), a new variable (i.e. with serial number one after the last defined so far) will be created and opened for you to edit. Likewise, if you press the Insert Variable button, a new variable will be created and inserted at the cursor position, pushing the existing variables down.
+\par \pard\sl235 
+\par In each of these scenarios, you will be presented with the \uldb Variable Definition dialog\plain\fs20 .
+\par 
+\par The variables from a given record in the file can be listed in any order. But all variables from a given record must be listed \i before\plain\fs20  variables from later records (Thus e.g. you cannot list a variable from record 1 after a variable from record 2).
+\par 
+\par When working with Recorded Data, you can also delete the current variable in the list by using the Delete Variable button. This option is included to help correct errors in defining the variables; if a variable is correctly defined, but you do not want it in this run, you should unselect it, not delete it.
+\par \pard\sl235 
+\par \b Selecting and unselecting variables\plain\fs20 
+\par 
+\par Clicking any variable (or pressing the space bar when the focus is on it, i.e. when it has a dotted frame around it) will make it the current variable and, more importantly, change its selection status. Only selected variables are used in the FSSA run, and the numbers that will appear in the output file are the selected numbers of the variables. By unselecting a variable, you choose to ignore it completely - but reversibly. All variables are selected by default.
+\par \page
+{\up $}
+{\up #}
+\pard\sl235 \b Variable Definition dialog\plain\fs20 
+\par 
+\par In this dialog you can alter the fields that define a variable:
+\par 
+\par \pard\sl235\li275\fi-275 1.  Var No.: You cannot change the variable number, this field notifies you which variable you are working on.
+\par 2.  Var Label: This label will appear in the FSSA output and in the screen diagrams. 
+\par 
+\par These fields will only be available when working with Recorded Data:
+\par 
+\par 3.  Rec No.:  Which record the variable is loacated in.
+\par 4.  Field Width: Field width of the variable (must be 1 or 2). 
+\par 5.  Start Col: Starting column in the record.
+\par 
+\par \pard\sl235 These fields will only be available when working with Recorded Data and zero is not the only missing value:
+\par 
+\par 6.  Valid Lo: Minimal valid value for the variable.
+\par 7.  Valid Hi: Maximal valid value for the variable.
+\par 
+\par When you are done editing a variable, press one of these buttons:
+\par 
+\par \trowd\trgaph105\trleft-106 \cellx1095\cellx8705\pard\intbl\sl235 Next Var\cell\pard \pard\intbl\sl235 Apply the data as entered to this variable and move on to the next. This is the default button, so pressing the Enter key while the cursor is in one of the fields will press it.\cell\intbl\row
+\trowd\trgaph105\trleft-106 \cellx1095\cellx8705\pard\intbl\sl235 Done\cell\pard \pard\intbl\sl235 Apply the data as entered to this variable and close the Variable Definition dialog.\cell\intbl\row
+\trowd\trgaph105\trleft-106 \cellx1095\cellx8705\pard\intbl\sl235 Cancel\cell\pard \pard\intbl\sl235 Leave this variable as it was and close the Variable Definition dialog.\cell\intbl\row
+\pard\sl235 
+\par When working with Recorded Data, the Next Var button can be used to add a new variable.
+\par \page
+{\up $}
+{\up #}
+\pard\sl235 {\up K}
+\b Dimensions & Coeffs command (SSA menu)\plain\fs20 
+\par 
+\par Use this command to open the \uldb Dimensions and Coefficients screen\plain\fs20  to select the dimensionalities you  wish to test and the type of coefficients you want to use.
+\par 
+\par \page
+{\up $}
+{\up #}
+\pard\sl235 \b Dimensions and Coefficients screen\plain\fs20 
+\par 
+\par This screen reports the number of variables you have selected to work on, and offers the following fields:
+\par 
+\par Type of coefficients:
+\par 
+\par \pard\sl235\li275 When working with Recorded Data, you can select between Monotonicity and Pearson. The coefficient of Monotonicity between two variables ranges from -1 to +1 and assesses to what extent an increase in one variable is accompanied by an increase (or no decrease) in the other variable, with no reference to an a priori regression line. Its absolute value is no smaller, and usually larger, than that of  Pearson correlation. The coefficient of monotonicity is more appropriate for ordinal data, where no linearity  is assumed for the regression line. Pearson correlation is the familiar linear correlation coefficient. Select either Monotonicity or Pearson, to suit your data and assumptions.
+\par \pard\sl235 
+\par \pard\sl235\li275 When working with a Coefficient Matrix, you can select between Similarity and Dissimilarity.Specify whether the matrix-entries represent similarity between the objects (e.g. correlation coefficients, indices of confusion, judged similarity) or dissimilarity between the objects (e.g., distance or indices of alienation).
+\par \pard\sl235 
+\par Lowest dimensionality and Highest dimensionality specify the range of dimensionalities to be tested. Dimensionalities may be between 2 and 10 with the lower being less than or equal to the higher. If only one dimensionality is desired, for example, two-dimensional, enter that dimensionality in both fields (i.e. 2 and 2 in the example).
+\par 
+\par \page
+{\up $}
+{\up #}
+\pard\sl235 \b Technical Options command (SSA menu)\plain\fs20 
+\par 
+\par Use this command to open the \uldb Technical Options dialog\plain\fs20  where you can set some output formatting options and the weight  for locality.
+\par 
+\par \page
+{\up $}
+{\up #}
+\pard\sl235 \b Technical Options dialog\plain\fs20 
+\par 
+\par This dialog offers you the ability to set the following parameters:
+\par 
+\par The weight for locality parameter determines weight to be assigned by the program to high (vs. low) similarity between variables (or other mapped objects) . The default value of 2 is recommended for most usages. High values for this parameter would result in better spatial representation of high similarities, possibly at the expense of the representation of low similarities. Low values for this parameter would produce a map 'interpretable as a version of cluster analysis. '
+\par \pard\sl235 
+\par In case your printer uses a form feed character that is different from chr(12), then you should enter it in the special formfeed field, otherwise leave it blank. 
+\par 
+\par If you want to change the characters used by the program to draw frames around diagrams in FSSA output, enter the characters here of your choosing in the following order: 
+\par \tab TOP,BOTTOM,LEFT,RIGHT,    
+\par \tab TOPLEFT,TOPRIGHT,BOTTOMLEFT,BOTTOMRIGHT 
+\par otherwise leave blank.
+\par You can hold the 'Alt' key and then strike a series of 3 numbers on the numerical keypad and lift the 'Alt' key to print many graphic characters.
+\par 
+\par Choose 'Yes' (by pushing the button) for trimmed ASCII file to create an ASCII file 'SOLUTION.FSS' with the essentials of FSSA solution in fixed format.
+\par \pard\sl235 
+\par \page
+{\up $}
+{\up #}
+\pard\sl235 \b Element Labels command (Facets menu)\plain\fs20 
+\par 
+\par Use this command to open the \uldb Facets Definition screen\plain\fs20  to define number of facets, number of elements in each facet, and facet element labels.
+\par 
+\par Use these command and screen also to specify that you want no faceted calculations.
+\par 
+\par \page
+{\up $}
+{\up #}
+\pard\sl235 {\up K}
+\b Facets Definition screen\plain\fs20 
+\par 
+\par A facet is a  classification of the  objects (variables)  by some  content  criterion. One facet  of psychological variables  may, for example, classify  those variables according to whether they refer to subjects' 'knowledge', 'love' or 'action'. A common facet of scholastic aptitude items classifies the items according to whether they assess verbal, spatial, or numerical ability.  Each object may be classifiable independently by several facets. This program allows up to 4 facets to be chosen. 
+\par \pard\sl235 
+\par Each facet is a content-classification of the variables into classes, and so contains several FACET-ELEMENTS, each facet-element representing a class within that facet. Above the labels for facet-elements is their number, in each facet. The labels you assign to facet-elements of each facet  will be used in output FSSA facet diagrams. 
+\par 
+\par By default, there are 4 elements in each facet, labeled by facet letter and element number (i.e. facet A has 4 elements labeled a1,a2,a3,a4).
+\par 
+\par If you choose 'No facets', no facet analysis will be carried out at  all, just Smallest Space Analysis (SSA), an MDS procedure. This is the default.
+\par \pard\sl235 
+\par \page
+{\up $}
+{\up #}
+\pard\sl235 \b Variable elements command (Facets menu)\plain\fs20 
+\par 
+\par Use this command to open the \uldb Variable Elements in Facets screen\plain\fs20  to define for each variable, to which element in each facet it belongs.
+\par \page
+{\up $}
+{\up #}
+\pard\sl235 {\up K}
+\b Variable Elements in Facets screen\plain\fs20 
+\par 
+\par That the variables may be classified by a facet, means that each variable belongs to one of the facet's classes. I.e., each variable may be assigned a facet-element of that particular facet. Similarly, from each of the additional facets you may have defined, a facet-element  can be assigned to the same variable. In this screen you are asked to classify each variable by Facet A (then by Facet B, if any, etc). In carrying out this task use the numerical designation of the appropriate facet-element.
+\par \pard\sl235 
+\par You can use the mouse to open a combo-box of facet elements that  you have defined, or select by a digit. Select 0 (Undefined) for a variable that has no classification in a particular facet.
+\par 
+\par Upon selection, the cursor will automatically move to the next variable; You do not need to move it yourself (by mouse or Tab key, as you usually do).
+\par 
+\par \page
+{\up $}
+{\up #}
+\pard\sl235 \b Hypotheses command (Facets menu)\plain\fs20 
+\par 
+\par Use this command to open the \uldb Regional Hypotheses screen\plain\fs20  to specify which geometric hypotheses to check for each facet.
+\par 
+\par \page
+{\up $}
+{\up #}
+\pard\sl235 {\up K}
+\b Regional Hypotheses screen\plain\fs20 
+\par 
+\par In this screen you choose, for each facet, which regional hypotheses to test for it.
+\par 
+\par Mark the Axial check-box if you want to test the hypothesis that  tha above mentioned facet is an AXIAL FACET. The program will then look for the set of PARALLEL LINES that best partition the space into strips according to that facet. The \ul Separation Index\plain\fs20  will indicate agreement with the axial partition pattern. 
+\par 
+\par Mark the Angular check-box if you want to test the hypothesis that  the above mentioned facet is an ANGULAR FACET. The program will then look for the set of RADIUSES that best partition the space into sectors according to that facet. The Separation Index will indicate agreement with the angular partition pattern. 
+\par \pard\sl235 
+\par Mark the Radial check-box if you want to test the hypothesis that  the above mentioned facet is a RADIAL FACET.  The program will then look for the set of CONCENTRIC  CIRCLES that best partition the space into rings  according to that facet. The Separation Index will indicate agreement with the radial partition pattern.   
+\par 
+\par \page
+{\up $}
+{\up #}
+\pard\sl235 \b Diagrams command (Facets menu)\plain\fs20 
+\par 
+\par \pard\sl235\tx7225 Use this command to open the \uldb Facet Diagrams screen\plain\fs20  to specify which dimensionalities are to be diagrammed for each facet.
+\par 
+\par \page
+{\up $}
+{\up #}
+\pard\sl235 {\up K}
+\b Facet Diagrams screen\plain\fs20 
+\par 
+\par A facet diagram is a reproduction of the SSA solution except that in the place of each variable, its facet-element is printed. Facet diagram facilitates the identification of systematic partitioning of the space by the facet represented. For a 2-dimensional solution, one facet diagram will be produced for every facet. For a 3-dimensional solution, three; and for 4-d solution, six such diagrams will be produced. 
+\par 
+\par To switch a Yes/No, just click on it. Alternatively, you can use the Tab/Shft-Tab keys to move the button on the grid and use the space-bar to push and change it.
+\par \pard\sl235 
+\par \page
+{\up $}
+{\up #}
+\pard\sl235 {\up K}
+\b Next command (View menu)\plain\fs20 
+\par 
+\par Use this command to move to the next screen in the FSSA form.
+\par 
+\par This command is also available via a button on the bottom of the screen and a little right arrow in the toolbar.
+\par 
+\par \page
+{\up $}
+{\up #}
+\pard\sl235 \b Previous command (View menu)\plain\fs20 
+\par 
+\par Use this command to move to the preceding screen in the FSSA form.
+\par 
+\par This command is also available via a button on the bottom of the screen and a little left arrow in the toolbar.
+\par 
+\par \page
+{\up $}
+{\up #}
+\pard\sl235 \b Toolbar command (View menu)\plain\fs20 
+\par 
+\par Use this command to display and hide the Toolbar, which includes buttons for some of the most common commands in FSSA for Windows, such as File Open.  A check mark appears next to the menu item when the Toolbar is displayed.
+\par 
+\par See \uldb Toolbar\plain\fs20  for help on using the toolbar.
+\par \page
+{\up $}
+{\up #}
+\pard\sl235 \b Toolbar\plain\fs20 
+\par \{bml bm17.bmp\}
+\par 
+\par The toolbar is displayed across the top of the application window, below the menu bar.  The toolbar provides quick mouse access to many tools used in FSSA for Windows,
+\par 
+\par To hide or display the Toolbar, choose Toolbar from the View menu (ALT, V, T).
+\par 
+\par \pard\sl235\brdrb\brdrs\tx1075 \b ClickTo\plain\fs20 
+\par \pard\sl235\li1075\fi-1075\tx1075 \{bmc bm0.bmp\}Open a new form.
+\par 
+\par \{bmc bm1.bmp\}Open an existing form.  FSSA for Windows displays the Open dialog box, in which you can locate and open the desired file.
+\par 
+\par \{bmc bm3.bmp\}Save the active form or template with its current name.  If you have not named the form, FSSA for Windows displays the Save As dialog box.
+\par 
+\par \pard\sl235 (left arrow)\tab Move to the previous screen.
+\par 
+\par (right arrow)\tab Move to the next screen.
+\par 
+\par (GO)\tab \tab Run FSSA according to form.
+\par 
+\par \page
+{\up $}
+{\up #}
+\pard\sl235 \b Status Bar command (View menu)
+\par \plain\fs20 
+\par Use this command to display and hide the Status Bar, which describes the action to be executed by the selected menu item or depressed toolbar button, and keyboard latch state. A check mark appears next to the menu item when the Status Bar is displayed.
+\par 
+\par See \uldb Status Bar\plain\fs20  for help on using the status bar.
+\par \page
+{\up $}
+{\up #}
+\pard\sl235 {\up K}
+\b Status Bar\plain\fs20 
+\par \{bml bm16.bmp\}
+\par 
+\par The status bar is displayed at the bottom of the FSSA for Windows window.  To display or hide the status bar, use the Status Bar command in the View menu.
+\par 
+\par The left area of the status bar describes actions of menu items as you use the arrow keys to navigate through menus.  This area similarly shows messages that describe the actions of toolbar buttons as you depress them, before releasing them.  If after viewing the description of the toolbar button command you wish not to execute the command, then release the mouse button while the pointer is off the toolbar button.
+\par 
+\par The right areas of the status bar indicate which of the following keys are latched down:
+\par 
+\par \pard\sl235\tx1435 \b IndicatorDescription\plain\fs20 
+\par \pard\sa115\sl235\li1435\fi-1435\tx1435 CAPThe Caps Lock key is latched down.
+\par NUMThe Num Lock key is latched down.
+\par SCRLThe Scroll Lock key is latched down.
+\par \page
+{\up $}
+{\up #}
+\pard\sl235 \b Input File command (View menu)\plain\fs20 
+\par 
+\par Use this command to take a peek in your data input file, e.g. if you are not sure about its format and where variables lie or how coefficients are formatted.
+\par 
+\par The input file will be opened for you in a DOS editor; use the editor's exit command to return to FSSA for Windows.
+\par 
+\par \page
+{\up $}
+{\up #}
+\pard\sl235 {\up K}
+\b Output File command (View menu)\plain\fs20 
+\par 
+\par Use this command to look at  the output  file after a successful run.
+\par 
+\par The output file will be opened for you in a DOS editor; use the editor's exit command to return to FSSA for Windows.
+\par 
+\par \page
+{\up $}
+{\up #}
+\pard\sl235 \b Diagrams submenus (View menu)\plain\fs20 
+\par 
+\par Use the commands in these submenus to view the diagrams for the different two- and three-dimensional FSSA solutions.
+\par 
+\par Screen diagrams are invoked through DOS. Where there is more than one diagram (3 dimensions means 3 diagrams - one for each projection on 2 dimensions; hypotheses for 2 dimensional solutions) press Enter to switch between them. While diagram is on screen:
+\par 
+\par Press 'Q' and Enter to quit screen diagram and return to FSSA for Windows.
+\par Press 'P' and Enter to print screen diagram on a dot-matrix printer.
+\par Press 'L' and Enter to print screen diagram on a laser printer.
+\par \pard\sl235 Press 'F' and Enter to create a *.PCX picture file that can be transported to a word processor.
+\par 
+\par Screen diagram files are overwritten in each new run, but they can be saved by changing their names. For details on screen diagram file names, see README.TXT file (accessible from the \uldb Help menu\plain\fs20 ).
+\par \page
+{\up #}
+\pard\sl235 \b Contents command (Help menu)
+\par \plain\fs20 
+\par Use this command to display the opening screen of Help.  From the opening screen, you can jump to step-by-step instructions for using FSSA for Windows and various types of reference information.  
+\par 
+\par Once you open Help, you can click the Contents button whenever you want to return to the opening screen.
+\par 
+\par \page
+{\up #}
+\pard\sl235 \b Using Help command (Help menu)
+\par \plain\fs20 
+\par Use this command for instructions about using Help.
+\par \page
+{\up #}
+\pard\sl235 \b About command (Help menu)
+\par \plain\fs20 
+\par Use this command to display the copyright notice and version number of your copy of FSSA for Windows.
+\par \page
+{\up $}
+{\up #}
+\pard\sl235 \b Context Help command 
+\par \plain\fs20 \{bml bm10.bmp\}
+\par 
+\par Use the Context Help command to obtain help on some portion of FSSA for Windows.  When you choose the Toolbar's Context Help button, the mouse pointer will change to an arrow and question mark.  Then click somewhere in the FSSA for Windows window, such as another Toolbar button.  The Help topic will be shown for the item you clicked.
+\par 
+\par \b Shortcut
+\par \pard\sl235\li1435\fi-1075\tx1435 \plain\fs20 Keys:SHIFT+F1
+\par \page
+{\up #}
+\pard\sl235 \b Modifying the Document
+\par \plain\fs20 
+\par << Write application-specific help here that provides an overview of how the user should modify a document using your application.  
+\par 
+\par If your application supports multiple document types and you want to have a distinct help topic for each, then use the help context i.d. generated by running the MAKEHELP.BAT file produced by AppWizard.  Alternatively, run MAKEHM as follows:
+\par 
+\par makehm IDR_HIDR_,0x2000 resource.h
+\par 
+\par If the IDR_ symbol for one of your document types is, for example, IDR_CHARTTYPE, then the help context i.d. generated by MAKEHM will be HIDR_CHARTTYPE.
+\par 
+\par Note, AppWizard defines the HIDR_DOC1TYPE help context i.d. used by this help topic for the first document type supported by your application.  AppWizard produces an alias in the .HPJ file for your application, mapping HIDR_DOC1TYPE to the HIDR_ produced by MAKEHM for that document type. >>
+\par \pard\sl235 
+\par \page
+\pard\sl235 
+\par \page
+{\up #}
+\pard\sl235 \b No Help Available\plain\f4\fs20 
+\par 
+\par \plain\fs20 No help is available for this area of the window.
+\par \page
+{\up #}
+\pard\sl235 \b No Help Available
+\par \plain\f4\fs20 
+\par \plain\fs20 No help is available for this message box.
+\par \f4 
+\par \plain\fs20 << If you wish to author help specific to each message box prompt, then remove the AFX_HIDP_xxx values from the [ALIAS] section of your .HPJ file, and author a topic for each AFX_HIDP_xxx value.  For example, AFX_HIDP_INVALID_FILENAME is the help topic for the Invalid Filename message box. >>
+\par 
+\par \pard \f4 
+\par 
+\par 
+\par 
+\par 
+\par 
+\par 
+\par \page
+}

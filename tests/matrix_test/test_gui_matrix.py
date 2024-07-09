@@ -1,6 +1,6 @@
 from lib.controller.controller import *
 from lib.controller.controller import Controller
-from const import *
+from .const import *
 
 TEST_LABELS = [
     'v1', 'v2', 'v3', 'v4', 'v5', 'v6', 'v7', 'v8', 'v9', 'v10', 'v11', 'v12',
@@ -60,6 +60,13 @@ class simple_example_gui(Controller):
         # # assert diff_lines_num(run_file_path, true_file_path) == 1
         # assert os.path.isfile(self.output_path)
 
+def test():
+    a = simple_example_gui()
+    try:
+        a.test_simple_example()
+    except Exception as e:
+        return False
+    return True
 
 if __name__ == '__main__':
     a = simple_example_gui()

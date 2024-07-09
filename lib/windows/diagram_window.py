@@ -261,10 +261,10 @@ class DiagramWindow(Window):
         # Adjust the plot limits to make sure it fits
         start_x, end_x = 0, 100
         start_y, end_y = 0, 100
-        x_offset, y_offset = (end_x - start_x) * OC * 2, \
+        x_offset, y_offset = (end_x - start_x) * OC * 0.75, \
                              (end_y - start_y) * OC * 0.75
-        axes.set_xlim([min(x) - x_offset, max(x) + x_offset])
-        axes.set_ylim([min(y) - y_offset, max(y) + y_offset])
+        axes.set_xlim([start_x - x_offset, end_x + x_offset])
+        axes.set_ylim([start_y - y_offset, end_y + y_offset])
         figure_canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
     def create_navigation(self):

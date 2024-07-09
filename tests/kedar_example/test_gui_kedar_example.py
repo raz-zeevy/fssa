@@ -12,11 +12,12 @@ SET_MODE_TEST()
 
 ###
 test_facets = [
-                ["figural", "verbal", "numeral", "social"],
-                ["fluency", "flexibility", "orginality", "elaboration", "closure"],
-                ["titles", "appropriateness"],
-                ["creativity", "torrance"],
-            ]
+    ["figural", "verbal", "numeral", "social"],
+    ["fluency", "flexibility", "orginality", "elaboration", "closure"],
+    ["titles", "appropriateness"],
+    ["creativity", "torrance"],
+]
+
 
 class simple_example_gui(Controller):
     def __init__(self):
@@ -34,15 +35,16 @@ class simple_example_gui(Controller):
         self.gui.pages[INPUT_PAGE_NAME].set_entry_lines(1)
         self.gui.pages[INPUT_PAGE_NAME].set_fixed_width("1-digit")
         self.next_page()
+        self.next_page()
         self.gui.pages[DATA_PAGE_NAME].select_variables({i for i in range(1,
                                                                           26)})
         self.next_page()
-        self.gui.pages[DIMENSIONS_PAGE_NAME].set_dims(2,3)
+        self.gui.pages[DIMENSIONS_PAGE_NAME].set_dims(2, 3)
         self.next_page()
         self.gui.pages[FACET_PAGE_NAME].set_facets_num(2)
         self.on_facet_num_change(None)
         self.next_page()
-        facets_var = [[1,2],[2,1],[1,2],[2,1],[1,2]]*5
+        facets_var = [[1, 2], [2, 1], [1, 2], [2, 1], [1, 2]] * 5
         self.gui.pages[FACET_VAR_PAGE_NAME].set_facets_vars(facets_var)
         self.next_page()
         self.next_page()
@@ -54,8 +56,18 @@ class simple_example_gui(Controller):
             self.enable_view_results()
         except Exception as e:
             print(e)
-            raise(e)
+            raise (e)
         assert os.path.isfile(self.output_path)
+
+
+def test():
+    a = simple_example_gui()
+    try:
+        a.test_simple_example()
+    except Exception as e:
+        return False
+    return True
+
 
 if __name__ == '__main__':
     a = simple_example_gui()

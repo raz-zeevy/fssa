@@ -1,7 +1,7 @@
 from lib.controller.controller import *
 from lib.controller.controller import Controller
 from lib.fss.fss_input_parser import *
-from const import *
+from .const import *
 
 DATA_PATH = 'data2900.dat'
 SET_MODE_TEST()
@@ -52,6 +52,15 @@ class simple_example_gui(Controller):
             print(e)
             raise(e)
         assert os.path.isfile(self.output_path)
+
+def test():
+    a = simple_example_gui()
+    try:
+        a.test_simple_example()
+    except Exception as e:
+        return False
+    a.shutdown()
+    return True
 
 if __name__ == '__main__':
     a = simple_example_gui()

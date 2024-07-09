@@ -1,0 +1,14 @@
+dist
+build
+output
+.idea
+venv
+venv37
+.git
+.gitignore
+lib/scripts/example
+lib/scripts/fssa-examples
+lib/scripts/run_files
+lib/scripts/simaple_example
+**/__pycache__/
+

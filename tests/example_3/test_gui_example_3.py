@@ -1,7 +1,7 @@
 from lib.controller.controller import *
 from lib.controller.controller import Controller
 from lib.fss.fss_input_parser import *
-from const import *
+from .const import *
 
 SET_MODE_TEST()
 # SET_MODE_PRODUCTION()
@@ -88,7 +88,16 @@ class example_3_gui(Controller):
         true_file_path = os.path.join(test_dir_path, "FSSAINP.DRV")
         assert os.path.isfile(self.output_path)
 
+def test():
+    a = example_3_gui()
+    try:
+        a.run_process()
+    except Exception as e:
+        return False
+    return True
+
 
 if __name__ == '__main__':
-    a = example_3_gui()
-    a.run_process()
+    test()
+    # a = example_3_gui()
+    # a.run_process()
