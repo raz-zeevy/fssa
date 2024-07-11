@@ -517,7 +517,39 @@ class ScreensGenerator():
     def section_data_screen(self):
         self.master.add_heading("Data Screen")
         self.master.add_line_break()
-        self.master.add_paragraph(" TO BE DONE")
+        self.master.add_paragraph(
+            "In this screen, you will define and visualize the data that has been loaded into FSSA for analysis. Here are the steps and options available:"
+        )
+        self.master.add_paragraph(
+            "1. Data Table Display: The main area of this screen shows a table where each row represents a record, and each column represents a variable. You can scroll through this table to inspect the data that has been loaded."
+        )
+        self.master.add_paragraph(
+            "2. Reload Input: This button allows you to reload the input data file. If there have been changes to the data file outside of FSSA, or if you need to refresh the data for any reason, clicking this button will update the data displayed in the table."
+        )
+        self.master.add_paragraph(
+            "3. Save To...: This option allows you to save the current state of your data. You can save the data to a specified file for later use or for further processing in other software."
+        )
+        self.master.add_paragraph(
+            "4. Select Vars.: This button opens a dialog where you can select which variables (columns) you want to include in the analysis. By selecting specific variables, you can focus the analysis on relevant data, excluding any extraneous information."
+        )
+        self.master.add_paragraph(
+            "5. Recode Vars.: This feature lets you transform or recode variables. If you need to adjust the data, such as converting categorical variables to numeric codes or normalizing values, this option provides the tools to do so."
+        )
+        self.master.add_paragraph(
+            "6. Navigation Buttons: Use the \"Previous\" and \"Next\" buttons to move through the different screens in the FSSA workflow. The \"Previous\" button will take you back to the Variable Definition Screen, while the \"Next\" button will advance you to the Dimensions and Coefficients Screen."
+        )
+        self.master.add_paragraph(
+            "7. Run: After configuring and verifying all your data and settings, clicking \"Run\" will start the analysis process using the defined variables and parameters."
+        )
+        self.master.add_paragraph(
+            "Additional Notes:"
+        )
+        self.master.add_paragraph(
+            "Data Validation: Ensure your data is correctly formatted and complete before running the analysis. Check for any missing or inconsistent values that might affect the results."
+        )
+        self.master.add_paragraph(
+            "Help: For more detailed information on each feature or step, press F1 at any time to access the help documentation specific to the current screen."
+        )
 
     def section_technical_options_command(self):
         self.master.add_heading("Technical Options command (SSA menu)")
