@@ -101,8 +101,9 @@ OUTPUT_FILE_NAME = "DJK21.FSS"
 p_OUTPUT_FILE = os.path.join(p_OUTPUT_DIR, OUTPUT_FILE_NAME)
 
 # Input paths
-RUN_FILES_DIR = "..\\run_files"
-RUN_FILES_DIR = os.path.join(get_script_dir_path(), RUN_FILES_DIR)
+# RUN_FILES_DIR = "..\\run_files"
+# RUN_FILES_DIR = os.path.join(get_script_dir_path(), RUN_FILES_DIR)
+RUN_FILES_DIR = os.getenv('APPDATA') + "\\Fssa\\run_files"
 PEAR_FILE_NAME = "PEARINP.DRV"
 MONO_FILE_NAME = "MONOINP.DRV"
 file_name = "FSSAINP.DRV"

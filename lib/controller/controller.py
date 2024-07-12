@@ -678,6 +678,8 @@ class Controller:
         else:
             self.enable_view_results()
             self.gui.show_msg("Finished running FSS Successfully.\n"
+                              'Click on "View" > "2D\\3D Diagram" to view '
+                              "and to save the diagrams.\n"
                               'Click on "Open" to view results',
                               title="Job Finished Successfully",
                               buttons=["Open:primary", "Close:secondary"],
@@ -707,6 +709,8 @@ class Controller:
         else:
             self.enable_view_results()
             self.gui.show_msg("Finished running FSS Successfully.\n"
+                              'Click on "View" > "2D\\3D Diagram" to view '
+                              "and to save the diagrams.\n"
                               'Click on "Open" to view results',
                               title="Job Finished Successfully",
                               buttons=["Open:primary", "Close:secondary"],

@@ -52,7 +52,7 @@ class FssInputWriter():
             os.makedirs(RUN_FILES_DIR)
         nvar = len(variables_labels)
         with open(p_FSS_DRV, "w") as f:
-            f.write(f"{job_name.replace('_',' ').title()}\n")
+            f.write(f"{job_name.replace('_', ' ').title()}\n")
             f.write(f"  {nvar}   {min_dim}   {max_dim}")
             f.write(f"   {int(is_similarity_data)}   {eps}   "
                     f"{len(missing_cells)}")
@@ -69,7 +69,7 @@ class FssInputWriter():
             for variable in variables_labels:
                 f.write(f" {' ' if variable['index'] < 10 else ''}"
                         f" {variable['index']}"
-                        f"{'  '+variable['label'] if variable['label'] else ''}"
+                        f"{'  ' + variable['label'] if variable['label'] else ''}"
                         "\n")
             # facet variable details
             for variable in facet_var_details:
