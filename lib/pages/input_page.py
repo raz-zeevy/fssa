@@ -103,6 +103,7 @@ class InputPage(ttk.Frame):
                            f"state the width ({DELIMITER_1_D},"
                            f" {DELIMITER_2_D})", width=5,
                 label_padx=ENTRIES_PADX,
+                pack=False,
                 pady=10,
                 values=FIXED_WIDTH_OPTIONS,
                 default="No",

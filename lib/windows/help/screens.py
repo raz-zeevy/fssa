@@ -539,9 +539,6 @@ class ScreensGenerator():
             "6. Navigation Buttons: Use the \"Previous\" and \"Next\" buttons to move through the different screens in the FSSA workflow. The \"Previous\" button will take you back to the Variable Definition Screen, while the \"Next\" button will advance you to the Dimensions and Coefficients Screen."
         )
         self.master.add_paragraph(
-            "7. Run: After configuring and verifying all your data and settings, clicking \"Run\" will start the analysis process using the defined variables and parameters."
-        )
-        self.master.add_paragraph(
             "Additional Notes:"
         )
         self.master.add_paragraph(

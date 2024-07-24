@@ -295,10 +295,10 @@ class GUI():
         self.root.config(menu=self.menu_bar)
 
     def set_menu_recorded_data(self):
-        self.input_data_radio.set(1)
-        self.input_data_menu.entryconfig("Recorded Data", state="disabled")
         self.input_data_menu.entryconfig("Coefficient Matrix",
                                          state="normal")
+        self.input_data_radio.set(1)
+        self.input_data_menu.entryconfig("Recorded Data", state="disabled")
         self.input_data_menu.entryconfig("Variables", state="disabled")
         try:
             self.input_data_menu.index("Data")
@@ -307,8 +307,8 @@ class GUI():
         self.input_data_menu.entryconfig("Data", state="disabled")
 
     def set_menu_matrix_data(self):
-        self.input_data_radio.set(2)
         self.input_data_menu.entryconfig("Recorded Data", state="normal")
+        self.input_data_radio.set(2)
         self.input_data_menu.entryconfig("Coefficient Matrix",
                                          state="disabled")
         # delete the entry data from the input data menu

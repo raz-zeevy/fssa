@@ -501,12 +501,15 @@ class Controller:
             self.load_session(open_path)
 
     def new_session_click(self, matrix=None):
-        print("hello")
         res = self.gui.show_msg("Do you want to save the "
                                               "current "
                                          "session before starting a new "
                                 "one?", title="New Session",
                           yes_command=self.save_session_click,)
+        if not res and not self.matrix_input:
+            self.gui.set_menu_recorded_data()
+        elif not res and self.matrix_input:
+            self.gui.set_menu_matrix_data()
         if res in ['Yes', 'No']:
             if matrix is None: matrix = self.matrix_input
             self.reset_session(matrix=matrix)
@@ -678,7 +681,8 @@ class Controller:
         else:
             self.enable_view_results()
             self.gui.show_msg("Finished running FSS Successfully.\n"
-                              'Click on "View" > "2D\\3D Diagram" to view '
+                              'Click on  "Close" > "View" > "2D\\3D Diagram" '
+                              'to view '
                               "and to save the diagrams.\n"
                               'Click on "Open" to view results',
                               title="Job Finished Successfully",
@@ -709,7 +713,8 @@ class Controller:
         else:
             self.enable_view_results()
             self.gui.show_msg("Finished running FSS Successfully.\n"
-                              'Click on "View" > "2D\\3D Diagram" to view '
+                              'Click on "Close" > "View" > "2D\\3D Diagram" '
+                              'to view '
                               "and to save the diagrams.\n"
                               'Click on "Open" to view results',
                               title="Job Finished Successfully",

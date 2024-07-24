@@ -58,7 +58,7 @@ class SelectionBox(ttk.Combobox):
 
 def create_labeled_selection_box(master, label_text, values, default,
                                  width=10, label_padx=10, box_pad_x=0, pady=10,
-                                 wraplength=real_size(500)):
+                                 wraplength=real_size(500), pack=True):
     # Delimiter Frame
     frame = ttk.Frame(master)
     frame.pack(fill='x', padx=label_padx, pady=pady)
@@ -66,13 +66,14 @@ def create_labeled_selection_box(master, label_text, values, default,
     label = Label(frame,
                   text=label_text,
                   wraplength=wraplength)
-    label.pack(side=ttk.LEFT)
     selection_box = SelectionBox(
         frame,
         values=values,
         default=default,
         width=width)
-    selection_box.pack(side=ttk.RIGHT, padx=box_pad_x)
+    if pack:
+        label.pack(side=ttk.LEFT)
+        selection_box.pack(side=ttk.RIGHT, padx=box_pad_x)
     return label, selection_box
 
 
