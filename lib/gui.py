@@ -294,6 +294,14 @@ class GUI():
         #
         self.root.config(menu=self.menu_bar)
 
+    def add_submenus(self, parent_menu, label, excel=False):
+        submenu = tk.Menu(parent_menu, tearoff=0)
+        submenu.add_command(label="Notepad", command=None)
+        submenu.add_command(label="Word", command=None)
+        if excel:
+            submenu.add_command(label="Excel", command=None)
+        parent_menu.add_cascade(label=label, menu=submenu)
+
     def set_menu_recorded_data(self):
         self.input_data_menu.entryconfig("Coefficient Matrix",
                                          state="normal")

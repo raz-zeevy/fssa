@@ -6,7 +6,7 @@ from lib.components.form import NavigationButton
 import matplotlib
 from lib.components.window import Window
 from lib.components.shapes import Line, Circle, DivideAxis
-from lib.utils import get_resource
+from lib.utils import get_resource, rreal_size
 
 G_COLOR = '#a4aab3'
 DPI_SAVE = 300
@@ -21,7 +21,6 @@ from matplotlib.backends.backend_tkagg import (
 BORDER_WIDTH = 0
 OC = 0.05
 
-
 class DiagramWindow(Window):
     def __init__(self, parent, graph_data_lst: list, **kwargs):
         """
@@ -29,9 +28,10 @@ class DiagramWindow(Window):
         should contain "x", "y", "annotations", "title", "legend",
          "captions", "geom" keys
         """
-        super().__init__(**kwargs, geometry="800x600")
+        super().__init__(**kwargs, geometry=f"{rreal_size(900)}x"
+                                            f"{rreal_size(700)}")
         self.title("FSS Solution")
-        self.iconbitmap(get_resource("icon.ico"))
+        # self.iconbitmap(get_resource("icon.ico"))
         # sets the geometry of toplevel
         self.graph_data_lst = graph_data_lst
         self.index = 0
@@ -104,7 +104,7 @@ class DiagramWindow(Window):
                                  command=self.legend_canvas.yview)
         self.legend_canvas.configure(yscrollcommand=self.vsb.set)
         self.vsb.pack(side="right", fill="y")
-        self.legend_canvas.pack(side="right", fill="both", expand=True)
+        self.legend_canvas.pack(side="right", fill="y", expand=False)
         self.canvas_frame = self.legend_canvas.create_window((0, 0),
                                                              window=self.diagram_labels_frame,
                                                              anchor="nw")
@@ -171,8 +171,7 @@ class DiagramWindow(Window):
                                  pady=(10, 0))
         diagram_label = ttk.Label(diagram_title_frame,
                                   text=graph_data["title"],
-                                  bootstyle="primary-bold",
-                                  font='Helvetica 8 bold')
+                                  font='Helvetica 11 bold')
         diagram_label.pack(side=tk.TOP,
                            expand=True,
                            fill='x')
@@ -185,8 +184,8 @@ class DiagramWindow(Window):
             space = "     " if item["index"] < 10 else "   "
             label = ttk.Label(legend_items_frame,
                               text=f'{item["index"]}{space}{item["value"]}',
-                              bootstyle=ttk.PRIMARY,
                               borderwidth=BORDER_WIDTH,
+                              font='Helvetica 11',
                               relief="solid", )
             label.pack(side=tk.TOP, fill=tk.BOTH)
 
@@ -233,7 +232,7 @@ class DiagramWindow(Window):
         y = graph_data["y"]
         z = graph_data["annotations"]
         # create a figure and axis
-        self.figure = Figure(figsize=(2, 4), dpi=100)
+        self.figure = Figure(figsize=(4, 4), dpi=100)
         figure_canvas = FigureCanvasTkAgg(self.figure,
                                           self.diagram_frame)
         axes = self.figure.add_subplot()
@@ -247,7 +246,7 @@ class DiagramWindow(Window):
         axes.text(0, -0.1, caption, ha='left', va='top',
                   transform=axes.transAxes, fontsize=8)
         self.figure.subplots_adjust(left=0.1,
-                                    right=0.95,
+                                    right=0.85,
                                     top=0.95,
                                     bottom=0.15)
         # create annotations
@@ -255,7 +254,7 @@ class DiagramWindow(Window):
         for i, txt in enumerate(z):
             axes.annotate(txt, (x[i], y[i] - annot_offset),
                           ha='center',
-                          fontsize=8)
+                          fontsize=9)
         # add geom
         add_geoms(x, axes, graph_data)
         # Adjust the plot limits to make sure it fits
@@ -275,7 +274,7 @@ class DiagramWindow(Window):
         frame_navigation.pack(side=ttk.BOTTOM, fill='x', padx=10,
                               pady=(0, 40))
         center_frame = ttk.Frame(frame_navigation)
-        center_frame.pack(pady=5, expand=True)
+        center_frame.pack(pady=5, expand=False)
         self.button_previous = NavigationButton(center_frame,
                                                 text="Previous",
                                                 command=self.previous_graph, )

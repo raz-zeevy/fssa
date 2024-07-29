@@ -77,14 +77,14 @@ class ManualFormatPage(ttk.Frame):
 
     def _configure_columns(self):
         self.data_table.heading("#0", anchor='c')
-        self.data_table.column("#0", width=50, anchor='w')
-        self.data_table.column(VAR_NO, anchor='c', width=45)
-        self.data_table.column(LINE_NO, anchor='c', width=45)
-        self.data_table.column(START_COL, anchor='c', width=45)
-        self.data_table.column(FIELD_WIDTH, anchor='c', width=50)
+        self.data_table.column("#0", width=rreal_size(50), anchor='w')
+        self.data_table.column(VAR_NO, anchor='c', width=rreal_size(45))
+        self.data_table.column(LINE_NO, anchor='c', width=rreal_size(45))
+        self.data_table.column(START_COL, anchor='c', width=rreal_size(45))
+        self.data_table.column(FIELD_WIDTH, anchor='c', width=rreal_size(50))
         for col in [VALID_LOW, VALID_HIGH,]:
             self.data_table.heading(col, anchor="c")
-            self.data_table.column(col, width=45, anchor='c')
+            self.data_table.column(col, width=rreal_size(45), anchor='c')
 
     def create_data_buttons(self):
         # Data Buttons Frame

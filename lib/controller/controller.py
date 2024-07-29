@@ -1,4 +1,5 @@
 # controller.py
+import subprocess
 import warnings
 import pandas as pd
 from lib.controller.graph_generator import generate_graphs
@@ -109,7 +110,6 @@ class Controller:
             self.previous_page()
         self.init_controller_attributes()
         self.on_facet_num_change(None)
-        self.disable_view_input()
         if matrix:
             self.navigator.show_page(MATRIX_INPUT_PAGE_NAME)
             self.navigator.hide_page(INPUT_PAGE_NAME)
@@ -296,6 +296,24 @@ class Controller:
     ###########################
     # Controls and Navigation #
     ###########################
+
+    def open_file(self, file, notepad=False, word=False):
+        def open_file_in_notepad(file_path):
+            try:
+                subprocess.run(['notepad', file_path], check=True)
+            except subprocess.CalledProcessError as e:
+                print(f"Failed to open file {file_path}: {e}")
+
+        def open_file_in_word(file_path):
+            try:
+                subprocess.run(['start', 'winword', file_path], shell=True,
+                               check=True)
+            except subprocess.CalledProcessError as e:
+                print(f"Failed to open file {file_path}: {e}")
+        if not notepad and not word:
+            raise UserWarning("Please specify a program to open the file with")
+        open_file = open_file_in_word if word else open_file_in_notepad
+        open_file(file)
 
     def open_results(self):
         os.startfile(self.output_path)
@@ -725,7 +743,6 @@ class Controller:
     def run_process(self):
         self.gui.run_process()
 
-
     def load_matrix_file(self):
         self.gui.pages[MATRIX_INPUT_PAGE_NAME].browse_file()
         data_file_path = self.gui.pages[
@@ -756,6 +773,7 @@ class Controller:
 
     @error_handler
     def load_recorded_data_file(self):
+        self.enable_view_input()
         self.gui.pages[INPUT_PAGE_NAME].browse_file()
         data_file_path = self.gui.pages[INPUT_PAGE_NAME].entry_data_file.get()
         self.init_controller_attributes()
