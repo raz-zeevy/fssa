@@ -17,9 +17,6 @@ class StartPage(ttk.Frame):
         self.colors = parent.root.style.colors
         self.create_widgets()
         self.root.update()
-        # parent.root.geometry("930x740")
-        # parent.root.geometry("590x493")
-        # parent.root.geometry("500x420")
 
     def create_widgets(self):
         side_img_data = Image.open(get_resource("side-img5.png"))

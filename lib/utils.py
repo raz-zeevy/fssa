@@ -4,16 +4,22 @@ from lib import config
 WINDOW_HEIGHT = 570
 # WINDOW_HEIGHT = 800
 WINDOW_WIDTH = 660
+TOOL_TIP_DELAY = 0.5
+
 
 # WINDOW_WIDTH = 950
 def get_window_width():
     return real_size(WINDOW_WIDTH)
 
+
 def get_window_height():
     return real_size(WINDOW_HEIGHT)
 
+
 def rreal_size(args):
     return real_size(args, _round=True)
+
+
 def real_size(args, _round=False):
     """
     This function is used to calculate the real size of the GUI elements

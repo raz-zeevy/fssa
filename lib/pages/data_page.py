@@ -11,6 +11,7 @@ import os
 from lib.utils import *
 from lib.fss.recoding import *
 from lib.components.form import DataButton
+from tktooltip import ToolTip
 
 
 class DataPage(ttk.Frame):
@@ -21,11 +22,12 @@ class DataPage(ttk.Frame):
         self.data = None
         self.data_table = None
 
-    def show_data(self, data):
+    def show_data(self, data : pd.DataFrame):
         if self.data_table:
             self.data_table.destroy()
         self.data = data
         self.create_data_table()
+        self.set_labels(data.columns)
 
     def create_data_table(self):
         coldata = [dict(text=col, stretch=False, ) for col in
@@ -43,38 +45,6 @@ class DataPage(ttk.Frame):
             stripecolor=(self.colors.light, None),
         )
         self.data_table.pack(fill=BOTH, expand=YES, padx=10, pady=10)
-
-        # Data Table Frame
-        # frame_data_table = ttk.Frame(self)
-        # frame_data_table.pack(fill='both', expand=True, padx=10, pady=10)
-
-        # # Data Table
-        # self.data_table = ttk.tableview.Tableview(frame_data_table)
-        #
-        # # Vertical Scrollbar
-        # v_scrollbar = ttk.Scrollbar(frame_data_table, orient="vertical",
-        #                             command=self.data_table.yview)
-        # v_scrollbar.pack(side='right', fill='y')
-        # self.data_table.configure(yscrollcommand=v_scrollbar.set)
-        #
-        # # Horizontal Scrollbar
-        # h_scrollbar = ttk.Scrollbar(frame_data_table, orient="horizontal",
-        #                             command=self.data_table.xview)
-        # h_scrollbar.pack(side='bottom', fill='x')
-        # self.data_table.configure(xscrollcommand=h_scrollbar.set)
-        #
-        # # Data Table Columns
-        # self.data_table['columns'] = list(self.data.columns)
-        # self.data_table['show'] = 'headings'
-        # for column in self.data_table['columns']:
-        #     self.data_table.heading(column, text=column)
-        #     self.data_table.column(column,
-        #                            width=100)  # Adjust column width as needed
-        #
-        # # Data Table Rows
-        # for row in self.data.iterrows():
-        #     self.data_table.insert('', 'end', values=list(row[1]))
-        #
         # # Bind double-click event
         self.data_table.view.unbind('<Button-1>')
         self.data_table.view.bind_all("<Double-1>", self.on_double_click)
@@ -83,20 +53,19 @@ class DataPage(ttk.Frame):
         for i in range(len(self.data.columns)):
             self.data_table.align_heading_center(cid=i)
             self.data_table.align_column_center(cid=i)
-        # # Pack the Treeview last so it fills the remaining space
-        # self.data_table.pack(side=ttk.LEFT, fill='both', expand=True)
 
     def on_double_click(self, event):
         region = self.data_table.view.identify("region", event.x, event.y)
         column = self.data_table.view.identify_column(event.x)
         if region == "heading":
             # Editing a column name
-            old_col_name = self.data_table.view.heading(column)['text']
+            col_id = int(column.replace('#', '')) - 1
+            old_col_name = self.get_var_label(col_id)
             new_col_name = askstring("Edit Variable Label",
                                      "Edit the variable label:",
                                      initialvalue=old_col_name)
             if new_col_name is not None:
-                self.data_table.view.heading(column, text=new_col_name)
+                self.set_var_label(col_id, new_col_name)
 
     def create_data_buttons(self):
         # Data Buttons Frame
@@ -107,20 +76,28 @@ class DataPage(ttk.Frame):
         self.button_reload = DataButton(frame_data_buttons, text="Reload "
                                                                  "Input",
                                         width=11)
-        self.button_reload.pack(side=tk.LEFT, padx=5)
-        self.button_save = DataButton(frame_data_buttons, text="Save To..", )
-        self.button_save.pack(side=tk.LEFT, padx=5)
+        # self.button_reload.pack(side=tk.LEFT, padx=5)
         self.button_select = DataButton(frame_data_buttons, text="Select "
                                                                  "Vars.",
                                         command=self.select_variables)
         self.button_select.pack(side=tk.LEFT, padx=5)
+        ToolTip(self.button_select, msg="You can return to the previous page "
+                                        "in\norder to cancel the selection",
+                delay=TOOL_TIP_DELAY)
         self.button_recode = DataButton(frame_data_buttons, text="Recode "
                                                                  "Vars.",
                                         command=self.select_variables,
                                         width=11)
         self.button_recode.pack(side=tk.LEFT, padx=5)
+        ToolTip(self.button_recode, msg="You can run multiple recoding "
+                                        "operations\non the same variables.",
+                delay=TOOL_TIP_DELAY)
+        self.button_save = DataButton(frame_data_buttons, text="Save Active "
+                                                               "Data To..",
+                                      width=rreal_size(18))
+        self.button_save.pack(side=tk.LEFT, padx=5)
 
-    def select_variables(self, selected_vars : set = None ):
+    def select_variables(self, selected_vars: set = None):
         # open a string dialog to select variable columns
         if not selected_vars:
             selected_vars = askstring("Select Variables",
@@ -128,12 +105,18 @@ class DataPage(ttk.Frame):
                                       "e.g. 1-5, 8, 11-13\n")
             selected_vars = self.parse_indices_string(selected_vars)
         if selected_vars:
-            # reset table
-            self.button_reload.invoke()
+            for i in selected_vars:
+                if i < 1 or i > len(self.data.columns):
+                    messagebox.showinfo("Error",
+                                        f"Invalid column index {i}. not in range "
+                                        f"of 1..{len(self.data.columns)}")
+                    return
             if len(selected_vars) < 3:
                 messagebox.showinfo("Error", "Please select at least 3 "
                                              "variables.")
                 return
+            # reset table
+            self.button_reload.invoke()
             # get the data from the table
             data = self.get_all_visible_data()
             labels = self.get_visible_labels()
@@ -146,6 +129,7 @@ class DataPage(ttk.Frame):
             selected_data.columns = selected_labels
             # show the selected data
             self.show_data(selected_data)
+            self.set_labels(selected_labels)
 
     def parse_indices_string(self, indices_string) -> set:
         if not indices_string: return set()
@@ -159,16 +143,11 @@ class DataPage(ttk.Frame):
                                                          list else [
                     int(x)] for x in parsed_indices]
             parsed_indices = set(itertools.chain(*parsed_indices))
-            for i in parsed_indices:
-                if i < 1 or i > len(self.data.columns):
-                    raise ValueError(f"Invalid column index {i}. not in range "
-                                    f"of 1..{len(self.data.columns)}")
             return parsed_indices
         except Exception as e:
-            if type(e) != ValueError:
-                raise ValueError("Invalid indices string")
+            messagebox.showinfo("Error", "Invalid indices string")
 
-    def recode_variables(self, recode_window, recoding_details :dict = None):
+    def recode_variables(self, recode_window, recoding_details: dict = None):
         """
         :param recode_window:
         :param recoding_details: {
@@ -186,8 +165,8 @@ class DataPage(ttk.Frame):
                                                     'indices_string'])
         recoded = False
         recoded_df = self.data
-        for col in [i-1 for i in col_indices]:
-            rec_col = recoded_df.iloc[:,col]
+        for col in [i - 1 for i in col_indices]:
+            rec_col = recoded_df.iloc[:, col]
             if recoding_details['grouping']:
                 if recoding_details['grouping_type'] == GROUPING_TYPES[0]:
                     rec_col = group_by_precentile(rec_col,
@@ -204,7 +183,7 @@ class DataPage(ttk.Frame):
             if recoding_details['inverting']:
                 rec_col = invert(rec_col)
                 recoded = True
-            recoded_df.iloc[:,col] = rec_col
+            recoded_df.iloc[:, col] = rec_col
         if recoded:
             self.show_data(recoded_df)
         if recode_window:
@@ -230,13 +209,20 @@ class DataPage(ttk.Frame):
         if not self.data_table: return None
         labels = []
         for i, col in enumerate(self.data_table.tablecolumns_visible):
-            labels.append(self.data_table.view.heading(i)['text'])
+            labels.append(self.get_var_label(i))
         return labels
 
     def set_labels(self, labels):
         assert len(labels) == len(self.data_table.tablecolumns)
         for i, col in enumerate(self.data_table.tablecolumns):
-            self.data_table.view.heading(col.cid, text=labels[i])
+            self.set_var_label(col.cid, labels[i])
+
+    def get_var_label(self, i):
+        return self.data_table.view.heading(i)['text'][3:]
+
+    def set_var_label(self, col_index, label):
+        index = f"{int(col_index)+1}. "
+        self.data_table.view.heading(col_index, text=index + label)
 
     def pack(self, kwargs=None, **kw):
         if self.data_table:

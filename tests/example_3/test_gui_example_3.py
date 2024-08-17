@@ -1,7 +1,7 @@
 from lib.controller.controller import *
 from lib.controller.controller import Controller
 from lib.fss.fss_input_parser import *
-from .const import *
+from const import *
 
 SET_MODE_TEST()
 # SET_MODE_PRODUCTION()

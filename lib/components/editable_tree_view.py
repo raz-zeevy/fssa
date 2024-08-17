@@ -370,6 +370,16 @@ class EditableTreeView(ttk.Treeview):
         if self._auto_index:
             self._reindex()
 
+    def remove_rows(self, row_indexes):
+        """ get the rows id from the row_index and remove it from the
+        treeview """
+        row_indexes.sort(reverse=True)
+        for row_index in row_indexes:
+            row_id = self.get_children()[row_index]
+            self.delete(row_id)
+        if self._auto_index:
+            self._reindex()
+
     def insert_row(self, index, values=[]):
         """ add a row to the treeview """
         if index == -1:

@@ -66,7 +66,7 @@ class GUI():
         self.root.minsize(*real_size((WINDOW_WIDTH, WINDOW_HEIGHT),
                                     _round = True))
         self.root.pack_propagate(0)
-        self.root.resizable(False, False)
+        self.root.resizable(True, True)
         # set the window to be always on top
         # self.root.attributes("-topmost", True)
 

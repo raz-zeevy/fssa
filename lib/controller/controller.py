@@ -180,6 +180,9 @@ class Controller:
         self.gui.pages[INPUT_PAGE_NAME]. \
             button_browse.bind("<Button-1>",
                                lambda x: self.load_recorded_data_file())
+        # Manual Page:
+        self.gui.pages[MANUAL_FORMAT_PAGE_NAME]. \
+            reload_variables = self.reload_variables
         # data page
         self.gui.pages[DATA_PAGE_NAME]. \
             button_save.bind("<Button-1>",
@@ -316,7 +319,10 @@ class Controller:
         open_file(file)
 
     def open_results(self):
-        os.startfile(self.output_path)
+        try:
+            subprocess.run(['notepad', self.output_path], check=True)
+        except subprocess.CalledProcessError as e:
+            print(f"Failed to open file {self.output_path}: {e}")
 
     def enable_view_results(self):
         self.gui.view_menu.entryconfig("Output File", state="normal")
@@ -535,7 +541,10 @@ class Controller:
     def load_data_page(self, data):
         self.gui.pages[DATA_PAGE_NAME].show_data(data)
 
-    def load_data(self):
+    def reload_variables(self, selected_vars):
+        self.load_data(col_indices=selected_vars)
+
+    def load_data(self, col_indices=None):
         # load data
         self.data_file_path = self.gui.pages[
             INPUT_PAGE_NAME].get_data_file_path()
@@ -563,6 +572,9 @@ class Controller:
                                           delimiter=self.delimiter,
                                           extension=self.data_file_extension,
                                           has_header=self.has_header)
+                self.gui.pages[MANUAL_FORMAT_PAGE_NAME].clear_all_vars()
+                if col_indices:
+                    data = data.iloc[:, [i-1 for i in col_indices]]
                 for col in data:
                     self.gui.pages[MANUAL_FORMAT_PAGE_NAME].add_variable(
                         label=col)

@@ -1,6 +1,9 @@
+import itertools
 import tkinter as tk
+from tkinter import messagebox
 from tkinter.simpledialog import askstring
 import ttkbootstrap as ttk
+from tktooltip import ToolTip
 from ttkbootstrap.constants import *
 from lib.components.editable_tree_view import EditableTreeView
 from dotmap import DotMap
@@ -37,8 +40,8 @@ class ManualFormatPage(ttk.Frame):
         self.coldata = None
         self.are_missing_values = True
         self.colors = parent.root.style.colors
-        self.create_data_buttons()
         self.limited_edit_mode = False
+        self.create_data_buttons()
         # create entry before the table:
         entry = ttk.Label(self, text="Specify where in the data file the "
                                 "variables are located: ")
@@ -88,20 +91,29 @@ class ManualFormatPage(ttk.Frame):
 
     def create_data_buttons(self):
         # Data Buttons Frame
-        frame_data_buttons = ttk.Frame(self)
+        self.frame_data_buttons = ttk.Frame(self)
         # Pack the frame for data buttons at the bottom of the screen
-        frame_data_buttons.pack(side=tk.BOTTOM, fill='x', padx=10,
+        self.frame_data_buttons.pack(side=tk.BOTTOM, fill='x', padx=10,
                                 pady=(0, 20))
         # Data Buttons
-        self.button_add_variable = DataButton(frame_data_buttons, text="Add "
+        self.button_add_variable = DataButton(self.frame_data_buttons,
+                                              text="Add "
                                                                        "Var.",
                                               command=self.add_variable)
         self.button_add_variable.pack(side=tk.LEFT, padx=5)
-        self.button_remove_variable = DataButton(frame_data_buttons,
+        self.button_remove_variable = DataButton(self.frame_data_buttons,
                                                  text="Remove Var.",
                                                  command=self.remove_variable,
                                                  width=11)
         self.button_remove_variable.pack(side=tk.LEFT, padx=5)
+        #
+        # self.button_reload.pack(side=tk.LEFT, padx=5)
+        self.button_select = DataButton(self.frame_data_buttons, text="Select "
+                                                                 "Vars.",
+                                        command=self.select_variables_window)
+        ToolTip(self.button_select, msg="You can return to the previous page "
+                                        "in\norder to cancel the selection",
+                delay=TOOL_TIP_DELAY)
 
     ###################
     #### Get & Set ####
@@ -150,6 +162,7 @@ class ManualFormatPage(ttk.Frame):
         for col in COLUMNS:
             if col not in [VAR_NO, LABEL, VALID_LOW, VALID_HIGH]:
                 self.data_table.hide_column(col)
+        self.button_select.pack(side=tk.LEFT, padx=5)
 
     def unset_limited_edit_mode(self):
         self.limited_edit_mode = False
@@ -157,6 +170,7 @@ class ManualFormatPage(ttk.Frame):
         self.button_remove_variable.config(state="normal")
         for col in COLUMNS:
             self.data_table.show_column(col)
+        self.button_select.pack_forget()
 
     def get_labels(self) -> list:
         return [row[LABEL] for row in self.data_table.rows()]
@@ -181,6 +195,48 @@ class ManualFormatPage(ttk.Frame):
     def select_variables(self, var_indices):
         self.data_table.toggle_all()
         self.data_table.toggle_rows(var_indices)
+
+    def select_variables_window(self, selected_vars : set = None ):
+        # open a string dialog to select variable columns
+        if not selected_vars:
+            selected_vars = askstring("Select Variables",
+                                      "Enter variable indices:\n"
+                                      "e.g. 1-5, 8, 11-13\n")
+            selected_vars = self.parse_indices_string(selected_vars)
+        if selected_vars:
+            if len(selected_vars) < 3:
+                messagebox.showinfo("Error", "Please select at least 3 "
+                                             "variables.")
+                return
+            # get the data from the table
+            # rows_to_remove = [i for i in range(len(self.data_table)) if i + 1
+            # not in selected_vars]
+            # self.data_table.remove_rows(rows_to_remove)
+            self.reload_variables(selected_vars)
+    def parse_indices_string(self, indices_string) -> set:
+        if not indices_string: return set()
+        try:
+            parsed_indices = indices_string.split(',')
+            parsed_indices = [x.strip() for x in parsed_indices]
+            parsed_indices = [x.split('-') if '-' in x else x for x in
+                              parsed_indices]
+            parsed_indices = [
+                list(range(int(x[0]), int(x[1]) + 1)) if type(x) is
+                                                         list else [
+                    int(x)] for x in parsed_indices]
+            parsed_indices = set(itertools.chain(*parsed_indices))
+            for i in parsed_indices:
+                if i < 1 or i > len(self.data_table):
+                    messagebox.showinfo("error", f"Invalid column index {i}. "
+                                                f"not in range "
+                                    f"of 1..{len(self.data_table)}")
+                    return None
+            return parsed_indices
+        except Exception as e:
+            messagebox.showinfo("error", "Invalid indices string")
+
+    def reload_variables(self, selected_vars=None):
+        raise UserWarning("Shouldn't be called.")
 
     def get_vars_valid_values(self):
         all_format = self.get_data_format()
@@ -224,12 +280,13 @@ class ManualFormatPage(ttk.Frame):
         # removes the last row from the table
         self.data_table.remove_row(-1)
 
+    def clear_all_vars(self):
+        for i in range(len(self.data_table)):
+            self.remove_variable()
+
     def add_variable(self, line=None, col=None,
                      width=None,
                      valid_low=None, valid_high=None, label=None):
-
-        if self.limited_edit_mode: return
-
         default_values = {LINE_NO: line, START_COL: col,
                           FIELD_WIDTH: width, VALID_LOW: valid_low,
                           VALID_HIGH: valid_high, LABEL: label}

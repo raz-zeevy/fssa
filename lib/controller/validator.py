@@ -5,7 +5,8 @@ from lib.utils import *
 def invalid_fields(data):
     res = dict(
         passed=True,
-        row_num=None,
+        row_num=0,
+        entry = None,
     )
     for i, row in enumerate(data):
         for entry in row:
@@ -13,18 +14,19 @@ def invalid_fields(data):
                 if entry.strip() != "":
                     if int(entry) != eval(entry):
                         res['passed'] = True
-                        res['row_num'] = i
+                        res['row_num'] = i+1
                         return res
             except ValueError:
                 # This is the case when the entry can't be converted to int
-                res['passed'] = True
-                res['row_num'] = i
+                res['passed'] = False
+                res['row_num'] = i+1
+                res['entry'] = entry
                 return res
             except SyntaxError:
                 # This is the case when the entry has a starting zero
                 # e.g 01, 02, 03, etc...
                 res['passed'] = True
-                res['row_num'] = i
+                res['row_num'] = i+1
                 return res
     return res
 
@@ -78,7 +80,11 @@ class Validator():
         res = invalid_fields(data)
         if not res["passed"]:
             raise Exception(
-                f"Usage Error Row {res['row_num']}:\nThe data fields must "
+                f"Entry '{res['entry']}' in row {res['row_num']} "
+                f"couldn't be parsed."
+                f"\nThe data "
+                f"fields "
+                f"must "
                 f"be "
                 f"numeric "
                 "and in the "

@@ -12,7 +12,8 @@ class RecodeWindow(Window):
     def __init__(self, parent,**kwargs):
         """
         """
-        super().__init__(**kwargs, geometry="600x450")
+        super().__init__(**kwargs, geometry=f"{rreal_size(600)}x"
+                                            f"{rreal_size(400)}")
         self.title("Recode Variables")
         self.iconbitmap(get_resource("icon.ico"))
         # sets the geometry of toplevel
@@ -119,7 +120,7 @@ class RecodeWindow(Window):
                                               bootstyle="secondary",
                                         command=self.exit)
         self.button_cancel.pack(side=tk.LEFT, padx=5)
-        self.button_recode = NavigationButton(frame_buttons, text="Recode",
+        self.button_recode = NavigationButton(frame_buttons, text="OK",
                                         command=self.recode,)
         self.button_recode.pack(side=tk.LEFT, padx=30)
 
