@@ -207,7 +207,7 @@ def run_matrix_fortran(output_path: str):
     fss_dir = get_script_dir_path()
     with cwd(fss_dir):
         result = subprocess.run(full_command, shell=True, stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE, text=True)
+                                stderr=subprocess.PIPE, text=True, errors="ignore")
         # Print the output and error, if any
         if result.returncode != 0:
             raise Exception(f"FSSA script failed : {result.stderr}")
@@ -308,7 +308,7 @@ def run_fortran(corr_type,
     fss_dir = get_script_dir_path()
     with cwd(fss_dir):
         result = subprocess.run(full_command, shell=True, stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE, text=True)
+                                stderr=subprocess.PIPE, text=True, errors="ignore")
         # Print the output and error, if any
         if result.returncode != 0:
             raise Exception(f"FSSA script failed : {result.stderr}")
