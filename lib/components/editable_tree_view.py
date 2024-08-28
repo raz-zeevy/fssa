@@ -4,7 +4,7 @@ import tkinter
 import tkinter as tk
 from tkinter import ttk
 from PIL import Image, ImageTk
-from lib.utils import get_resource
+from lib.utils import get_resource, rreal_size
 import ttkbootstrap as ttkb
 
 class EditableTreeView(ttk.Treeview):
@@ -63,11 +63,12 @@ class EditableTreeView(ttk.Treeview):
                         # foreground="white",
                         bordercolor="black",
                         borderwidth=1,
-                        padding=(10, 0, 0, 0),
+                        padding=(rreal_size(10), 0, 0, 0),
                         # Padding: (left, top, right, bottom)
                         )
         style.configure("Treeview",
-                        rowheight=21)  # Adjust the row height as needed
+                        rowheight=rreal_size(21))  # Adjust the row height as
+        # needed
         self.tag_configure('oddrow', background='#F8F5F0')
         self.tag_configure('evenrow', background='white')
 
@@ -321,6 +322,9 @@ class EditableTreeView(ttk.Treeview):
     def get_checked_rows(self):
         return [self.set(iid) for iid in self.get_children() if self._checkboxes_states.get(iid, True)]
 
+    def get_checked_row_indices(self):
+        return [i for i, iid in enumerate(self.get_children()) if self._checkboxes_states.get(iid, True)]
+
     def row_ids(self):
         for iid in self.get_children():
             yield iid
@@ -342,7 +346,9 @@ class EditableTreeView(ttk.Treeview):
             self.toggle_row(row)
 
     def toggle_row(self, row):
-        """index start in 0"""
+        """index start in 1"""
+        if row < 0:
+            row = len(self) + row
         self._on_check_click(None, row_id=f"I00{row+1}")
 
     def toggle_all(self):

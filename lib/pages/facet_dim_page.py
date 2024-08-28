@@ -67,7 +67,7 @@ class FacetDimPage(ttk.Frame):
                                                    text="Yes",
                                                    onvalue=0,
                                                    offvalue=1,
-                                                   bootstyle="dark-outline-toolbutton")
+                                                   bootstyle="secondary-outline-toolbutton")
                 dim_facet_button.configure(command=lambda
                     var=check_var,
                     btn=dim_facet_button: self._update_checkbutton_text(var,

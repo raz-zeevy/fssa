@@ -22,6 +22,9 @@ from lib.utils import *
 from ttkbootstrap.dialogs.dialogs import Messagebox
 from lib.windows.technical_options_window import TOWindow
 
+ROOT_TITLE = "FSSAWIN - Faceted Smallest Space Analysis for " \
+    "Windows"
+
 THEME_NAME = 'sandstone'
 p_ICON = 'icon.ico'
 
@@ -43,8 +46,7 @@ class GUI():
         # os.system("xrandr  | grep \* | cut -d' ' -f4")
         # Main window
         self.root = ttk.Window(themename=THEME_NAME)
-        self.root.title("FSSAWIN - Faceted Smallest Space Analysis for "
-                        "Windows")
+        self.root.title(ROOT_TITLE)
         # set the icon
         self.root.iconbitmap(get_resource(p_ICON))
 
@@ -387,6 +389,11 @@ class GUI():
         # You might want to inform the user with a message box
         # messagebox.showerror("Save Error", "The file contains non-ASCII characters.")
 
+    def set_save_title(self, save_path):
+        if save_path:
+            self.root.title(f"{ROOT_TITLE} - {save_path}")
+        else:
+            self.root.title(ROOT_TITLE)
     @gui_only
     def show_msg(self, msg, title=None, yes_command=None,
                  no_command=None,
@@ -428,15 +435,19 @@ class GUI():
             title="Save Output File To...")
         return output_file_path
 
-    def save_session_dialogue(self):
-        file_name = filedialog.asksaveasfilename(filetypes=[('mem', '*.mem')],
-                                                 defaultextension='.mem',
+    def save_session_dialogue(self, data_file_name=""):
+        file_name = filedialog.asksaveasfilename(filetypes=[('FSSA Memory '
+                                                             'File',
+                                                             f'*{SAVE_EXTENSION}')],
+                                                 defaultextension=SAVE_EXTENSION,
                                                  title="Save FSSA Session",
+                                                 initialfile=data_file_name,
                                                  confirmoverwrite=True)
         return file_name
 
     def open_session_dialogue(self):
-        file_name = filedialog.askopenfilename(filetypes=[('mem', '*.mem')],
+        file_name = filedialog.askopenfilename(filetypes=[('FSSA Memory '
+                                                             'File', f'*{SAVE_EXTENSION}')],
                                                title="Open FSSA Session")
         return file_name
 

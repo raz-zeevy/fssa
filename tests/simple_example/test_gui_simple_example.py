@@ -1,7 +1,7 @@
 from lib.controller.controller import *
 from lib.controller.controller import Controller
 from const import *
-
+from lib.fss.fss_input_parser import simulate_facets_var_data
 
 # SET_MODE_PRODUCTION()
 SET_MODE_TEST()
@@ -32,6 +32,7 @@ class simple_example_gui(Controller):
         for _ in range(5):
             manual_page.add_variable()
         manual_page.set_labels(['a','b','c','d','e'])
+        manual_page.select_variables([0,2,4])
         self.next_page()
         self.next_page()
         dims_page = self.gui.pages[DIMENSIONS_PAGE_NAME]
@@ -39,6 +40,24 @@ class simple_example_gui(Controller):
         dims_page.dimension_combo_selected(None)
         dims_page.set_dims(2,5)
         self.next_page()
+        facet_page = self.gui.pages[FACET_PAGE_NAME]
+        facet_page.set_facets_num(1)
+        self.on_facet_num_change(None)
+        self.gui.button_next.invoke()
+        simulate_facets_var_data(" 1\n 2\n 1",
+                                 self.gui.pages[
+            FACET_VAR_PAGE_NAME].combo_by_var)
+        [self.previous_page() for _ in '0004']
+        [self.next_page() for _ in '0004']
+        [self.previous_page() for _ in '0004']
+        [manual_page.remove_variable() for _ in '00005']
+        for _ in range(5):
+            manual_page.add_variable()
+        manual_page.set_labels(['a','b','c','d','e'])
+        self.next_page()
+        simulate_facets_var_data(" 1\n 2\n 1\n 1\n 2",
+                                self.gui.pages[
+                                    FACET_VAR_PAGE_NAME].combo_by_var)
         try:
             self.output_path = \
                 r"C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\output" \
@@ -48,7 +67,7 @@ class simple_example_gui(Controller):
         except Exception as e:
             print(e)
             assert False
-        run_file_path = p_FSS_DRV
+        # run_file_path = p_FSS_DRV
 
     def test_simple_csv(self):
         """
@@ -83,7 +102,7 @@ class simple_example_gui(Controller):
         self.previous_page(); self.previous_page()
         self.gui.pages[INPUT_PAGE_NAME].set_missing_value(True)
         self.next_page()
-        self.gui.pages[MANUAL_FORMAT_PAGE_NAME].select_variables([0,1,2,3])
+        self.gui.pages[MANUAL_FORMAT_PAGE_NAME].select_csv_variables([0, 1, 2, 3])
         self.gui.pages[MANUAL_FORMAT_PAGE_NAME].set_labels(['a','b','c','d',
                                                             'e'])
         self.next_page()
@@ -107,7 +126,7 @@ class simple_example_gui(Controller):
 if __name__ == '__main__':
     a = simple_example_gui()
     a.test_simple_example()
-    a.reset_session(False)
+    # a.reset_session(False)
     # a.test_simple_example()
-    a.test_simple_csv()
+    # a.test_simple_csv()
     a.run_process()

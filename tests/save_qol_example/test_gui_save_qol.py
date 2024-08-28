@@ -6,7 +6,8 @@ from const import *
 DATA_PATH = 'qolstu20.dat'
 SET_MODE_TEST()
 VARS_LABELS = [f"v{i}" for i in range(1,17)]
-
+SAVE_PATH = r'C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\tests' \
+            '\save_qol_example\sessions.mms'
 ###
 test_facets = [
                 ["figural", "verbal", "numeral", "social"],
@@ -54,10 +55,10 @@ class simple_example_gui(Controller):
             raise(e)
         assert os.path.isfile(self.output_path)
         [self.previous_page() for _ in range(3)]
-        self.save_session('sessions.mem')
+        self.save_session_click(SAVE_PATH)
 
     def test_load(self):
-        self.load_session('sessions.mem')
+        self.load_session(SAVE_PATH)
         assert self.gui.pages[INPUT_PAGE_NAME].get_data_file_path() == \
                r"C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\tests\save_qol_example\qolstu20.dat"
         assert self.gui.pages[INPUT_PAGE_NAME].get_lines_per_var() == 1

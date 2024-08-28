@@ -54,7 +54,9 @@ def load_recorded_data(path, delimiter=None, lines_per_var=1, manual_format: Lis
         elif extension == ".tsv":
             df = pd.read_csv(path, sep="\t", header=header, dtype=str)
         elif extension == ".xls" or extension == ".xlsx":
-            df = pd.read_excel(path, header=header, engine="openpyxl",
+            df = pd.read_excel(path,
+                               header=header,
+                               engine="openpyxl",
                                dtype=str)
         else:
             raise Exception(f"Invalid extension: {extension}")
@@ -314,6 +316,8 @@ def run_fortran(corr_type,
             raise Exception(f"FSSA script failed : {result.stderr}")
         if result.stderr not in [RESULTS_SUCCESS_STDERR,
                                  RESULTS_SUCCESS_STDERR2]:
+            if "Fortran runtime error:" in result.stderr:
+                raise Exception(f"FSSA script failed : {result.stderr}")
             if len(result.stderr.split("\n")) >= 3:
                 if result.stderr.split("\n")[2] == 'Fortran runtime error: ' \
                                                    'Cannot write to file opened for READ':

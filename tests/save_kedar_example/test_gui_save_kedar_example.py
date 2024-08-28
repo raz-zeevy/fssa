@@ -11,6 +11,7 @@ DATA_PATH = 'DJKEDAR2.DAT'
 # SET_MODE_PRODUCTION()
 SET_MODE_TEST()
 
+
 ###
 test_facets = [
                 ["figural", "verbal", "numeral", "social"],
@@ -36,8 +37,8 @@ class simple_example_gui(Controller):
         self.gui.pages[INPUT_PAGE_NAME].set_fixed_width("1-digit")
         self.next_page()
         self.next_page()
-        self.gui.pages[DATA_PAGE_NAME].select_variables({i for i in range(1,
-                                                                          26)})
+        self.gui.pages[DATA_PAGE_NAME].select_csv_variables({i for i in range(1,
+                                                                              26)})
         self.next_page()
         self.gui.pages[DIMENSIONS_PAGE_NAME].set_dims(2,3)
         self.next_page()

@@ -38,10 +38,12 @@ class ManualFormatPage(ttk.Frame):
         self.data_table = None
         ttk.Frame.__init__(self, parent.root)
         self.coldata = None
-        self.are_missing_values = True
+        self.are_missing_values = False
         self.colors = parent.root.style.colors
         self.limited_edit_mode = False
         self.create_data_buttons()
+        # Selection
+        self.vars_i = []
         # create entry before the table:
         entry = ttk.Label(self, text="Specify where in the data file the "
                                 "variables are located: ")
@@ -172,11 +174,21 @@ class ManualFormatPage(ttk.Frame):
             self.data_table.show_column(col)
         self.button_select.pack_forget()
 
-    def get_labels(self) -> list:
+    def get_labels(self, selected=False) -> list:
         return [row[LABEL] for row in self.data_table.rows()]
 
     def get_selected_var_labels(self):
         return [var['Label'] for var in self.data_table.get_checked_rows()]
+
+    def get_selected_var_indices(self):
+        indices = []
+        for i in self.data_table.get_checked_row_indices():
+            indices.append(self.vars_i[i])
+        print(f"selected indices:\n{indices} - get_selected_var_indices()")
+        return indices
+
+    def get_selected_var_rel_indices(self):
+        return self.data_table.get_checked_row_indices()
 
     def get_len_selected_vars(self):
         return len(self.data_table.get_checked_rows())
@@ -196,7 +208,7 @@ class ManualFormatPage(ttk.Frame):
         self.data_table.toggle_all()
         self.data_table.toggle_rows(var_indices)
 
-    def select_variables_window(self, selected_vars : set = None ):
+    def select_variables_window(self, selected_vars : set = None):
         # open a string dialog to select variable columns
         if not selected_vars:
             selected_vars = askstring("Select Variables",
@@ -212,7 +224,16 @@ class ManualFormatPage(ttk.Frame):
             # rows_to_remove = [i for i in range(len(self.data_table)) if i + 1
             # not in selected_vars]
             # self.data_table.remove_rows(rows_to_remove)
-            self.reload_variables(selected_vars)
+            new_vars_i = []
+            for i in selected_vars:
+                new_vars_i.append(self.vars_i[i-1])
+            self.vars_i = new_vars_i
+            print(f"selecting variables:\n{new_vars_i}")
+            # remove unselected variables from table
+            for i in range(len(self.data_table)-1, -1, -1):
+                if i + 1 not in selected_vars:
+                    self.data_table.remove_row(i)
+            self.reload_variables(new_vars_i)
     def parse_indices_string(self, indices_string) -> set:
         if not indices_string: return set()
         try:
@@ -275,18 +296,19 @@ class ManualFormatPage(ttk.Frame):
         else:
             self.data_table.hide_column(VALID_LOW)
             self.data_table.hide_column(VALID_HIGH)
-
     def remove_variable(self):
         # removes the last row from the table
         self.data_table.remove_row(-1)
 
     def clear_all_vars(self):
+        print("Clean all vars and vars_i")
+        self.vars_i = []
         for i in range(len(self.data_table)):
             self.remove_variable()
 
     def add_variable(self, line=None, col=None,
                      width=None,
-                     valid_low=None, valid_high=None, label=None):
+                     valid_low=None, valid_high=None, label=None, var_i=None):
         default_values = {LINE_NO: line, START_COL: col,
                           FIELD_WIDTH: width, VALID_LOW: valid_low,
                           VALID_HIGH: valid_high, LABEL: label}
@@ -321,3 +343,5 @@ class ManualFormatPage(ttk.Frame):
             new_row = new_row_from_default(**default_values)
         new_row[LABEL] = label
         self.add_row_from_dict(new_row)
+        var_i = var_i if var_i is not None else len(self.vars_i)
+        self.vars_i.append(var_i)

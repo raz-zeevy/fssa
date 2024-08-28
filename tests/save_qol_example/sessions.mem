@@ -1,56 +1,169 @@
 {
-  "navigator": {
-    "pages_list": [
-      {
-        "py/object": "lib.controller.navigator.Navigator.Page",
-        "name": "InputPage",
-        "show": true
-      },
-      {
-        "py/object": "lib.controller.navigator.Navigator.Page",
-        "name": "MatrixInputPage",
-        "show": false
-      },
-      {
-        "py/object": "lib.controller.navigator.Navigator.Page",
-        "name": "ManualFormatPage",
-        "show": true
-      },
-      {
-        "py/object": "lib.controller.navigator.Navigator.Page",
-        "name": "DataPage",
-        "show": true
-      },
-      {
-        "py/object": "lib.controller.navigator.Navigator.Page",
-        "name": "DimensionsPage",
-        "show": true
-      },
-      {
-        "py/object": "lib.controller.navigator.Navigator.Page",
-        "name": "FacetPage",
-        "show": true
-      },
-      {
-        "py/object": "lib.controller.navigator.Navigator.Page",
-        "name": "FacetVarPage",
-        "show": true
-      },
-      {
-        "py/object": "lib.controller.navigator.Navigator.Page",
-        "name": "HypothesisPage",
-        "show": true
-      },
-      {
-        "py/object": "lib.controller.navigator.Navigator.Page",
-        "name": "FacetDimPage",
-        "show": true
-      }
-    ],
-    "index": 3
-  },
+  "active_variables_details": [
+    {
+      "label": "v1",
+      "index": 0,
+      "facets": [
+        1,
+        1
+      ],
+      "show": true,
+      "remove": false
+    },
+    {
+      "label": "v2",
+      "index": 1,
+      "facets": [
+        1,
+        2
+      ],
+      "show": true,
+      "remove": false
+    },
+    {
+      "label": "v3",
+      "index": 2,
+      "facets": [
+        1,
+        3
+      ],
+      "show": true,
+      "remove": false
+    },
+    {
+      "label": "v4",
+      "index": 3,
+      "facets": [
+        1,
+        4
+      ],
+      "show": true,
+      "remove": false
+    },
+    {
+      "label": "v5",
+      "index": 4,
+      "facets": [
+        2,
+        1
+      ],
+      "show": true,
+      "remove": false
+    },
+    {
+      "label": "v6",
+      "index": 5,
+      "facets": [
+        2,
+        2
+      ],
+      "show": true,
+      "remove": false
+    },
+    {
+      "label": "v7",
+      "index": 6,
+      "facets": [
+        2,
+        3
+      ],
+      "show": true,
+      "remove": false
+    },
+    {
+      "label": "v8",
+      "index": 7,
+      "facets": [
+        2,
+        4
+      ],
+      "show": true,
+      "remove": false
+    },
+    {
+      "label": "v9",
+      "index": 8,
+      "facets": [
+        3,
+        1
+      ],
+      "show": true,
+      "remove": false
+    },
+    {
+      "label": "v10",
+      "index": 9,
+      "facets": [
+        3,
+        2
+      ],
+      "show": true,
+      "remove": false
+    },
+    {
+      "label": "v11",
+      "index": 10,
+      "facets": [
+        3,
+        3
+      ],
+      "show": true,
+      "remove": false
+    },
+    {
+      "label": "v12",
+      "index": 11,
+      "facets": [
+        3,
+        4
+      ],
+      "show": true,
+      "remove": false
+    },
+    {
+      "label": "v13",
+      "index": 12,
+      "facets": [
+        4,
+        1
+      ],
+      "show": true,
+      "remove": false
+    },
+    {
+      "label": "v14",
+      "index": 13,
+      "facets": [
+        4,
+        2
+      ],
+      "show": true,
+      "remove": false
+    },
+    {
+      "label": "v15",
+      "index": 14,
+      "facets": [
+        4,
+        3
+      ],
+      "show": true,
+      "remove": false
+    },
+    {
+      "label": "v16",
+      "index": 15,
+      "facets": [
+        4,
+        4
+      ],
+      "show": true,
+      "remove": false
+    }
+  ],
   "delimiter": null,
-  "data": {
+  "data": [],
+  "org_data": {
     "py/object": "pandas.core.frame.DataFrame",
     "py/state": {
       "_mgr": {
@@ -138,12 +251,12 @@
                   ]
                 },
                 "_index_data": {
-                  "py/id": 17
+                  "py/id": 40
                 },
                 "_name": null,
                 "_cache": {
                   "dtype": {
-                    "py/id": 18
+                    "py/id": 41
                   },
                   "_engine": {
                     "py/reduce": [
@@ -234,7 +347,7 @@
                         ]
                       },
                       {
-                        "py/id": 18
+                        "py/id": 41
                       },
                       false,
                       [
@@ -436,7 +549,7 @@
                           ]
                         },
                         {
-                          "py/id": 18
+                          "py/id": 41
                         },
                         false,
                         [
@@ -462,7 +575,7 @@
                   ]
                 },
                 "_index_data": {
-                  "py/id": 33
+                  "py/id": 56
                 },
                 "_name": null,
                 "_cache": {},
@@ -474,12 +587,12 @@
             {
               "0.14.1": {
                 "axes": {
-                  "py/id": 15
+                  "py/id": 38
                 },
                 "blocks": [
                   {
                     "values": {
-                      "py/id": 29
+                      "py/id": 52
                     },
                     "mgr_locs": {
                       "py/reduce": [
@@ -774,188 +887,7 @@
       "label": "v16"
     }
   ],
-  "fss_data": [
-    [
-      "3",
-      "5",
-      "3",
-      "3",
-      "4",
-      "3",
-      "3",
-      "2",
-      "2",
-      "2",
-      "1",
-      "1",
-      "2",
-      "3",
-      "3",
-      "1"
-    ],
-    [
-      "2",
-      "3",
-      "2",
-      "1",
-      "1",
-      "1",
-      "2",
-      "1",
-      "2",
-      "4",
-      "3",
-      "4",
-      "1",
-      "1",
-      "2",
-      "1"
-    ],
-    [
-      "2",
-      "2",
-      "2",
-      "2",
-      "1",
-      "1",
-      "2",
-      "1",
-      "3",
-      "2",
-      "3",
-      "3",
-      "3",
-      "3",
-      "2",
-      "3"
-    ],
-    [
-      "2",
-      "3",
-      "5",
-      "1",
-      "3",
-      "2",
-      "1",
-      "1",
-      "2",
-      "3",
-      "3",
-      "2",
-      "2",
-      "3",
-      "2",
-      "1"
-    ],
-    [
-      "1",
-      "2",
-      "2",
-      "1",
-      "3",
-      "1",
-      "1",
-      "1",
-      "3",
-      "2",
-      "2",
-      "2",
-      "3",
-      "2",
-      "3",
-      "2"
-    ],
-    [
-      "3",
-      "3",
-      "2",
-      "2",
-      "3",
-      "2",
-      "1",
-      "4",
-      "2",
-      "3",
-      "1",
-      "2",
-      "2",
-      "0",
-      "2",
-      "4"
-    ],
-    [
-      "3",
-      "2",
-      "4",
-      "2",
-      "2",
-      "1",
-      "2",
-      "2",
-      "3",
-      "1",
-      "1",
-      "2",
-      "2",
-      "2",
-      "3",
-      "3"
-    ],
-    [
-      "3",
-      "3",
-      "3",
-      "3",
-      "5",
-      "2",
-      "1",
-      "2",
-      "3",
-      "3",
-      "2",
-      "2",
-      "2",
-      "3",
-      "2",
-      "3"
-    ],
-    [
-      "3",
-      "5",
-      "4",
-      "3",
-      "1",
-      "2",
-      "1",
-      "1",
-      "5",
-      "5",
-      "5",
-      "5",
-      "6",
-      "2",
-      "4",
-      "2"
-    ],
-    [
-      "4",
-      "4",
-      "4",
-      "2",
-      "2",
-      "3",
-      "1",
-      "1",
-      "3",
-      "2",
-      "2",
-      "2",
-      "2",
-      "3",
-      "3",
-      "0"
-    ]
-  ],
+  "fss_data": [],
   "valid_values_range": [
     {
       "py/tuple": [

@@ -18,6 +18,7 @@ class FacetVarPage(ttk.Frame):
         self.main_table_frame = None
         self.parent = parent
         self.create_entries()
+        self.selected_var_i = []
     def create_entries(self):
         frame_correlation_combo = ttk.Frame(self)
         frame_correlation_combo.pack(fill='x', padx=ENTRIES_PADX, pady=(20,
@@ -28,15 +29,18 @@ class FacetVarPage(ttk.Frame):
                                            "its facet element in each facet")
         correlation_label.pack(side="left")
 
-    def create_facet_variable_table(self, var_labels, facet_details):
+    def create_facet_variable_table(self, var_details,
+                                    facet_details):
         """
         Create the table layout for the facet variables page
-        :param var_labels: eg. ["first", "", "third_label]
+        :param var_details: eg. ["first", "", "third_label]
         :param facet_details:  [[a,b,c], [a,b,c,d,e], [a,b]]
         :return:
         """
-        var_num = len(var_labels)
+        self.selected_var_i = [i['index'] for i in var_details if i['show']]
+        var_num = len(self.selected_var_i)
         num_facets = len(facet_details)
+        var_labels = [var['label'] for var in var_details if var['show']]
 
         def on_frame_configure(canvas):
             '''Reset the scroll region to encompass the inner frame'''
@@ -65,7 +69,7 @@ class FacetVarPage(ttk.Frame):
             num_facets)]
         # Define a dictionary to keep track of the width of each column based on the header
         header_widgets = []
-        header_colspan = [8] +[19]*num_facets
+        header_colspan = [8] + max([19]*num_facets, [19])
         for col, text in enumerate(headers):
             header_label = Label(self.header_frame, text=text, borderwidth=1,
                                  padding = (3,3,3,3),
@@ -123,7 +127,9 @@ class FacetVarPage(ttk.Frame):
                   borderwidth=0.5, relief="solid",
                   bootstyle='primary').grid(row=row - 1, column=0, sticky='ew', ipady=7)
             for col in range(1, num_facets + 1):
-                values = ["Undefined"] + facet_details[col - 1]
+                values = ["Undefined"]
+                if facet_details:
+                    values += facet_details[col - 1]
                 combobox = ttk.Combobox(self.table_frame,
                                         values=values,
                                         width=width_facet_combo,
@@ -138,10 +144,25 @@ class FacetVarPage(ttk.Frame):
     def set_facets_vars(self, facets_vars : List[list]):
         for i, var in enumerate(self.combo_by_var):
             for j, facet in enumerate(var):
-                self.combo_by_var[i][j].current(facets_vars[i][j])
+                if facets_vars[i]:
+                    self.combo_by_var[i][j].current(facets_vars[i][j])
+                else:
+                    self.combo_by_var[i][j].current(0)
 
+    def set_facets_var_from_active(self, active_var):
+        facets = [var['facets'] for var in active_var if var['show']]
+        self.set_facets_vars(facets)
 
     def get_all_var_facets_indices(self):
+        data = {}
+        for i, var in enumerate(self.combo_by_var):
+            var_facets = []
+            for j, facet_index in enumerate(var):
+                var_facets.append(facet_index.current())
+            data[self.selected_var_i[i]] = var_facets
+        return data
+
+    def get_all_var_facets_indices_values(self):
         data = []
         for i, var in enumerate(self.combo_by_var):
             var_facets = []

@@ -19,10 +19,15 @@ class DataPage(ttk.Frame):
         ttk.Frame.__init__(self, parent.root)
         self.colors = parent.root.style.colors
         self.create_data_buttons()
+        self.vars_i = None
+        self.var_details = None
         self.data = None
         self.data_table = None
 
-    def show_data(self, data : pd.DataFrame):
+    def show_data(self, data : pd.DataFrame, var_details=None):
+        if var_details:
+            self.vars_i = [var['index'] for var in var_details if var['show']]
+            self.var_details = var_details
         if self.data_table:
             self.data_table.destroy()
         self.data = data
@@ -30,7 +35,7 @@ class DataPage(ttk.Frame):
         self.set_labels(data.columns)
 
     def create_data_table(self):
-        coldata = [dict(text=col, stretch=False, ) for col in
+        coldata = [dict(text=col, stretch=True, ) for col in
                    self.data.columns]
         rowdata = [row for row in self.data.values]
         self.data_table = Tableview(
@@ -50,11 +55,13 @@ class DataPage(ttk.Frame):
         self.data_table.view.bind_all("<Double-1>", self.on_double_click)
         for col in self.data_table.view['columns']:
             self.data_table.view.heading(col, command=lambda: None)
+            self.data_table.view.column(col, width=rreal_size(65))
         for i in range(len(self.data.columns)):
             self.data_table.align_heading_center(cid=i)
             self.data_table.align_column_center(cid=i)
 
     def on_double_click(self, event):
+        return
         region = self.data_table.view.identify("region", event.x, event.y)
         column = self.data_table.view.identify_column(event.x)
         if region == "heading":
@@ -71,7 +78,8 @@ class DataPage(ttk.Frame):
         # Data Buttons Frame
         frame_data_buttons = ttk.Frame(self)
         # Pack the frame for data buttons at the bottom of the screen
-        frame_data_buttons.pack(side=tk.BOTTOM, fill='x', padx=10, pady=10)
+        frame_data_buttons.pack(side=tk.BOTTOM, fill='x', padx=rreal_size(15),
+                                pady=rreal_size(10))
         # Data Buttons
         self.button_reload = DataButton(frame_data_buttons, text="Reload "
                                                                  "Input",
@@ -79,8 +87,9 @@ class DataPage(ttk.Frame):
         # self.button_reload.pack(side=tk.LEFT, padx=5)
         self.button_select = DataButton(frame_data_buttons, text="Select "
                                                                  "Vars.",
-                                        command=self.select_variables)
-        self.button_select.pack(side=tk.LEFT, padx=5)
+                                        command=self.select_variables,
+                                        bootstyle="secondary")
+        # self.button_select.pack(side=tk.RIGHT, padx=5)
         ToolTip(self.button_select, msg="You can return to the previous page "
                                         "in\norder to cancel the selection",
                 delay=TOOL_TIP_DELAY)
@@ -89,13 +98,13 @@ class DataPage(ttk.Frame):
                                         command=self.select_variables,
                                         width=11)
         self.button_recode.pack(side=tk.LEFT, padx=5)
-        ToolTip(self.button_recode, msg="You can run multiple recoding "
-                                        "operations\non the same variables.",
+        ToolTip(self.button_recode, msg="different subsets of variables"
+                                        "\ncan be recoded differently.",
                 delay=TOOL_TIP_DELAY)
         self.button_save = DataButton(frame_data_buttons, text="Save Active "
                                                                "Data To..",
-                                      width=rreal_size(18))
-        self.button_save.pack(side=tk.LEFT, padx=5)
+                                      width=rreal_size(18), bootstyle="secondary")
+        self.button_save.pack(side=tk.RIGHT, padx=5)
 
     def select_variables(self, selected_vars: set = None):
         # open a string dialog to select variable columns
@@ -116,7 +125,7 @@ class DataPage(ttk.Frame):
                                              "variables.")
                 return
             # reset table
-            self.button_reload.invoke()
+            # self.button_reload.invoke()
             # get the data from the table
             data = self.get_all_visible_data()
             labels = self.get_visible_labels()
@@ -128,8 +137,21 @@ class DataPage(ttk.Frame):
             selected_data = pd.DataFrame(new_data)
             selected_data.columns = selected_labels
             # show the selected data
-            self.show_data(selected_data)
+            r_selected_var = []
+            for i in selected_vars:
+                r_selected_var.append(self.vars_i[i-1])
+            for var in self.var_details:
+                if var['index'] not in r_selected_var:
+                    var['show'] = False
+                    var['label'] = labels.pop(0)
+                else:
+                    var['show'] = True
+            self.show_data(selected_data, var_details=self.var_details)
             self.set_labels(selected_labels)
+            self.select_variables_subset(self.vars_i)
+
+    def select_variables_subset(self, variables_index : list):
+        raise Exception("This function should be override")
 
     def parse_indices_string(self, indices_string) -> set:
         if not indices_string: return set()

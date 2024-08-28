@@ -217,5 +217,7 @@ class InputPage(ttk.Frame):
 
     def browse_file(self):
         filename = filedialog.askopenfilename()
-        self.entry_data_file.delete(0, ttk.END)
-        self.entry_data_file.insert(0, filename)
+        if filename:
+            self.entry_data_file.delete(0, ttk.END)
+            self.entry_data_file.insert(0, filename)
+        return filename

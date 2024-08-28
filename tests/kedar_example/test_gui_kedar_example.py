@@ -7,8 +7,9 @@ this file is a test for the kedar example which contains:
 from lib.controller.controller import *
 from lib.controller.controller import Controller
 
-DATA_PATH = 'DJKEDAR2.DAT'
-SET_MODE_TEST()
+DATA_PATH = 'DJKEDAR2_FIXED.DAT'
+F_DATA_PATH = 'DJKEDAR2.DAT'
+SET_MODE_PRODUCTION()
 
 ###
 test_facets = [
@@ -22,22 +23,21 @@ test_facets = [
 class simple_example_gui(Controller):
     def __init__(self):
         super().__init__()
-        self.test_simple_example()
 
-    def test_simple_example(self):
+    def test_fixed_data(self):
         self.gui.pages[START_PAGE_NAME].button_recorded_data.invoke()
         # get the absoult path of the data file
         test_dir_path = os.path.dirname(os.path.abspath(__file__))
         data_file_path = os.path.join(test_dir_path,
                                       DATA_PATH)
+        self._suggest_parsing(interactive=False)
         self.gui.pages[INPUT_PAGE_NAME].set_data_file_path(
             data_file_path)
         self.gui.pages[INPUT_PAGE_NAME].set_entry_lines(1)
-        self.gui.pages[INPUT_PAGE_NAME].set_fixed_width("1-digit")
         self.next_page()
+        for _ in range(25):
+            self.gui.pages[MANUAL_FORMAT_PAGE_NAME].add_variable()
         self.next_page()
-        self.gui.pages[DATA_PAGE_NAME].select_variables({i for i in range(1,
-                                                                          26)})
         self.next_page()
         self.gui.pages[DIMENSIONS_PAGE_NAME].set_dims(2, 3)
         self.next_page()
@@ -59,11 +59,28 @@ class simple_example_gui(Controller):
             raise (e)
         assert os.path.isfile(self.output_path)
 
+    def test_fault_data(self):
+        self.gui.pages[START_PAGE_NAME].button_recorded_data.invoke()
+        # self.reset_session(False)
+        # get the absoult path of the data file
+        test_dir_path = os.path.dirname(os.path.abspath(__file__))
+        data_file_path = os.path.join(test_dir_path,
+                                      F_DATA_PATH)
+        self._suggest_parsing(interactive=False)
+        self.gui.pages[INPUT_PAGE_NAME].set_data_file_path(
+            data_file_path)
+        self.gui.pages[INPUT_PAGE_NAME].set_entry_lines(1)
+        self.next_page()
+        for _ in range(25):
+            self.gui.pages[MANUAL_FORMAT_PAGE_NAME].add_variable()
+        self.next_page()
+        self.next_page()
+
 
 def test():
     a = simple_example_gui()
     try:
-        a.test_simple_example()
+        a.test_fixed_data()
     except Exception as e:
         return False
     return True
@@ -71,4 +88,6 @@ def test():
 
 if __name__ == '__main__':
     a = simple_example_gui()
+    # a.test_fixed_data()
+    a.test_fault_data()
     a.run_process()

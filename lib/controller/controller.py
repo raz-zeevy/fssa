@@ -1,7 +1,10 @@
 # controller.py
+import os.path
 import subprocess
 import warnings
 import pandas as pd
+from typing import List
+
 from lib.controller.graph_generator import generate_graphs
 from lib.controller.navigator import Navigator
 from lib.controller.session import Session
@@ -23,6 +26,7 @@ class Controller:
         self.navigator = self.init_navigator()
         ###
         self.init_controller_attributes()
+        self.active_variables_details = []
         self.manual_input = False
         self.matrix_input = False
         self.are_missing_values = None
@@ -34,10 +38,29 @@ class Controller:
         #
         self.gui.switch_page(START_PAGE_NAME)
 
+        self.gui.root.protocol("WM_DELETE_WINDOW", self.on_close)
+
         # Override the default showwarning method with your custom one
         if IS_PRODUCTION():
             warnings.showwarning = self.custom_show_warning
-
+    def on_close(self):
+        # Prompt the user with a message box
+        if IS_PRODUCTION():
+            result = self.gui.show_msg(
+                "Do you want to save the current session before exiting?",
+                title="Exit",
+                yes_command=self.save_session_click,
+                buttons=["Yes:primary", "No:secondary", "Cancel:secondary"]
+            )
+            if result == "Yes":
+                self.save_session_click()
+                self.gui.root.destroy()  # Close the application after saving
+            elif result == "No":
+                self.gui.root.destroy()  # Close the application without saving
+            else:
+                pass  # Do nothing (cancel the close operation)
+        else:
+            self.gui.root.destroy()
     def custom_show_warning(self, message, category, filename, lineno,
                             file=None,
                             line=None):
@@ -46,10 +69,11 @@ class Controller:
         # Assuming you have a GUI instance available as `self.gui`
         self.gui.show_warning("Warning", warning_msg)
 
-
     def init_controller_attributes(self):
+        self.active_variables_details = []
         self.delimiter = None
         self.data = None
+        self.org_data = None
         self.data_file_path = None
         self.save_path = None
         self.data_file_extension = None
@@ -187,11 +211,11 @@ class Controller:
         self.gui.pages[DATA_PAGE_NAME]. \
             button_save.bind("<Button-1>",
                              lambda x: self.save_data())
-        self.gui.pages[DATA_PAGE_NAME]. \
-            button_reload.configure(command=self.load_data)
         self.gui.pages[DATA_PAGE_NAME].button_recode.config(
             command=lambda: self.gui.show_recode_window()
         )
+        self.gui.pages[DATA_PAGE_NAME].select_variables_subset = \
+        self.update_facets_var_selection
         # Facet Page
         self.gui.pages[FACET_PAGE_NAME]. \
             facets_combo.bind("<<ComboboxSelected>>",
@@ -302,6 +326,8 @@ class Controller:
 
     def open_file(self, file, notepad=False, word=False):
         def open_file_in_notepad(file_path):
+            if not os.path.exists(file_path):
+                raise FileNotFoundError(f"File {file_path} does not exist")
             try:
                 subprocess.run(['notepad', file_path], check=True)
             except subprocess.CalledProcessError as e:
@@ -336,8 +362,18 @@ class Controller:
             for i in range(self.facets_num):
                 menu.entryconfig("Facet " + chr(65 + i), state="normal")
 
+    def disable_view_results(self):
+        self.gui.view_menu.entryconfig("Output File", state="disabled")
+        self.gui.view_menu.entryconfig("2D Diagram ", state="disabled")
+        self.gui.view_menu.entryconfig("3D Diagram ", state="disabled")
+        for menu in [self.gui.diagram_2d_menu, self.gui.diagram_3d_menu]:
+            for i in range(self.facets_num):
+                menu.entryconfig("Facet " + chr(65 + i), state="disabled")
+
     def enable_view_input(self):
         def view_input():
+            if not os.path.exists(self.data_file_path):
+                raise FileNotFoundError(f"Can not find input file {self.data_file_path}")
             os.startfile(self.data_file_path)
 
         self.gui.view_menu.entryconfig("Input File", state="normal")
@@ -415,12 +451,15 @@ class Controller:
             self.gui.pages[MANUAL_FORMAT_PAGE_NAME].load_missing_values(
                 self.are_missing_values)
             if not self.manual_input:
-                self.load_data()
+                if not self.active_variables_details:
+                    self.load_csv_init()
+                else:
+                    self.load_csv()
         # Matrix Input page
-        if cur_page == MATRIX_INPUT_PAGE_NAME:
+        elif cur_page == MATRIX_INPUT_PAGE_NAME:
             self.load_matrix()
         # Manual Format Page
-        if cur_page == MANUAL_FORMAT_PAGE_NAME:
+        elif cur_page == MANUAL_FORMAT_PAGE_NAME:
             # for recorded data
             if next_page == DATA_PAGE_NAME:
                 Validator.validate_manual_input(self.gui.pages[
@@ -428,21 +467,15 @@ class Controller:
                 self.manual_input = not self.gui.pages[
                     MANUAL_FORMAT_PAGE_NAME].limited_edit_mode
                 if self.manual_input:
-                    self.load_data()
-                    data = self.data
-                else:
-                    self.data.columns = self.gui.pages[
-                        MANUAL_FORMAT_PAGE_NAME].get_labels()
-                    data = self.data[self.gui.pages[
-                        MANUAL_FORMAT_PAGE_NAME].get_selected_var_labels()]
-                self.load_data_page(data)
+                    self.load_fixed_width()
+                self.commit_data()
             # for matrix data
             elif next_page == DIMENSIONS_PAGE_NAME:
                 self.gui.pages[DIMENSIONS_PAGE_NAME].set_number_of_variables(
                     self.gui.pages[MANUAL_FORMAT_PAGE_NAME]
                     .get_len_selected_vars())
         # Data Page
-        if cur_page == DATA_PAGE_NAME:
+        elif cur_page == DATA_PAGE_NAME:
             Validator.validate_data_page(
                 data=self.gui.pages[DATA_PAGE_NAME].get_all_visible_data(),
                 labels=self.gui.pages[DATA_PAGE_NAME].get_visible_labels()
@@ -451,7 +484,7 @@ class Controller:
             self.gui.pages[DIMENSIONS_PAGE_NAME].set_number_of_variables(
                 len(self.gui.pages[DATA_PAGE_NAME].get_visible_labels()))
         # Dimension Page
-        if cur_page == DIMENSIONS_PAGE_NAME:
+        elif cur_page == DIMENSIONS_PAGE_NAME:
             cur_dims = self.gui.pages[
                 DIMENSIONS_PAGE_NAME].get_dimensions()
             if cur_dims[0] != self.min_dim or cur_dims[-1] != self.max_dim:
@@ -463,7 +496,7 @@ class Controller:
                     else:
                         self.navigator.show_page(HYPOTHESIS_PAGE_NAME)
         # Facet Page
-        if cur_page == FACET_PAGE_NAME:
+        elif cur_page == FACET_PAGE_NAME:
             if self.facet_details:
                 cur_facet_details = self.gui.pages[
                     FACET_PAGE_NAME].get_facets_details()
@@ -474,50 +507,37 @@ class Controller:
             self.facet_details = self.gui.pages[
                 FACET_PAGE_NAME].get_facets_details()
         # Facet Var Page
-        if cur_page == FACET_VAR_PAGE_NAME:
+        elif cur_page == FACET_VAR_PAGE_NAME:
             Validator.validate_facet_var_page(self.gui.pages[
-                                                  FACET_VAR_PAGE_NAME].get_all_var_facets_indices())
+                                                  FACET_VAR_PAGE_NAME].get_all_var_facets_indices_values())
         self.navigate_page(self.navigator.get_next())
         return True
 
-    #################
-    #  Gui Methods  #
-    #################
+    #############
+    # Save Load #
+    # & New     #
+    #############
 
-    def on_facet_num_change(self, event):
-        facet_page = self.gui.pages[FACET_PAGE_NAME]
-        facet_page.update_facet_count()
-        self.facets_num = int(facet_page.facets_combo.get().split()[
-                                  0]) if facet_page.facets_combo.get() != "No facets" else 0
-        if self.facets_num > 0:
-            self.load_facet_dim_page()
-            self.load_hypothesis_page()
-            self.navigator.remove_block(FACET_PAGE_NAME)
-        else:
-            self.navigator.add_block(FACET_PAGE_NAME)
-            self.gui.button_run.update()
-        self.update_navigation_buttons()
-        self.navigator.update_menu()
-
-    def run_button_click(self):
-        self.output_path = self.gui.run_button_dialogue()
-        if self.output_path:
-            if self.matrix_input:
-                self.run_matrix_fss()
-            else:
-                self.run_fss()
-
-    def save_session_click(self):
+    def save_session_click(self, save_path=None):
+        if save_path:
+            self.save_path = save_path
+            self.update_save_path(save_path)
         if not self.save_path:
-            self.save_path = self.gui.save_session_dialogue()
-        if self.save_path:
+            self.save_as_session_click()
+        else:
             self.save_session(self.save_path)
 
     def save_as_session_click(self):
-        save_path = self.gui.save_session_dialogue()
+        data_file_name = os.path.basename(self.gui.pages[
+            INPUT_PAGE_NAME].get_data_file_path()).split(".")[0]
+        save_path = self.gui.save_session_dialogue(data_file_name)
         if save_path:
-            self.save_path = save_path
+            self.update_save_path(save_path)
             self.save_session(self.save_path)
+
+    def update_save_path(self, path):
+        self.save_path = path
+        self.gui.set_save_title(self.save_path)
 
     def open_session_click(self):
         open_path = self.gui.open_session_dialogue()
@@ -539,60 +559,189 @@ class Controller:
             self.reset_session(matrix=matrix)
 
     def load_data_page(self, data):
-        self.gui.pages[DATA_PAGE_NAME].show_data(data)
+        print("Loading data")
+        self.gui.pages[DATA_PAGE_NAME].show_data(data,
+                                                 self.active_variables_details)
+
+    #################
+    #  Gui Methods  #
+    #################
+
+    def on_facet_num_change(self, event):
+        facet_page = self.gui.pages[FACET_PAGE_NAME]
+        facet_page.update_facet_count()
+        self.facets_num = int(facet_page.facets_combo.get().split()[
+                                  0]) if facet_page.facets_combo.get() != "No facets" else 0
+        if self.facets_num > 0:
+            self.load_facet_dim_page()
+            self.load_hypothesis_page()
+            self.navigator.remove_block(FACET_PAGE_NAME)
+        else:
+            self.navigator.add_block(FACET_PAGE_NAME)
+            self.gui.button_run.update()
+        self.update_navigation_buttons()
+        self.navigator.update_menu()
+
+    def update_facets_var_selection(self, selected_vars : list=None):
+        # todo: remove this: update selection
+        if selected_vars:
+            for var in self.active_variables_details:
+                var['show'] = False
+            for i in selected_vars:
+                self.active_variables_details[i]['show'] = True
+        # update the current self.c_facet_var_details with the data
+        # [{index: int, label : string,
+        # facets : [int], show : bool}]
+        facets_values = self.gui.pages[
+            FACET_VAR_PAGE_NAME].get_all_var_facets_indices()
+        for active_var in self.active_variables_details:
+            if active_var['index'] in facets_values:
+                active_var['facets'] = facets_values[active_var['index']]
+        # rebuild facets
+        print("reloading facets")
+        self.gui.pages[FACET_VAR_PAGE_NAME].create_facet_variable_table(
+            var_details=self.active_variables_details,
+            facet_details=self.facet_details)
+        # update with values
+        facet_values = [var['facets'] for var in
+                        self.active_variables_details if var['show']]
+        self.gui.pages[FACET_VAR_PAGE_NAME].set_facets_vars(
+            facet_values)
+
+    def run_button_click(self):
+        self.output_path = self.gui.run_button_dialogue()
+        if self.output_path:
+            if self.matrix_input:
+                self.run_matrix_fss()
+            else:
+                self.run_fss()
+
 
     def reload_variables(self, selected_vars):
-        self.load_data(col_indices=selected_vars)
+        self.select_csv_variables(selected_vars)
 
-    def load_data(self, col_indices=None):
+    def select_csv_variables(self, selected_vars_i):
+        """
+        scenraio: this function is called on "select vars." of the manual page
+        :param selected_vars_i: the variables real-index (var_i) that
+        matches the one in active_variables_data
+        """
+        # change the selection in active_variable_details
+        for i, var in enumerate(self.active_variables_details):
+            var['show'] = i in selected_vars_i
+            var['remove'] = i not in selected_vars_i
+    def load_csv(self):
+        # init loading variables
+        self.data_file_path = self.gui.pages[
+            INPUT_PAGE_NAME].get_data_file_path()
+        self.delimiter = self.gui.pages[
+            INPUT_PAGE_NAME].get_auto_parsing_format()
         # load data
+        try:
+            data = load_recorded_data(self.data_file_path,
+                                      lines_per_var=None,
+                                      delimiter=self.delimiter,
+                                      extension=self.data_file_extension,
+                                      has_header=self.has_header)
+        except Exception as e:
+            if IS_PRODUCTION():
+                raise DataLoadingException(e)
+            else:
+                raise e
+        # saves the data to the controller, mostly for displaying it and
+        # for later selection operations
+        self.org_data = data
+        self.gui.pages[MANUAL_FORMAT_PAGE_NAME].set_limited_edit_mode()
+
+    def load_csv_init(self):
+        """
+        this function is called on "next" of the input page and
+         - loads the entrie csv into self.data
+         - inits the manual page with variables
+         - inits the active variables details []
+        :return:
+        """
+        self.load_csv()
+        # clear manual format (todo: for cases of reloading?)
+        self.gui.pages[MANUAL_FORMAT_PAGE_NAME].clear_all_vars()
+        # reset active variables details
+        self.active_variables_details = []
+        for i, var in enumerate(self.org_data.columns):
+            # add to active_dat_details
+            active_var = dict(label=var, index=i, facets=[],
+                              show=True, remove=False)
+            self.active_variables_details.append(active_var)
+            # add to manual format with the real-index "var_i = i"
+            self.gui.pages[MANUAL_FORMAT_PAGE_NAME].add_variable(
+                label=var, var_i=i)
+    def load_fixed_width(self):
+        """
+        Called on manual input when clicking "next" on "Manual Page"
+        :return:
+        """
+        # init loading parameters
         self.data_file_path = self.gui.pages[
             INPUT_PAGE_NAME].get_data_file_path()
         self.lines_per_var = self.gui.pages[
             INPUT_PAGE_NAME].get_lines_per_var()
-        self.delimiter = self.gui.pages[
-            INPUT_PAGE_NAME].get_auto_parsing_format()
-        #
-        if self.data_file_path:
-            self.enable_view_input()
-        #
-        if self.manual_input:
-            data_format = self.gui.pages[
-                MANUAL_FORMAT_PAGE_NAME].get_data_format()
-            data = load_recorded_data(self.data_file_path,
-                                      lines_per_var=self.lines_per_var,
-                                      manual_format=data_format,
-                                      extension=self.data_file_extension,
-                                      has_header=self.has_header)
-            data.columns = [row["label"] for row in data_format]
+        data_format = self.gui.pages[
+            MANUAL_FORMAT_PAGE_NAME].get_data_format()
+        all_vars = self.gui.pages[
+            MANUAL_FORMAT_PAGE_NAME].get_labels()
+        # Load data
+        data = load_recorded_data(self.data_file_path,
+                                  lines_per_var=self.lines_per_var,
+                                  manual_format=data_format,
+                                  extension=self.data_file_extension,
+                                  has_header=self.has_header)
+        # Update active_variables_data with never seen variables
+        for i, var in enumerate(all_vars):
+            if i >= len(self.active_variables_details):
+                # add to active_var_details
+                active_var = dict(label=var, index=i, facets=[],
+                                  show=True, remove=False)
+                self.active_variables_details.append(active_var)
+        while len(self.active_variables_details) > len(all_vars):
+            self.active_variables_details.pop()
+        self.org_data = data
+
+    def commit_data(self):
+        # Update toggled of variables
+        manual_page = self.gui.pages[MANUAL_FORMAT_PAGE_NAME]
+        selected_vars_i = manual_page.get_selected_var_indices()
+        # these variables are used to iterate against active_var and labels
+        # where because of selection they may be not at synch
+        label_i = 0
+        labels = manual_page.get_labels()
+        for var in self.active_variables_details:
+            # commit toggle
+            var['show'] = var['index'] in selected_vars_i
+            # commit labels
+            if not var['remove']:
+                var['label'] = labels[label_i]
+                label_i += 1
+        # Remove toggled off columns only on csv
+        if not self.manual_input:
+            # try:
+            self.data = self.org_data.iloc[:, [i for i in selected_vars_i]]
+            # except Exception:
+            #     raise DataLoadingException("Error loading data."
+         #                                "Are you sure the variables match the columns in the data file?")
+
         else:
-            try:
-                data = load_recorded_data(self.data_file_path,
-                                          lines_per_var=self.lines_per_var,
-                                          delimiter=self.delimiter,
-                                          extension=self.data_file_extension,
-                                          has_header=self.has_header)
-                self.gui.pages[MANUAL_FORMAT_PAGE_NAME].clear_all_vars()
-                if col_indices:
-                    data = data.iloc[:, [i-1 for i in col_indices]]
-                for col in data:
-                    self.gui.pages[MANUAL_FORMAT_PAGE_NAME].add_variable(
-                        label=col)
-                self.gui.pages[MANUAL_FORMAT_PAGE_NAME].set_limited_edit_mode()
-            except Exception as e:
-                if IS_PRODUCTION():
-                    raise DataLoadingException(e)
-                else:
-                    raise e
-        ##########
-        self.data = data
+            self.data = self.org_data
+        # Commit labels to data
+        self.data.columns = manual_page.get_selected_var_labels()
+        # Show data on data page
+        self.load_data_page(self.data)
+        # Change the facets selection
+        self.update_facets_var_selection(selected_vars_i)
 
     def load_facet_var_page(self):
         facets_details = self.gui.pages[FACET_PAGE_NAME].get_facets_details()
-        self.get_labels()
         self.gui.pages[FACET_VAR_PAGE_NAME].create_facet_variable_table(
-            var_labels=self.var_labels,
-            facet_details=facets_details, )
+            var_details=self.active_variables_details,
+            facet_details=facets_details)
 
     def set_header(self, is_header):
         self.has_header = is_header
@@ -600,7 +749,7 @@ class Controller:
     def get_labels(self):
         if self.matrix_input:
             self.var_labels = self.gui.pages[
-                MANUAL_FORMAT_PAGE_NAME].get_labels()
+                MANUAL_FORMAT_PAGE_NAME].get_selected_var_labels()
         else:
             self.var_labels = self.gui.pages[
                 DATA_PAGE_NAME].get_visible_labels()
@@ -658,7 +807,7 @@ class Controller:
         self.facet_details = self.gui.pages[
             FACET_PAGE_NAME].get_facets_details()
         self.facet_var_details = self.gui.pages[
-            FACET_VAR_PAGE_NAME].get_all_var_facets_indices()
+            FACET_VAR_PAGE_NAME].get_all_var_facets_indices_values()
         self.facet_dim_details = self.gui.pages[
             FACET_DIM_PAGE_NAME].get_facets_dim()
         # Manual Format Page
@@ -679,7 +828,7 @@ class Controller:
         self.get_labels()
         if self.var_labels:
             for i, label in enumerate(self.var_labels):
-                if label == f"var{i + 1}":
+                if label.strip() == f"var{i + 1}":
                     self.fss_labels.append("")
                 else:
                     self.fss_labels.append(label)
@@ -687,6 +836,10 @@ class Controller:
                                 enumerate(self.fss_labels)]
         else:
             self.fss_labels = None
+        facets_var_info = self.gui.pages[FACET_VAR_PAGE_NAME].get_all_var_facets_indices()
+        for var in facets_var_info:
+            self.active_variables_details[var]['facets'] = facets_var_info[
+                var]
 
     @error_handler
     def run_matrix_fss(self):
@@ -739,6 +892,7 @@ class Controller:
         try:
             run_fortran(self.correlation_type, self.output_path)
         except Exception as e:
+            self.disable_view_results()
             raise e
         else:
             self.enable_view_results()
@@ -763,7 +917,7 @@ class Controller:
             self.init_controller_attributes()
             self.data_file_path = data_file_path
 
-    def _suggest_parsing(self):
+    def _suggest_parsing(self, interactive=True):
         path = self.data_file_path or self.gui.pages[
             INPUT_PAGE_NAME].get_data_file_path()
         file_extension = os.path.splitext(path)[
@@ -772,33 +926,34 @@ class Controller:
             self.data_file_extension = file_extension
             self.gui.pages[INPUT_PAGE_NAME].disable_additional_options()
             self.gui.pages[INPUT_PAGE_NAME].automatic_parsable = True
-            # Ask the user whether to treat the first row as a header
-            self.gui.show_msg(
-                "Do you want to treat the first row as a header?",
-                title="Header",
-                buttons=["Yes:primary", "No:primary"],
-                yes_command=lambda: self.set_header(True),
-                no_command=lambda: self.set_header(False))
+            if interactive:
+                # Ask the user whether to treat the first row as a header
+                self.gui.show_msg(
+                    "Do you want to treat the first row as a header?",
+                    title="Header",
+                    buttons=["Yes:primary", "No:primary"],
+                    yes_command=lambda: self.set_header(True),
+                    no_command=lambda: self.set_header(False))
         else:
             self.gui.pages[INPUT_PAGE_NAME].enable_additional_options()
             self.gui.pages[INPUT_PAGE_NAME].automatic_parsable = False
-
+        self.enable_view_input()
     @error_handler
     def load_recorded_data_file(self):
-        self.enable_view_input()
-        self.gui.pages[INPUT_PAGE_NAME].browse_file()
-        data_file_path = self.gui.pages[INPUT_PAGE_NAME].entry_data_file.get()
-        self.init_controller_attributes()
-        self.data_file_path = data_file_path
-        if self.data_file_path:
-            self.gui.pages[INPUT_PAGE_NAME].set_data_file_path(data_file_path)
+        data_file_path = self.gui.pages[INPUT_PAGE_NAME].browse_file()
+        if data_file_path:
+            self.enable_view_input()
             self.gui.pages[INPUT_PAGE_NAME].default_entry_lines()
-            self._suggest_parsing()
+            self._suggest_parsing(interactive=not self.active_variables_details)
 
     @error_handler
     def save_data(self):
+        filename = f"" \
+                   f"{os.path.basename(self.data_file_path).split('.')[0]}-" \
+                   f"Active"
         file_name = self.gui.save_file_diaglogue(file_types=[('csv', '*.csv')],
-                                                 default_extension=".csv", )
+                                                 default_extension=".csv",
+                                                 initial_file_name=filename)
         data = pd.DataFrame(self.gui.pages[
                                 DATA_PAGE_NAME].get_all_visible_data())
         if file_name:

@@ -59,14 +59,12 @@ class DivideAxis(Shape):
         self.center = center
         self.angle = angle
 
-    def get_points(self, length=1000) ->\
-            Tuple[List[float],List[float]]:
-        # Calculate two points on the dividing axis
+    def get_points(self, length=1000) -> Tuple[List[float], List[float]]:
+        # Calculate the endpoint of the dividing axis starting from the center
         dx = length * np.cos(self.angle)
         dy = length * np.sin(self.angle)
-        point1 = (self.center[0] - dx, self.center[1] - dy)
-        point2 = (self.center[0] + dx, self.center[1] + dy)
-        return [point1[0], point2[0]], [point1[1], point2[1]]
+        point = (self.center[0] + dx, self.center[1] + dy)
+        return [self.center[0], point[0]], [self.center[1], point[1]]
 
 if __name__ == '__main__':
     line = Line(-0.0762 / 0.9971, 68.0871 / 0.9971)

@@ -199,4 +199,3 @@ if __name__ == '__main__':
     # output_path = r"C:\Users\Raz_Z\Projects\Shmuel\fssa\output\test_simple.fss"
     print(json.dumps(parse_output(output_path),
                      sort_keys=True, indent=4))
-    print("done")

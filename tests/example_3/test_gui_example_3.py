@@ -5,6 +5,7 @@ from const import *
 
 SET_MODE_TEST()
 # SET_MODE_PRODUCTION()
+SAVE_PATH = r"C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\tests\example_3\save.mem"
 
 ###
 test_facets = [
@@ -17,7 +18,6 @@ test_facets = [
 class example_3_gui(Controller):
     def __init__(self):
         super().__init__()
-        self.test_example_3()
 
     def test_example_3(self):
         # get the absoult path of the data file
@@ -55,7 +55,7 @@ class example_3_gui(Controller):
                                  self.gui.pages[
             FACET_VAR_PAGE_NAME].combo_by_var)
         assert self.gui.pages[
-                   FACET_VAR_PAGE_NAME].get_all_var_facets_indices()\
+                   FACET_VAR_PAGE_NAME].get_all_var_facets_indices_values()\
                == \
                parse_facets_var_data(EX_3_FACETS_VAR_TXT)
         self.gui.button_next.invoke()
@@ -87,6 +87,23 @@ class example_3_gui(Controller):
         run_file_path = p_FSS_DRV
         true_file_path = os.path.join(test_dir_path, "FSSAINP.DRV")
         assert os.path.isfile(self.output_path)
+        self.save_session(SAVE_PATH)
+
+    def load(self):
+        self.gui.pages[START_PAGE_NAME].button_recorded_data.invoke()
+        # self.reset_session(False)
+        self.load_session(SAVE_PATH)
+        self.next_page()
+        self.next_page()
+        try:
+            self.output_path = \
+                r"C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\output" \
+                r"\test_3_gui.fss"
+            self.run_fss()
+            self.enable_view_results()
+        except Exception as e:
+            print(e)
+            raise(e)
 
 def test():
     a = example_3_gui()
@@ -98,6 +115,6 @@ def test():
 
 
 if __name__ == '__main__':
-    test()
-    # a = example_3_gui()
-    # a.run_process()
+    ex_3 = example_3_gui()
+    ex_3.load()
+    ex_3.run_process()

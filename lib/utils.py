@@ -6,6 +6,7 @@ WINDOW_HEIGHT = 570
 WINDOW_WIDTH = 660
 TOOL_TIP_DELAY = 0.5
 
+SAVE_EXTENSION = '.mms'
 
 # WINDOW_WIDTH = 950
 def get_window_width():

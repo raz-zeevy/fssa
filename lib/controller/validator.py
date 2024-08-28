@@ -11,7 +11,10 @@ def invalid_fields(data):
     for i, row in enumerate(data):
         for entry in row:
             try:
-                if entry.strip() != "":
+                # this used to tolerate
+                # if entry.strip() != "":
+                # this is used for null values
+                if entry:
                     if int(entry) != eval(entry):
                         res['passed'] = True
                         res['row_num'] = i+1
