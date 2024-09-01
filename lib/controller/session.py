@@ -3,7 +3,6 @@ import pandas as pd
 
 from lib.utils import *
 
-
 class Session:
     def __init__(self, controller=None, path=None):
         if controller:
@@ -17,7 +16,7 @@ class Session:
     def _attributes_from_controller(self, controller):
         controller.init_fss_attributes()
         controller_dict = controller.__dict__.copy()
-        for key in ['gui', 'keyboard', 'navigator']:
+        for key in ['gui', 'keyboard', 'navigator', 'history']:
             controller_dict.pop(key, None)
         controller_dict['data'] = []
         controller_dict['fss_data'] = []
@@ -40,10 +39,10 @@ class Session:
         controller.update_save_path(state['save_path'])
 
     def load_to_controller(self, controller):
-        self.load_to_controller_attributes(controller)
         state = self.state
-        gui = controller.gui
         controller.reset_session(state['matrix_input'])
+        self.load_to_controller_attributes(controller)
+        gui = controller.gui
         controller.active_variables_details = state['active_variables_details']
         for key, value in state.items():
             if key in ['navigator']:
@@ -76,6 +75,8 @@ class Session:
             controller._suggest_parsing(interactive=False)
             if state["lines_per_var"]:
                 input_page.set_entry_lines(state["lines_per_var"])
+            if self.state['are_missing_values']:
+                input_page.checkbox_missing_value.invoke()
             if state["additional_options"]:
                 if state["fixed_width"] != "No":
                     input_page.set_fixed_width(state["fixed_width"])
@@ -96,10 +97,11 @@ class Session:
                                 MANUAL_FORMAT_PAGE_NAME].data_table.toggle_row(
                                 -1)
         dims_page = controller.gui.pages[DIMENSIONS_PAGE_NAME]
-        dim_range = state["max_dim"] > state["min_dim"]
-        dims_page.dimension_combo.current(dim_range)
-        dims_page.dimension_combo_selected(None)
-        dims_page.set_dims(state["min_dim"], state["max_dim"])
+        if state['max_dim']:
+            dim_range = state["max_dim"] > state["min_dim"]
+            dims_page.dimension_combo.current(dim_range)
+            dims_page.dimension_combo_selected(None)
+            dims_page.set_dims(state["min_dim"], state["max_dim"])
         dims_page.set_correlation_type(state["correlation_type"])
         # #   Facet Page
         facet_page = controller.gui.pages[FACET_PAGE_NAME]

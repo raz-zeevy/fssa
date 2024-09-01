@@ -113,8 +113,16 @@ class ManualFormatPage(ttk.Frame):
         self.button_select = DataButton(self.frame_data_buttons, text="Select "
                                                                  "Vars.",
                                         command=self.select_variables_window)
-        ToolTip(self.button_select, msg="You can return to the previous page "
-                                        "in\norder to cancel the selection",
+        ToolTip(self.button_select, msg="You can cancel the selection by "
+                                        "clicking\non the 'Reload Vars.' "
+                                        "button",
+                delay=TOOL_TIP_DELAY)
+        self.button_reload = DataButton(self.frame_data_buttons,
+                                        text="Reload Vars.",
+                                        command=None)
+        ToolTip(self.button_reload, msg="Reload all the variables from the "
+                                        "data "
+                                        "file",
                 delay=TOOL_TIP_DELAY)
 
     ###################
@@ -165,6 +173,7 @@ class ManualFormatPage(ttk.Frame):
             if col not in [VAR_NO, LABEL, VALID_LOW, VALID_HIGH]:
                 self.data_table.hide_column(col)
         self.button_select.pack(side=tk.LEFT, padx=5)
+        self.button_reload.pack(side=tk.LEFT, padx=5)
 
     def unset_limited_edit_mode(self):
         self.limited_edit_mode = False
@@ -173,6 +182,7 @@ class ManualFormatPage(ttk.Frame):
         for col in COLUMNS:
             self.data_table.show_column(col)
         self.button_select.pack_forget()
+        self.button_reload.pack_forget()
 
     def get_labels(self, selected=False) -> list:
         return [row[LABEL] for row in self.data_table.rows()]
@@ -233,7 +243,7 @@ class ManualFormatPage(ttk.Frame):
             for i in range(len(self.data_table)-1, -1, -1):
                 if i + 1 not in selected_vars:
                     self.data_table.remove_row(i)
-            self.reload_variables(new_vars_i)
+            self.update_variables(new_vars_i)
     def parse_indices_string(self, indices_string) -> set:
         if not indices_string: return set()
         try:
@@ -256,7 +266,7 @@ class ManualFormatPage(ttk.Frame):
         except Exception as e:
             messagebox.showinfo("error", "Invalid indices string")
 
-    def reload_variables(self, selected_vars=None):
+    def update_variables(self, selected_vars=None):
         raise UserWarning("Shouldn't be called.")
 
     def get_vars_valid_values(self):
@@ -274,7 +284,7 @@ class ManualFormatPage(ttk.Frame):
 
     def row_dict_to_list(self, row_dict):
         return [row_dict.get(col) for col in COLUMNS if
-                    row_dict.get(col) is not None]
+                row_dict.get(col) is not None]
 
     def add_row_from_dict(self, row_dict):
         # convert the row_dict to a list of values in the order of the columns
@@ -286,9 +296,6 @@ class ManualFormatPage(ttk.Frame):
     #################
 
     def load_missing_values(self, are_missing_values):
-        if are_missing_values == self.are_missing_values:
-            return
-        self.create_data_table()
         self.are_missing_values = are_missing_values
         if self.are_missing_values:
             self.data_table.show_column(VALID_LOW)

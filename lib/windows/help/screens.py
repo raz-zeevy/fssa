@@ -1,5 +1,5 @@
 from lib.moduls.help_content import *
-
+from lib.utils import VERSION
 ###################################
 ############ SECTIONS #############
 ###################################
@@ -110,7 +110,7 @@ class ScreensGenerator():
 
     def section_contents(self):
         # default
-        self.master.add_heading("FSSA for Windows Help Index", H1)
+        self.master.add_heading(f"FSSA for Windows ({VERSION}) Help Index", H1)
         self.master.add_line_break()
         self.master.add_link("What is FSSA ?\n", s_WHAT_IS_FSSA)
         self.master.add_line_break()

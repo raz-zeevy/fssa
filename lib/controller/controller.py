@@ -4,7 +4,7 @@ import subprocess
 import warnings
 import pandas as pd
 from typing import List
-
+from lib.controller.sessions_history import SessionsHistory
 from lib.controller.graph_generator import generate_graphs
 from lib.controller.navigator import Navigator
 from lib.controller.session import Session
@@ -24,6 +24,7 @@ class Controller:
         self.bind_gui_events()
         self.keyboard = pynput.keyboard.Controller()
         self.navigator = self.init_navigator()
+        self.history = SessionsHistory(callback=self.update_history)
         ###
         self.init_controller_attributes()
         self.active_variables_details = []
@@ -71,6 +72,7 @@ class Controller:
 
     def init_controller_attributes(self):
         self.active_variables_details = []
+        self.update_save_path("")
         self.delimiter = None
         self.data = None
         self.org_data = None
@@ -106,9 +108,14 @@ class Controller:
                                             "the data file variables. Please "
                                             "check again "
                                             "that the data file matches the "
-                                            "options you selected, "
-                                            "or if you use recorded data chose"
-                                            " the manual parsing option.")
+                                            "options you selected and the "
+                                            "current formatting. "
+                                            "Alternatively if you use "
+                                            ".csv/.xls "
+                                            "that "
+                                            "has already been loaded, "
+                                            "start a new session and reload "
+                                            "the data file.")
                     else:
                         self.gui.show_error("Error Occurred", str(e))
                 else:
@@ -154,18 +161,19 @@ class Controller:
 
     def save_session(self, path):
         session = Session(self)
+        self.history.add(path)
         session.save(path)
-        # current page
-        print("done")
-        # all screens data:
+
 
     def load_session(self, path):
+        self.history.add(path)
         session = Session(path=path)
         session.load_to_controller(self)
 
     def start_fss(self, matrix=False):
         self.navigator.pop_page(0)
         self.gui.start_fss()
+        self.update_history()
         if matrix:
             self.matrix_input = True
             self.navigator.hide_page(INPUT_PAGE_NAME)
@@ -206,7 +214,10 @@ class Controller:
                                lambda x: self.load_recorded_data_file())
         # Manual Page:
         self.gui.pages[MANUAL_FORMAT_PAGE_NAME]. \
-            reload_variables = self.reload_variables
+            update_variables = self.reload_variables
+        self.gui.pages[MANUAL_FORMAT_PAGE_NAME].button_reload.configure(
+            command=self.load_csv_init
+        )
         # data page
         self.gui.pages[DATA_PAGE_NAME]. \
             button_save.bind("<Button-1>",
@@ -563,6 +574,21 @@ class Controller:
         self.gui.pages[DATA_PAGE_NAME].show_data(data,
                                                  self.active_variables_details)
 
+    def update_history(self):
+        """
+        this function gets at most 4 last sessions path's and updates
+        the menu under file section with the paths and bind them with load_path
+        :return:
+        """
+        paths = self.history.get_n(4)
+        self.gui.update_history_menu(paths)
+
+        # Bind each path to the corresponding menu item using its index
+        menu_start_index = self.gui.file_menu.index('end') - len(
+            paths) + 1  # Start index of the new paths
+        for i, path in enumerate(paths):
+            self.gui.file_menu.entryconfig(menu_start_index + i, command=lambda
+                p=path: self.load_session(p))
     #################
     #  Gui Methods  #
     #################
@@ -616,7 +642,6 @@ class Controller:
             else:
                 self.run_fss()
 
-
     def reload_variables(self, selected_vars):
         self.select_csv_variables(selected_vars)
 
@@ -630,6 +655,7 @@ class Controller:
         for i, var in enumerate(self.active_variables_details):
             var['show'] = i in selected_vars_i
             var['remove'] = i not in selected_vars_i
+
     def load_csv(self):
         # init loading variables
         self.data_file_path = self.gui.pages[
@@ -656,7 +682,7 @@ class Controller:
     def load_csv_init(self):
         """
         this function is called on "next" of the input page and
-         - loads the entrie csv into self.data
+         - loads the entire csv into self.data
          - inits the manual page with variables
          - inits the active variables details []
         :return:
@@ -793,6 +819,8 @@ class Controller:
 
     def init_fss_attributes(self):
         # Input Page
+        self.data_file_path = self.gui.pages[
+            INPUT_PAGE_NAME].get_data_file_path()
         self.additional_options = self.gui.pages[
             INPUT_PAGE_NAME].additional_options
         self.fixed_width = self.gui.pages[INPUT_PAGE_NAME].get_fixed_width()
@@ -923,17 +951,18 @@ class Controller:
         file_extension = os.path.splitext(path)[
             1].lower()
         if file_extension in SUPPORTED_RECORDED_DATA_FORMATS:
-            self.data_file_extension = file_extension
-            self.gui.pages[INPUT_PAGE_NAME].disable_additional_options()
-            self.gui.pages[INPUT_PAGE_NAME].automatic_parsable = True
             if interactive:
                 # Ask the user whether to treat the first row as a header
-                self.gui.show_msg(
+                res = self.gui.show_msg(
                     "Do you want to treat the first row as a header?",
                     title="Header",
                     buttons=["Yes:primary", "No:primary"],
                     yes_command=lambda: self.set_header(True),
                     no_command=lambda: self.set_header(False))
+                if not res: return
+            self.data_file_extension = file_extension
+            self.gui.pages[INPUT_PAGE_NAME].disable_additional_options()
+            self.gui.pages[INPUT_PAGE_NAME].automatic_parsable = True
         else:
             self.gui.pages[INPUT_PAGE_NAME].enable_additional_options()
             self.gui.pages[INPUT_PAGE_NAME].automatic_parsable = False
@@ -982,7 +1011,6 @@ class Controller:
         self.gui.diagram_window.bind("<F1>",
                                      lambda e: controller.show_help(
                                          "facet_diagrams_screen"))
-
 
 
 

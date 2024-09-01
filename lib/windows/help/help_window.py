@@ -5,7 +5,7 @@ from lib.moduls.help_content import *
 from lib.components.window import Window
 from lib.utils import get_resource
 from lib.windows.help.screens import ScreensGenerator
-
+from lib.utils import *
 
 ###################################
 ############ SECTIONS #############
@@ -110,7 +110,7 @@ class HelpWindow(Window):
          "captions", "geom" keys
         """
         super().__init__(**kwargs, geometry="1240x900")
-        self.title("FSSA For Windows Help")
+        self.title(f"FSSA For Windows ({VERSION}) Help")
         self.iconbitmap(get_resource("help.ico"))
         # sets the geometry of toplevel
         self.center_window()

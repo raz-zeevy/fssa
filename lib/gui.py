@@ -21,9 +21,8 @@ from lib.pages.start_page import StartPage
 from lib.utils import *
 from ttkbootstrap.dialogs.dialogs import Messagebox
 from lib.windows.technical_options_window import TOWindow
+from tktooltip import ToolTip
 
-ROOT_TITLE = "FSSAWIN - Faceted Smallest Space Analysis for " \
-    "Windows"
 
 THEME_NAME = 'sandstone'
 p_ICON = 'icon.ico'
@@ -169,16 +168,23 @@ class GUI():
         icon_menu_frame.pack(side=ttk.TOP, fill='x')
         load_icon_images()
         self.m_button_new = add_button("new.png")
+        ToolTip(self.m_button_new, "New")
         self.m_button_open = add_button("open.png")
+        ToolTip(self.m_button_open, "Open")
         self.m_button_save = add_button("save.jpg")
+        ToolTip(self.m_button_save, "Save")
         tk.Frame(icon_menu_frame, width=10).pack(side=ttk.LEFT)
         ###
         self.m_button_prev = add_button("prev.jpg")
+        ToolTip(self.m_button_prev, "Previous Page")
         self.m_button_next = add_button("next.jpg")
+        ToolTip(self.m_button_next, "Next Page")
         tk.Frame(icon_menu_frame, width=10).pack(side=ttk.LEFT)
         ###
         self.m_button_run = add_button("go.png")
+        ToolTip(self.m_button_run, "Run FSSA")
         self.m_button_help = add_button("help.png")
+        ToolTip(self.m_button_help, "Help")
         icon_menu_border = tk.Frame(self.root,
                                     autostyle=False,
                                     borderwidth=1, relief='flat',
@@ -296,6 +302,42 @@ class GUI():
         #
         self.root.config(menu=self.menu_bar)
 
+    def update_history_menu(self, paths, max_length=30):
+        """
+        In the file menu, remove all existing path items after the "Exit" item,
+        add a separating line below the "Exit" item, and then add each path item from the list.
+        :param paths: A list of file paths to add to the menu.
+        :return: None
+        """
+
+        def truncate_path(path, max_length):
+            if len(path) > max_length:
+                return "..." + path[-(max_length - 3):]
+            return path
+
+        # Reverse the paths list
+        paths = paths[::-1]
+
+        # Find the index of the "Exit" item
+        exit_index = None
+        for index in range(self.file_menu.index('end') + 1):
+            if self.file_menu.type(
+                    index) == 'command' and self.file_menu.entrycget(index,
+                                                                     'label') == 'Exit':
+                exit_index = index
+                break
+
+        if exit_index is not None:
+            # Remove all items after the "Exit" item
+            self.file_menu.delete(exit_index + 1, 'end')
+
+            if paths:
+                # Add a separator before the new paths
+                self.file_menu.add_separator()
+                for path in paths:
+                    truncated_path = truncate_path(path, max_length)
+                    self.file_menu.add_command(label=truncated_path)
+
     def add_submenus(self, parent_menu, label, excel=False):
         submenu = tk.Menu(parent_menu, tearoff=0)
         submenu.add_command(label="Notepad", command=None)
@@ -403,7 +445,7 @@ class GUI():
                 buttons[0], buttons[1]])
             if clicked_yes == buttons[0].split(":")[0]:
                 yes_command()
-            elif no_command:
+            elif no_command and clicked_yes == buttons[1].split(":")[0]:
                 no_command()
             return clicked_yes
         else:

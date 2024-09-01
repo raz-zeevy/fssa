@@ -5,8 +5,9 @@ WINDOW_HEIGHT = 570
 # WINDOW_HEIGHT = 800
 WINDOW_WIDTH = 660
 TOOL_TIP_DELAY = 0.5
-
+VERSION = "v.1.14"
 SAVE_EXTENSION = '.mms'
+ROOT_TITLE = "FssaWin"
 
 # WINDOW_WIDTH = 950
 def get_window_width():
@@ -114,6 +115,7 @@ p_OUTPUT_FILE = os.path.join(p_OUTPUT_DIR, OUTPUT_FILE_NAME)
 # RUN_FILES_DIR = "..\\run_files"
 # RUN_FILES_DIR = os.path.join(get_script_dir_path(), RUN_FILES_DIR)
 RUN_FILES_DIR = os.getenv('APPDATA') + "\\Fssa\\run_files"
+SESSIONS_HISTORY = os.getenv('APPDATA') + "\\Fssa\\sessions_history.txt"
 PEAR_FILE_NAME = "PEARINP.DRV"
 MONO_FILE_NAME = "MONOINP.DRV"
 file_name = "FSSAINP.DRV"

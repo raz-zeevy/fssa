@@ -421,12 +421,19 @@ class EditableTreeView(ttk.Treeview):
         if not col_name and not index: raise ValueError("Either col_name or "
                                                         "index must be "
                                                         "provided")
-        if index:
+        if index is not None:
             col_name = self._col_names[index]
         if col_name not in self._display_columns:
-            self._display_columns.append(col_name)
+            col_i = self.get_col_display_i(col_name)
+            self._display_columns.insert(col_i, col_name)
         self["displaycolumns"] = self._display_columns
 
+    def get_col_display_i(self, col_name):
+        col_i = self._col_names.index(col_name)
+        for i, col in enumerate(self._display_columns):
+            if self._col_names.index(col) > col_i:
+                return i
+        return -1
 
 if __name__ == '__main__':
     # Setup root window

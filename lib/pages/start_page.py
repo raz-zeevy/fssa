@@ -3,7 +3,7 @@ from PIL import Image
 from lib.utils import *
 import ttkbootstrap as ttk
 from lib.components.form import HelpButton
-import tkinter as tk
+from tktooltip import ToolTip
 
 MAIN_BTN_FOREGROUND = "#325d88"
 MAIN_BTN_FOCUSED = "#325d88"
@@ -33,8 +33,14 @@ class StartPage(ttk.Frame):
 
         CTkLabel(master=frame, text="FSSA", text_color="#601E88", anchor="w",
                  justify="left", font=("Arial Bold", 24)).pack(anchor="w",
-                                                               pady=(50, 5),
+                                                               pady=(50, 0),
                                                                padx=(25, 0))
+        # create another sub title just below the FSSA with this text:
+        # Faceted Smallest Space Analysis for Windows"
+        CTkLabel(master=frame, text="Faceted Smallest Space Analysis for "
+                                    "Windows", text_color="#7E7E7E", anchor="w",
+                    justify="left", font=("Arial Bold", 14),
+                 wraplength=250).pack(anchor="w",padx=(25, 0),pady=(0, 20))
         CTkLabel(master=frame,
                  text="Chose the type of input file you wish\nto "
                       "process.", text_color="#7E7E7E", anchor="w",
@@ -49,12 +55,12 @@ class StartPage(ttk.Frame):
         self.button_recorded_data.pack(anchor="w",
                                        padx=(19, 0),
                                        pady=(38, 0))
-        rec_hlp_btn = HelpButton(frame, "Press here if your input file "
+        ToolTip(self.button_recorded_data, msg="Press here if your input file "
                                         "consists of a list of cases (e.g., "
-                                        "subjects), that are scored with "
+                                        "subjects), that\n are scored with "
                                         "respect to a set of variables to be "
-                                        "mapped by FSSA.")
-        rec_hlp_btn.place(x=real_size(257), y=real_size(155))
+                                        "mapped by FSSA.",
+                delay=0)
         self.button_matrix_data = CTkButton(master=frame,
                                             text="Dis/similarity Matrix",
                            fg_color="#601E88",
@@ -63,13 +69,13 @@ class StartPage(ttk.Frame):
         self.button_matrix_data.pack(anchor="w",
                                      padx=(19,0),
                                      pady=(38,0))
-        mat_hlp_btn = HelpButton(frame, "Press here if your input file "
+        ToolTip(self.button_matrix_data, msg="Press here if your input file "
                                         "consists of a symmetric matrix of "
                                         "similarity coefficients (e.g., "
                                         "correlations) or dissimilarity "
                                         "coefficients (distances) between "
-                                        "objects to be mapped by FSSA.")
-        mat_hlp_btn.place(x=real_size(257), y=real_size(220))
+                                        "objects to be mapped by FSSA.",
+                delay=0)
         self.button_info = CTkButton(master=frame, text="What is FSSA?",
                   fg_color=self.colors.primary,
                   hover_color=SECONDARY_FOCUS_COLOR, font=("Arial Bold", 12),

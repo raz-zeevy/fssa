@@ -5,7 +5,8 @@ from const import *
 
 SET_MODE_TEST()
 # SET_MODE_PRODUCTION()
-SAVE_PATH = r"C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\tests\example_3\save.mem"
+SAVE_PATH = r"C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\tests\example_3" \
+            r"\save.mms"
 
 ###
 test_facets = [
@@ -116,5 +117,6 @@ def test():
 
 if __name__ == '__main__':
     ex_3 = example_3_gui()
+    # ex_3.test_example_3()
     ex_3.load()
     ex_3.run_process()

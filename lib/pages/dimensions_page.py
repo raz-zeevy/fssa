@@ -101,8 +101,9 @@ class DimensionsPage(ttk.Frame):
         if max and len(self.dimension_boxes) == 1:
             self.dimension_combo.set(DIMENSION_OPTIONS[1])
             self.dimension_combo_selected(None)
-        self.dimension_boxes[0].set(min)
-        if max:
+        if self.dimension_boxes:
+            self.dimension_boxes[0].set(min)
+        if max and len(self.dimension_boxes) >= 2:
             self.dimension_boxes[1].set(max)
     def get_correlation_type(self):
         return self.correlation_combo.get()
