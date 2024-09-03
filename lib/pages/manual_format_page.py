@@ -243,6 +243,8 @@ class ManualFormatPage(ttk.Frame):
             for i in range(len(self.data_table)-1, -1, -1):
                 if i + 1 not in selected_vars:
                     self.data_table.remove_row(i)
+            # change indices accordingly
+            self.set_variables_nums(self.vars_i)
             self.update_variables(new_vars_i)
     def parse_indices_string(self, indices_string) -> set:
         if not indices_string: return set()
@@ -268,6 +270,9 @@ class ManualFormatPage(ttk.Frame):
 
     def update_variables(self, selected_vars=None):
         raise UserWarning("Shouldn't be called.")
+
+    def set_variables_nums(self, nums):
+        self.data_table.set_index(nums)
 
     def get_vars_valid_values(self):
         all_format = self.get_data_format()

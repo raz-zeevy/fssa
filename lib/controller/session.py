@@ -93,9 +93,9 @@ class Session:
                         manual_page.add_variable(label=var['label'],
                                                  var_i=var['index'])
                         if not var['show']:
-                            gui.pages[
-                                MANUAL_FORMAT_PAGE_NAME].data_table.toggle_row(
+                            manual_page.data_table.toggle_row(
                                 -1)
+                manual_page.set_variables_nums(manual_page.vars_i)
         dims_page = controller.gui.pages[DIMENSIONS_PAGE_NAME]
         if state['max_dim']:
             dim_range = state["max_dim"] > state["min_dim"]

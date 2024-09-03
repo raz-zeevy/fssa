@@ -7,6 +7,12 @@ from PIL import Image, ImageTk
 from lib.utils import get_resource, rreal_size
 import ttkbootstrap as ttkb
 
+"""
+It's not possible in the current impolemention to have checkbox without index
+that's why the method set_index() is for.
+"""
+
+
 class EditableTreeView(ttk.Treeview):
     def __init__(self, master=None, add_check_box=False,
                  auto_index=True, index=True, index_col_name="Index",
@@ -359,7 +365,15 @@ class EditableTreeView(ttk.Treeview):
     # Add/Remove/Insert #
     #####################
     def _reindex(self):
-        """ reindex the treeview """
+        """
+        This method is used to reindex the treeview.
+        - It iterates over all the children of the treeview.
+        - Updates the text of each item with its index (1-based).
+        - Sets the tag of each item to 'oddrow' or 'evenrow' based on its
+            index for alternate row coloring.
+        - If the treeview is configured with a checkbox column,
+            it resets the sub-index of the checkboxes.
+        """
         for i, iid in enumerate(self.get_children()):
             text = str(i + 1)
             if len(self._indices) == 2: text = "  " + text
@@ -367,6 +381,17 @@ class EditableTreeView(ttk.Treeview):
             self.item(iid, tags="oddrow" if i % 2 == 0 else "evenrow")
         if len(self._indices) == 2:
             self._reset_sub_index()
+
+    def set_index(self, indices : list):
+        table_len = len(self.get_children())
+        if len(indices) != table_len:
+            raise UserWarning(f"Indices length {len(indices)} must be equal to "
+                                f"table length {table_len}")
+        for i, iid in enumerate(self.get_children()):
+            text = str(indices[i])
+            if len(self._indices) == 2: text = "  " + text
+            self.item(iid, text=text)
+
 
     def remove_row(self, row_index=None):
         """ get the rows id from the row_index and remove it from the

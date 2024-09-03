@@ -205,7 +205,7 @@ class DataPage(ttk.Frame):
             if recoding_details['inverting']:
                 rec_col = invert(rec_col)
                 recoded = True
-            recoded_df.iloc[:, col] = rec_col
+            recoded_df.loc[:, recoded_df.columns[col]] = rec_col
         if recoded:
             self.show_data(recoded_df)
         if recode_window:
