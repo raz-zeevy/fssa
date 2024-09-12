@@ -211,6 +211,9 @@ class Controller:
         # input page
         self.gui.pages[INPUT_PAGE_NAME]. \
             button_browse.bind("<Button-1>",
+                               lambda x: self.browse_recorded_data_file())
+        self.gui.pages[INPUT_PAGE_NAME]. \
+            button_load.bind("<Button-1>",
                                lambda x: self.load_recorded_data_file())
         # Manual Page:
         self.gui.pages[MANUAL_FORMAT_PAGE_NAME]. \
@@ -383,6 +386,10 @@ class Controller:
 
     def enable_view_input(self):
         def view_input():
+            self.data_file_path = self.gui.pages[
+                INPUT_PAGE_NAME].get_data_file_path()
+            if not self.data_file_path:
+                raise FileNotFoundError("No input file was loaded")
             if not os.path.exists(self.data_file_path):
                 raise FileNotFoundError(f"Can not find input file {self.data_file_path}")
             os.startfile(self.data_file_path)
@@ -461,11 +468,6 @@ class Controller:
                 INPUT_PAGE_NAME].missing_value_var.get()
             self.gui.pages[MANUAL_FORMAT_PAGE_NAME].load_missing_values(
                 self.are_missing_values)
-            if not self.manual_input:
-                if not self.active_variables_details:
-                    self.load_csv_init()
-                else:
-                    self.load_csv()
         # Matrix Input page
         elif cur_page == MATRIX_INPUT_PAGE_NAME:
             self.load_matrix()
@@ -747,7 +749,7 @@ class Controller:
                 var['label'] = labels[label_i]
                 label_i += 1
         # Remove toggled off columns only on csv
-        if not self.manual_input:
+        if not self.gui.pages[INPUT_PAGE_NAME].is_manual_input():
             # try:
             self.data = self.org_data.iloc[:, [i for i in selected_vars_i]]
             # except Exception:
@@ -946,7 +948,7 @@ class Controller:
             self.data_file_path = data_file_path
 
     def _suggest_parsing(self, interactive=True):
-        path = self.data_file_path or self.gui.pages[
+        path = self.gui.pages[
             INPUT_PAGE_NAME].get_data_file_path()
         file_extension = os.path.splitext(path)[
             1].lower()
@@ -973,7 +975,18 @@ class Controller:
         if data_file_path:
             self.enable_view_input()
             self.gui.pages[INPUT_PAGE_NAME].default_entry_lines()
-            self._suggest_parsing(interactive=not self.active_variables_details)
+            self._suggest_parsing(interactive=True)
+        if not self.gui.pages[
+                INPUT_PAGE_NAME].is_manual_input():
+            self.load_csv_init()
+
+    def browse_recorded_data_file(self):
+        data_file_path = self.gui.pages[INPUT_PAGE_NAME].browse_file()
+        if data_file_path:
+            self.enable_view_input()
+        if not self.gui.pages[
+            INPUT_PAGE_NAME].is_manual_input():
+            self.load_csv()
 
     @error_handler
     def save_data(self):

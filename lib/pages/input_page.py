@@ -2,6 +2,7 @@ from tkinter import filedialog, Menu
 import ttkbootstrap as ttk
 from lib.components.form import *
 from lib.utils import *
+from tktooltip import ToolTip
 
 FIXED_WIDTH_OPTIONS = ["No", DELIMITER_1_D, DELIMITER_2_D]
 AUTO_PARSING_DELIMITER_OPTIONS = ["None", "Tab", "Comma", "Space"]
@@ -32,8 +33,23 @@ class InputPage(ttk.Frame):
                                          validate="focusout",
                                          textvariable=data_file_path, )
         self.entry_data_file.pack(side=ttk.LEFT, fill='x', expand=True)
-        self.button_browse = ttk.Button(frame_data_file, text="Browse")
+        self.button_load = ttk.Button(frame_data_file,
+                                        text="Browse &\nLoad")
+        self.button_load.pack(side=ttk.LEFT, padx=10)
+        ToolTip(self.button_load,
+                msg="Click to select a data file and automatically\nload it "
+                    "into the system.",
+                delay=TOOL_TIP_DELAY)
+        self.button_browse = ttk.Button(frame_data_file,
+                                        width=rreal_size(6),
+                                        text="Browse\nOnly",
+                                        bootstyle="secondary",)
         self.button_browse.pack(side=ttk.LEFT, padx=10)
+        ToolTip(self.button_browse,
+                msg="Click to select a data file without changing\nthe"
+                    " current state of the job. Used for loading\nsame job "
+                    "with a different data file path.",
+                delay=TOOL_TIP_DELAY)
         # Missing Value Frame
         frame_missing_value = ttk.Frame(self)
         frame_missing_value.pack(fill='x', padx=ENTRIES_PADX, pady=(20, 0))

@@ -73,6 +73,9 @@ class Session:
                 input_page.set_data_file_path(state["data_file_path"])
             controller.set_header(state["has_header"])
             controller._suggest_parsing(interactive=False)
+            if not controller.gui.pages[
+                INPUT_PAGE_NAME].is_manual_input():
+                controller.load_csv()
             if state["lines_per_var"]:
                 input_page.set_entry_lines(state["lines_per_var"])
             if self.state['are_missing_values']:

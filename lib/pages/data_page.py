@@ -13,7 +13,6 @@ from lib.fss.recoding import *
 from lib.components.form import DataButton
 from tktooltip import ToolTip
 
-
 class DataPage(ttk.Frame):
     def __init__(self, parent):
         ttk.Frame.__init__(self, parent.root)
@@ -24,7 +23,7 @@ class DataPage(ttk.Frame):
         self.data = None
         self.data_table = None
 
-    def show_data(self, data : pd.DataFrame, var_details=None):
+    def show_data(self, data: pd.DataFrame, var_details=None):
         if var_details:
             self.vars_i = [var['index'] for var in var_details if var['show']]
             self.var_details = var_details
@@ -103,7 +102,8 @@ class DataPage(ttk.Frame):
                 delay=TOOL_TIP_DELAY)
         self.button_save = DataButton(frame_data_buttons, text="Save Active "
                                                                "Data To..",
-                                      width=rreal_size(18), bootstyle="secondary")
+                                      width=rreal_size(18),
+                                      bootstyle="secondary")
         self.button_save.pack(side=tk.RIGHT, padx=5)
 
     def select_variables(self, selected_vars: set = None):
@@ -139,7 +139,7 @@ class DataPage(ttk.Frame):
             # show the selected data
             r_selected_var = []
             for i in selected_vars:
-                r_selected_var.append(self.vars_i[i-1])
+                r_selected_var.append(self.vars_i[i - 1])
             for var in self.var_details:
                 if var['index'] not in r_selected_var:
                     var['show'] = False
@@ -150,7 +150,7 @@ class DataPage(ttk.Frame):
             self.set_labels(selected_labels)
             self.select_variables_subset(self.vars_i)
 
-    def select_variables_subset(self, variables_index : list):
+    def select_variables_subset(self, variables_index: list):
         raise Exception("This function should be override")
 
     def parse_indices_string(self, indices_string) -> set:
@@ -181,6 +181,7 @@ class DataPage(ttk.Frame):
         }
         :return:
         """
+        pd.options.mode.chained_assignment = None
         if not recoding_details:
             recoding_details = recode_window.get_recoding_details()
         col_indices = self.parse_indices_string(recoding_details[
@@ -243,7 +244,7 @@ class DataPage(ttk.Frame):
         return self.data_table.view.heading(i)['text'][3:]
 
     def set_var_label(self, col_index, label):
-        index = f"{int(col_index)+1}. "
+        index = f"{int(col_index) + 1}. "
         self.data_table.view.heading(col_index, text=index + label)
 
     def pack(self, kwargs=None, **kw):

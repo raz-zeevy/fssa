@@ -68,9 +68,9 @@ class RecodeWindow(Window):
         self.grouping_entry = SelectionBox(grouping_frame,
                                            values=grouping_values,
                                            width=5,)
+        # set default to the first option
         self.grouping_entry.bind("<<ComboboxSelected>>", lambda x:
                                  self.on_grouping_change())
-
         self.grouping_entry.pack(side=tk.RIGHT, padx=(0,20), pady=(10,0))
         # Grouping Type
         grouping_type_frame = ttk.Frame(self)
@@ -107,7 +107,7 @@ class RecodeWindow(Window):
         self.inverting_check_box.pack(side=ttk.RIGHT, padx=(0,27))
 
         # default values
-        self.grouping_entry.current(9)
+        self.grouping_entry.current(0)
         self.grouping_type_entry.current(0)
 
     def create_buttons(self):

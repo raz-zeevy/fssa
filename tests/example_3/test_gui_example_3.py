@@ -3,8 +3,8 @@ from lib.controller.controller import Controller
 from lib.fss.fss_input_parser import *
 from const import *
 
-SET_MODE_TEST()
-# SET_MODE_PRODUCTION()
+# SET_MODE_TEST()
+SET_MODE_PRODUCTION()
 SAVE_PATH = r"C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\tests\example_3" \
             r"\save.mms"
 

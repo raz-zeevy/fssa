@@ -30,6 +30,7 @@ class simple_example_gui(Controller):
             data_file_path)
         self.set_header(True)
         self.data_file_extension = ".csv"
+        self.load_csv_init()
         self.gui.pages[INPUT_PAGE_NAME].disable_additional_options()
         self.next_page()
         self.gui.pages[MANUAL_FORMAT_PAGE_NAME].select_variables_window(
