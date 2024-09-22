@@ -93,9 +93,9 @@ class Validator():
                 "and in the "
                 "range of 0-99.")
         res = needs_recoding(data)
-        if needs_recoding(data):
+        if not res['passed']:
             raise Exception(
-                f"Usage Error Row {res['row_num']}:\nRecorded data values "
+                f"Usage Error Column {res['col_num']}:\nRecorded data values "
                 "must be between 1-99."
                 " You can use the recoding option to recode the data to "
                 "this values range.")

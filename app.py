@@ -1,6 +1,7 @@
 # app.py
 from lib.controller.controller import Controller
 
+
 def main():
     controller = Controller()
     controller.run_process()

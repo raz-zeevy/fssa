@@ -86,6 +86,7 @@ class Controller:
         self.facet_details = []
         self.facet_dim_details = {}
         #
+        self.gui.pages
         self.gui.pages[MANUAL_FORMAT_PAGE_NAME].create_data_table()
         self.gui.pages[MANUAL_FORMAT_PAGE_NAME].unset_limited_edit_mode()
         self.gui.pages[INPUT_PAGE_NAME].reset_entries()
@@ -141,6 +142,7 @@ class Controller:
             self.previous_page()
         self.init_controller_attributes()
         self.on_facet_num_change(None)
+        self.disable_view_results()
         if matrix:
             self.navigator.show_page(MATRIX_INPUT_PAGE_NAME)
             self.navigator.hide_page(INPUT_PAGE_NAME)
@@ -584,13 +586,13 @@ class Controller:
         """
         paths = self.history.get_n(4)
         self.gui.update_history_menu(paths)
-
         # Bind each path to the corresponding menu item using its index
         menu_start_index = self.gui.file_menu.index('end') - len(
             paths) + 1  # Start index of the new paths
         for i, path in enumerate(paths):
-            self.gui.file_menu.entryconfig(menu_start_index + i, command=lambda
-                p=path: self.load_session(p))
+            self.gui.file_menu.entryconfig(menu_start_index + i,
+                                           command=lambda
+                                               p=path: self.load_session(p))
     #################
     #  Gui Methods  #
     #################

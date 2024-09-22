@@ -315,9 +315,6 @@ class GUI():
                 return "..." + path[-(max_length - 3):]
             return path
 
-        # Reverse the paths list
-        paths = paths[::-1]
-
         # Find the index of the "Exit" item
         exit_index = None
         for index in range(self.file_menu.index('end') + 1):

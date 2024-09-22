@@ -66,6 +66,7 @@ class ManualFormatPage(ttk.Frame):
     def create_data_table(self):
         self.limited_edit_mode = False
         if self.data_table is not None:
+            self.clear_all_vars()
             self.data_table.destroy()
         self.coldata = COLUMNS
         self.data_table = EditableTreeView(

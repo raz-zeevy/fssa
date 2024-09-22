@@ -39,7 +39,13 @@ class SessionsHistory:
 
     # Getters
     def get_n(self, n):
-        return list(set(self.history[(-1*(n+1)):]))
+        rec_set = set()
+        for rec in self.history[::-1]:
+            if len(rec_set) == n:
+                break
+            if rec not in rec_set:
+                rec_set.add(rec)
+        return list(rec_set)
 
     def get_all(self):
         return self.history

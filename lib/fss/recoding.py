@@ -34,17 +34,27 @@ def needs_recoding(values : np.array):
     """
     this function checks if the values need recoding
     :param values: the values to check
-    :return: True if the values need recoding, False otherwise
     """
+    res = {
+        "passed": True,
+        "entry": "",
+        "col_num": -1
+    }
     int_values = []
     for row in values:
+        row_vals = []
         for value in row:
             try:
-                int_values.append(int(value))
+                row_vals.append(int(value))
             except ValueError:
-                pass
-    return np.amax(int_values) > 100 or np.amin(int_values) < 0
-
+                row_vals.append(0)
+        int_values.append(row_vals)
+    for i, col in enumerate(np.array(int_values).T):
+        if np.amax(col) > 100 or np.amin(col) < 0:
+            res["passed"] = False
+            res["col_num"] = i+1
+            return res
+    return res
 @safe_conversion
 def group_by_precentile(values: np.array, groups_num):
     """

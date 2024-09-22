@@ -241,7 +241,8 @@ def run_fortran(corr_type,
     matrix_file_name = OUTPUT_MONO_MAT_FILE if corr_type == MONO else \
         OUTPUT_PEARSON_MAT_FILE
     output_results_file = output_path
-    output_matrix_file = os.path.join(os.path.dirname(output_results_file)
+    #
+    output_matrix_file = os.path.join(os.path.dirname(p_DATA_FILE)
                                         , matrix_file_name)
     script_corr_type = SCRIPT_MONO if corr_type == MONO else SCRIPT_PEARSON
     # script_nesting_prefix = SCRIPT_NESTING_PREFIX
