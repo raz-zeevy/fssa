@@ -1,11 +1,12 @@
 import os
 from lib import config
-from dotenv import load_dotenv
+
 
 WINDOW_HEIGHT = 570
 # WINDOW_HEIGHT = 800
 WINDOW_WIDTH = 660
 TOOL_TIP_DELAY = 0.3
+from dotenv import load_dotenv
 load_dotenv()
 VERSION = os.getenv('APP_VERSION', 'unknown')
 SAVE_EXTENSION = '.mms'

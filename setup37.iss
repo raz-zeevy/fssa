@@ -2,19 +2,20 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Fssa"
-#define MyAppVersion "{param:MyAppVersion|1.0.0}"
+#define MyAppVersion "1.1.6.0"
+#define MyVersionInfoVersion "1.1.6.0"
 #define MyAppPublisher "Raz Zeevy"
 #define MyAppURL "https://raz-zeevy.github.io/fssa/"
 #define MyAppExeName "fssa.exe"
 #define MyAppAssocName MyAppName + " File"
 #define MyAppAssocExt ".fss"
 #define MyAppAssocKey StringChange(MyAppAssocName, " ", "") + MyAppAssocExt
-#define MyVersionInfo "{param:MyAppVersion|1.0.0}"
+#define MyVersionInfo "{#MyAppVersion}"
 #define SessionIcon "C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\lib\assets\session_icon.ico"
 
 [Setup]
-; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
-; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
+; Ensure VersionInfoVersion is correctly passed as a string
+VersionInfoVersion={#MyVersionInfoVersion}
 AppId={{A5033936-6373-4BCB-AE0E-231D3E51F327}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
@@ -28,13 +29,12 @@ ChangesAssociations=yes
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
-; PrivilegesRequired=lowest 
+; PrivilegesRequired=lowest
 OutputBaseFilename=FssaSetup
 OutputDir=releases
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
-
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -57,9 +57,6 @@ Root: HKCU; Subkey: ".mem"; ValueType: string; ValueName: ""; ValueData: "FssaSe
 Root: HKCU; Subkey: "FssaSession"; ValueType: string; ValueName: ""; ValueData: "Fssa Session"; Flags: uninsdeletekey
 Root: HKCU; Subkey: "FssaSession\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: """{#SessionIcon}"""
 Root: HKCU; Subkey: "MyProgramFile\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""
-
-
-
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
