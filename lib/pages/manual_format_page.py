@@ -45,8 +45,9 @@ class ManualFormatPage(ttk.Frame):
         # Selection
         self.vars_i = []
         # create entry before the table:
-        entry = ttk.Label(self, text="Specify where in the data file the "
-                                "variables are located: ")
+        entry = ttk.Label(self, text="Select the variables to be processed ("
+                                     "and if necessary, specify the valid "
+                                     "range of the variables):")
         entry.pack(side=tk.TOP, fill='x', padx=40, pady=(10, 0))
 
     def pack(self, kwargs=None, **kw):

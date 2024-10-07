@@ -223,6 +223,7 @@ class EditableTreeView(ttk.Treeview):
         self._entry_popup.insert(0, self.set(item_id)[
             self._cur_focus_v_col_name])
         self._entry_popup.select_range(0, tk.END)
+        self._entry_popup.focus_set()  # Add this line to focus on the Entry widget
         self._entry_popup.bind("<Return>", lambda e: self._on_return(item_id,
                                                                      column_id,
                                                                      self._entry_popup))

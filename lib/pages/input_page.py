@@ -37,11 +37,11 @@ class InputPage(ttk.Frame):
                                         text="Browse &\nLoad")
         self.button_load.pack(side=ttk.LEFT, padx=10)
         ToolTip(self.button_load,
-                msg="Click to select a data file and automatically\nload it "
+                msg="Click to select a data file and load it\n"
                     "into the system.",
                 delay=TOOL_TIP_DELAY)
         self.button_browse = ttk.Button(frame_data_file,
-                                        width=rreal_size(6),
+                                        width=rreal_size(7),
                                         text="Browse\nOnly",
                                         bootstyle="secondary",)
         self.button_browse.pack(side=ttk.LEFT, padx=10)

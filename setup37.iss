@@ -2,14 +2,14 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Fssa"
-#define MyAppVersion "1.5"
+#define MyAppVersion "{param:MyAppVersion|1.0.0}"
 #define MyAppPublisher "Raz Zeevy"
 #define MyAppURL "https://raz-zeevy.github.io/fssa/"
 #define MyAppExeName "fssa.exe"
 #define MyAppAssocName MyAppName + " File"
 #define MyAppAssocExt ".fss"
 #define MyAppAssocKey StringChange(MyAppAssocName, " ", "") + MyAppAssocExt
-#define MyVersionInfo "1.5" 
+#define MyVersionInfo "{param:MyAppVersion|1.0.0}"
 #define SessionIcon "C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\lib\assets\session_icon.ico"
 
 [Setup]
@@ -34,7 +34,7 @@ OutputDir=releases
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
-VersionInfoVersion={#MyVersionInfo}
+
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"

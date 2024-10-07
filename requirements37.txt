@@ -8,5 +8,6 @@ pynput==1.7.6
 customtkinter==5.2.2
 xlrd==2.0.1
 openpyxl==3.1.2
+python-dotenv
 jsonpickle
 tktooltip

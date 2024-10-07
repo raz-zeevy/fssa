@@ -929,13 +929,9 @@ class Controller:
         else:
             self.enable_view_results()
             self.gui.show_msg("Finished running FSS Successfully.\n"
-                              'Click on "Close" > "View" > "2D\\3D Diagram" '
-                              'to view '
-                              "and to save the diagrams.\n"
-                              'Click on "Open" to view results',
+                              'To see results click "View" in the menu',
                               title="Job Finished Successfully",
-                              buttons=["Open:primary", "Close:secondary"],
-                              yes_command=self.open_results)
+                              buttons=["Ok:primary"])
 
     @error_handler
     def run_process(self):

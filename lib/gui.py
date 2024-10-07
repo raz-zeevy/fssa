@@ -227,7 +227,7 @@ class GUI():
         self.file_menu.add_command(label="Run")
         self.file_menu.add_separator()
         self.file_menu.add_command(label="Exit")
-        self.menu_bar.add_cascade(label="File", menu=self.file_menu)
+        self.menu_bar.add_cascade(label="Job File", menu=self.file_menu)
         #
         self.input_data_menu = Menu(self.menu_bar, tearoff=0)
         self.input_data_radio = tk.StringVar()

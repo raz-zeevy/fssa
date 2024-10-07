@@ -97,8 +97,9 @@ class DataPage(ttk.Frame):
                                         command=self.select_variables,
                                         width=11)
         self.button_recode.pack(side=tk.LEFT, padx=5)
-        ToolTip(self.button_recode, msg="different subsets of variables"
-                                        "\ncan be recoded differently.",
+        ToolTip(self.button_recode, msg="different subsets of variables can "
+                                        "be\nrecoded differently. If no "
+                                        "recoding is\nnecessary press \"Next\"",
                 delay=TOOL_TIP_DELAY)
         self.button_save = DataButton(frame_data_buttons, text="Save Active "
                                                                "Data To..",
