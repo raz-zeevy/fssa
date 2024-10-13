@@ -96,7 +96,8 @@ class InputPage(ttk.Frame):
         frame_lines.pack(fill='x', padx=ENTRIES_PADX, pady=(15, 10))
         # Records per Case Entry
         self.entry_lines_label = Label(frame_lines,
-                                           text="How many lines per case ? (1-99)")
+                                           text="How many lines per case ? ("
+                                                "1-10)")
         self.entry_lines_label.pack(side=ttk.LEFT)
         self.entry_lines = ttk.Entry(frame_lines, width=7)
         self.entry_lines.pack(side=ttk.RIGHT, padx=0)
@@ -104,7 +105,7 @@ class InputPage(ttk.Frame):
             create_labeled_selection_box(
                 self.additiona_options_frame,
                 label_text="Is the data file delimited "
-                     "by one of the delimiters in the"
+                     "by one of the delimiters in the "
                      "selection box? If yes, choose "
                      "the delimiter. If not, choose "
                      "None.", width=5, label_padx=ENTRIES_PADX, pady=10,
