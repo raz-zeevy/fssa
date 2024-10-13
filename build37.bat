@@ -20,7 +20,7 @@ if not "%dot_count%"=="3" (
 call venv37\Scripts\activate
 
 :: Run PyInstaller with the version passed to the .spec file
-:: venv37\Scripts\python.exe -m PyInstaller app.spec --noconfirm
+venv37\Scripts\python.exe -m PyInstaller app.spec --noconfirm
 
 echo Version loaded from .env: %APP_VERSION%
 
