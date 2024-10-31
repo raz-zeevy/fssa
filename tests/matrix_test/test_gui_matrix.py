@@ -50,7 +50,7 @@ class simple_example_gui(Controller):
             self.output_path = \
                 r"C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\output" \
                 r"\achieement_18_vars.fss"
-            self.run_matrix_fss()
+            self._run_matrix_fss()
             self.enable_view_results()
         except Exception as e:
             raise (e)

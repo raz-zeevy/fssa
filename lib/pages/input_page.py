@@ -38,7 +38,10 @@ class InputPage(ttk.Frame):
         self.button_load.pack(side=ttk.LEFT, padx=10)
         ToolTip(self.button_load,
                 msg="Click to select a data file and load it\n"
-                    "into the system.",
+                    "into the system. This program accepts .csv,\n"
+                    "excel or any file that contains only the\n"
+                    "digits 0-9 with or without separators (see\n"
+                    "below in 'Additional Data Options')",
                 delay=TOOL_TIP_DELAY)
         self.button_browse = ttk.Button(frame_data_file,
                                         width=rreal_size(7),

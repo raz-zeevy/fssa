@@ -8,6 +8,7 @@ import ttkbootstrap as ttk
 from lib.components.form import NavigationButton
 from lib.pages.data_page import DataPage
 from lib.windows.diagram_window import DiagramWindow
+from lib.windows.loading_window import LoadingWindow
 from lib.windows.recode_window import RecodeWindow
 from lib.pages.dimensions_page import DimensionsPage
 from lib.pages.facet_dim_page import FacetDimPage
@@ -22,6 +23,7 @@ from lib.utils import *
 from ttkbootstrap.dialogs.dialogs import Messagebox
 from lib.windows.technical_options_window import TOWindow
 from tktooltip import ToolTip
+from tkinter import font as tkFont
 
 
 THEME_NAME = 'sandstone'
@@ -48,7 +50,6 @@ class GUI():
         self.root.title(ROOT_TITLE)
         # set the icon
         self.root.iconbitmap(get_resource(p_ICON))
-
         # # Initialize an attribute to store images
         self.image_references = {}
         #
@@ -81,7 +82,7 @@ class GUI():
                      FacetDimPage,):
             page_name = Page.__name__
             self.pages[page_name] = Page(self)
-
+        self.loading_window = LoadingWindow(self.root)
         # init common gui
         # self.center_window()
 
@@ -215,6 +216,7 @@ class GUI():
     ##################
 
     def create_menu(self):
+        bold_font = tkFont.Font(weight="bold")
         # Menu
         self.menu_bar = Menu(self.root)
         # File Menu
@@ -252,7 +254,8 @@ class GUI():
         self.facet_menu.add_command(label="Variable Elements")
         self.facet_menu.add_command(label="Hypotheses")
         self.facet_menu.add_command(label="Diagrams")
-        self.menu_bar.add_cascade(label="Facet", menu=self.facet_menu)
+        self.menu_bar.add_cascade(label="Facet", menu=self.facet_menu,
+                                  font=bold_font)
         # View Menu
         self.view_menu = Menu(self.menu_bar, tearoff=0)
         self.view_menu.add_command(label="Next")
@@ -264,7 +267,7 @@ class GUI():
         self.view_menu.add_command(label="Output File",
                                    state="disabled")
         self.diagram_2d_menu = Menu(self.view_menu, tearoff=0)
-        self.diagram_2d_menu.add_command(label="No Facet")
+        self.diagram_2d_menu.add_command(label="FSSA Solution")
         self.diagram_2d_menu.add_command(label="Facet A",
                                          state="disabled")
         self.diagram_2d_menu.add_command(label="Facet B",
@@ -277,7 +280,7 @@ class GUI():
                                    menu=self.diagram_2d_menu,
                                    state="disabled")
         self.diagram_3d_menu = Menu(self.view_menu, tearoff=0)
-        self.diagram_3d_menu.add_command(label="No Facet")
+        self.diagram_3d_menu.add_command(label="FSSA Solution")
         self.diagram_3d_menu.add_command(label="Facet A",
                                          state="disabled")
         self.diagram_3d_menu.add_command(label="Facet B",
@@ -399,8 +402,8 @@ class GUI():
     # Dialogues and Windows #
     #########################
 
-    def show_diagram_window(self, graph_data_lst):
-        self.diagram_window = DiagramWindow(self, graph_data_lst)
+    def show_diagram_window(self, graph_data_lst, title="FSSA Diagram"):
+        self.diagram_window = DiagramWindow(self, graph_data_lst, title)
         self.diagram_window.bind("<F1>", lambda x: self.show_help_windw())
 
     def show_help_windw(self, section=None):

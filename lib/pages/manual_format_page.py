@@ -122,9 +122,8 @@ class ManualFormatPage(ttk.Frame):
         self.button_reload = DataButton(self.frame_data_buttons,
                                         text="Reload Vars.",
                                         command=None)
-        ToolTip(self.button_reload, msg="Reload all the variables from the "
-                                        "data "
-                                        "file",
+        ToolTip(self.button_reload, msg="Undo selection / Reload all the "
+                                        "variables from the data file",
                 delay=TOOL_TIP_DELAY)
 
     ###################

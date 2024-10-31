@@ -5,6 +5,7 @@ output
 venv
 venv37
 .git
+.SCR
 .gitignore
 lib/scripts/example
 lib/scripts/fssa-examples

@@ -36,7 +36,7 @@ class TestFSSAProcess(unittest.TestCase):
                    'DimensionsPage'].get_dimensions() == [2]
 
         # self.controller.gui.pages['FacetPage'].button_run.invoke()
-        self.controller.run_fss()
+        self.controller._run_fss()
         print("ok")
 
 

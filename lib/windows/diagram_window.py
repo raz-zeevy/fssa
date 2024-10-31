@@ -2,7 +2,7 @@ import os
 import ttkbootstrap as ttk
 import tkinter as tk
 from tkinter import filedialog
-from lib.components.form import NavigationButton
+from lib.components.form import NavigationButton, DataButton
 import matplotlib
 from lib.components.window import Window
 from lib.components.shapes import Line, Circle, DivideAxis
@@ -22,7 +22,7 @@ BORDER_WIDTH = 0
 OC = 0.05
 
 class DiagramWindow(Window):
-    def __init__(self, parent, graph_data_lst: list, **kwargs):
+    def __init__(self, parent, graph_data_lst: list, title, **kwargs):
         """
         graph_data: list of dictionaries containing the data to be plotted
         should contain "x", "y", "annotations", "title", "legend",
@@ -30,13 +30,13 @@ class DiagramWindow(Window):
         """
         super().__init__(**kwargs, geometry=f"{rreal_size(900)}x"
                                             f"{rreal_size(700)}")
-        self.title("FSS Solution")
+        self.title(title)
         # self.iconbitmap(get_resource("icon.ico"))
         # sets the geometry of toplevel
         self.graph_data_lst = graph_data_lst
         self.index = 0
         # init
-        self.create_navigation()
+        self.create_bottom_panel()
         self.create_menu()
         self.main_frame = ttk.Frame(self)
         self.main_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
@@ -64,7 +64,7 @@ class DiagramWindow(Window):
 
     def get_default_fig_file_name(self):
         label = self.graph_data_lst[self.index]["title"]
-        clean_label = label.replace(" ", "_")
+        clean_label = label.replace(" ", "_").replace(":","_")
         default_name = f"{clean_label}.png"
         return default_name
 
@@ -122,6 +122,10 @@ class DiagramWindow(Window):
         self.legend_canvas.itemconfig(self.canvas_frame, width=canvas_width)
 
     def navigate_control(self):
+        """
+        This function is now Obsolete because we have circular paging
+        :return:
+        """
         if self.index < len(self.graph_data_lst) - 1:
             self.button_next.state(["!disabled"])
         else:
@@ -134,12 +138,16 @@ class DiagramWindow(Window):
     def next_graph(self):
         if self.index < len(self.graph_data_lst) - 1:
             self.index += 1
-            self.load_page(self.index)
+        else:
+            self.index = 0  # Loop back to the first graph
+        self.load_page(self.index)
 
     def previous_graph(self):
         if self.index > 0:
             self.index -= 1
-            self.load_page(self.index)
+        else:
+            self.index = len(self.graph_data_lst) - 1  # Loop to the last graph
+        self.load_page(self.index)
 
     def exit(self):
         self.destroy()
@@ -147,7 +155,8 @@ class DiagramWindow(Window):
     def load_page(self, i):
         for widget in self.main_frame.winfo_children():
             widget.destroy()
-        self.navigate_control()
+        # this is not needed cause we have circular paging
+        # self.navigate_control()
         #
         self.diagram_frame = ttk.Frame(self.main_frame)
         self.diagram_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
@@ -266,7 +275,7 @@ class DiagramWindow(Window):
         axes.set_ylim([start_y - y_offset, end_y + y_offset])
         figure_canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
-    def create_navigation(self):
+    def create_bottom_panel(self):
         # Navigation Buttons Frame
         frame_navigation = ttk.Frame(self)
         # pack the navigation at the bottom of the screen but above the help
@@ -282,7 +291,12 @@ class DiagramWindow(Window):
         self.button_next = NavigationButton(center_frame, text="Next",
                                             command=self.next_graph, )
         self.button_next.pack(side=ttk.LEFT, padx=20, )
+        self.button_save_figure = NavigationButton(center_frame,
+                                                    text="Save Figure",
+                                                    command=self.save_figure, )
+        self.button_save_figure.pack(side=ttk.LEFT, padx=20)
         self.button_exit = NavigationButton(center_frame, text="Exit",
                                             bootstyle='secondary',
                                             command=self.exit, )
         self.button_exit.pack(side=ttk.LEFT, padx=20)
+

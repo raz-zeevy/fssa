@@ -78,7 +78,7 @@ class example_3_controller(unittest.TestCase):
         try:
             self.controller.output_path = \
                 r"C:\Users\Raz_Z\Projects\Shmuel\fssa\output\test_3.fss"
-            self.controller.run_fss()
+            self.controller._run_fss()
         except Exception as e:
             print(e)
             assert False

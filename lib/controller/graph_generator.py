@@ -2,6 +2,13 @@ from lib.components.shapes import ShapeFactory
 
 
 def generate_graphs(controller, dim, facet):
+    """
+    Generate graph data for the given controller, dimension and facet
+    :param controller: The Apps controller
+    :param dim:
+    :param facet:
+    :return:
+    """
     from lib.fss.fss_output_parser import parse_output
     controller.get_labels()
     output = parse_output(controller.output_path)
@@ -26,6 +33,11 @@ def generate_graphs(controller, dim, facet):
         )
         graph_data_list.append(graph)
         if facet is not None:
+            # first change the first graph annotations to the facet var
+            # details instead of the var index
+            graph["annotations"] = [controller.facet_var_details[i - 1][
+                                        facet - 1] for i in index]
+            # generate the facet graphs
             index = [point['serial_number'] for point in coors]
             annotations = [controller.facet_var_details[i - 1][
                                facet - 1] for i in index]

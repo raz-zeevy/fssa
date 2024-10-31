@@ -1,6 +1,8 @@
 # controller.py
 import os.path
+import queue
 import subprocess
+import threading
 import warnings
 import pandas as pd
 from typing import List
@@ -303,7 +305,7 @@ class Controller:
         self.gui.help_menu.entryconfig("About", command=lambda:
         self.show_help("what_is_fssa"))
         #### Diamgrams Menu
-        self.gui.diagram_2d_menu.entryconfig("No Facet", command=lambda:
+        self.gui.diagram_2d_menu.entryconfig("FSSA Solution", command=lambda:
         self.show_diagram_window(2, None))
         self.gui.diagram_2d_menu.entryconfig("Facet A", command=lambda:
         self.show_diagram_window(2, 1))
@@ -313,7 +315,7 @@ class Controller:
         self.show_diagram_window(2, 3))
         self.gui.diagram_2d_menu.entryconfig("Facet D", command=lambda:
         self.show_diagram_window(2, 4))
-        self.gui.diagram_3d_menu.entryconfig("No Facet", command=lambda:
+        self.gui.diagram_3d_menu.entryconfig("FSSA Solution", command=lambda:
         self.show_diagram_window(3, None))
         self.gui.diagram_3d_menu.entryconfig("Facet A", command=lambda:
         self.show_diagram_window(3, 1))
@@ -642,9 +644,9 @@ class Controller:
         self.output_path = self.gui.run_button_dialogue()
         if self.output_path:
             if self.matrix_input:
-                self.run_matrix_fss()
+                self.run_fss(self._run_matrix_fss)
             else:
-                self.run_fss()
+                self.run_fss(self._run_fss)
 
     def reload_variables(self, selected_vars):
         self.select_csv_variables(selected_vars)
@@ -873,8 +875,7 @@ class Controller:
             self.active_variables_details[var]['facets'] = facets_var_info[
                 var]
 
-    @error_handler
-    def run_matrix_fss(self):
+    def _run_matrix_fss(self):
         self.init_fss_attributes()
         create_matrix_running_files(
             job_name=os.path.basename(self.output_path.split(".")[0]),
@@ -889,23 +890,9 @@ class Controller:
             facet_var_details=self.facet_var_details,
             hypotheses_details=self.hypotheses_details,
             facet_dim_details=self.facet_dim_details)
-        try:
-            run_matrix_fortran(self.output_path)
-        except Exception as e:
-            raise e
-        else:
-            self.enable_view_results()
-            self.gui.show_msg("Finished running FSS Successfully.\n"
-                              'Click on  "Close" > "View" > "2D\\3D Diagram" '
-                              'to view '
-                              "and to save the diagrams.\n"
-                              'Click on "Open" to view results',
-                              title="Job Finished Successfully",
-                              buttons=["Open:primary", "Close:secondary"],
-                              yes_command=self.open_results)
+        run_matrix_fortran(self.output_path)
 
-    @error_handler
-    def run_fss(self):
+    def _run_fss(self):
         self.init_fss_attributes()
         create_running_files(
             job_name=os.path.basename(self.output_path.split(".")[0]),
@@ -921,17 +908,70 @@ class Controller:
             facet_dim_details=self.facet_dim_details,
             valid_values_range=self.valid_values_range
         )
-        try:
-            run_fortran(self.correlation_type, self.output_path)
-        except Exception as e:
-            self.disable_view_results()
-            raise e
-        else:
-            self.enable_view_results()
-            self.gui.show_msg("Finished running FSS Successfully.\n"
-                              'To see results click "View" in the menu',
-                              title="Job Finished Successfully",
-                              buttons=["Ok:primary"])
+        run_fortran(self.correlation_type, self.output_path)
+
+    @error_handler
+    def run_fss(self, fss_function):
+        """Run FSSA in a separate thread for the FSSA process and manage the loading window on the main thread."""
+
+        # Create a queue to communicate between threads
+        result_queue = queue.Queue()
+
+        def run_fssa_and_hide_loading():
+            """Function to run FSSA and hide the loading window after completion."""
+            try:
+                # Run the FSSA process (this is where your actual FSSA logic goes)
+                fss_function()
+                result_queue.put({"status": "success"})  # Indicate success
+            except Exception as e:
+                # Put the exception into the queue for handling in the main thread
+                result_queue.put({"status": "error", "message": str(e)})
+            finally:
+                # Put a message to hide the loading window
+                result_queue.put({"status": "hide_loading"})
+
+        def process_queue():
+            """Check the queue for any results from the FSSA thread."""
+            try:
+                result = result_queue.get_nowait()
+            except queue.Empty:
+                # If the queue is empty, check again after 100 milliseconds
+                self.gui.root.after(100, process_queue)
+                return
+
+            # Handle the result from the queue
+            if result["status"] == "success":
+                self.enable_view_results()
+                # Show success message, but don't block the loading window from hiding
+                self.gui.root.after(0, lambda: self.gui.show_msg(
+                    "Finished running FSS Successfully.\n"
+                    'To see results click "View" in the menu',
+                    title="Job Finished Successfully",
+                    buttons=["Ok:primary"]
+                ))
+            elif result["status"] == "error":
+                # Handle errors by showing a message box on the main thread
+                self.gui.show_error("Error Occurred", result["message"])
+                self.disable_view_results()
+
+            # Always hide the loading window if a message is received to do so
+            if result["status"] == "hide_loading":
+                self.gui.loading_window.hide()
+
+            # Continue checking the queue after handling the current message
+            self.gui.root.after(100, process_queue)
+
+        # Show loading window on the main thread
+        self.gui.root.after(0, self.gui.loading_window.show)
+
+        # Create a thread to run the FSSA process
+        fssa_thread = threading.Thread(target=run_fssa_and_hide_loading)
+
+        # Start the thread
+        fssa_thread.start()
+
+        # Start checking the queue for results from the FSSA thread
+        process_queue()
 
     @error_handler
     def run_process(self):
@@ -1018,7 +1058,11 @@ class Controller:
 
     def show_diagram_window(self, dim, facet):
         graph_data_list = generate_graphs(self, dim, facet)
-        self.gui.show_diagram_window(graph_data_list)
+        if facet:
+            title = f"FSSA Diagrams for Facet {chr(64 + facet)}"
+        else:
+            title = "FSSA Solution Diagrams"
+        self.gui.show_diagram_window(graph_data_list, title)
         self.gui.diagram_window.bind("<F1>",
                                      lambda e: controller.show_help(
                                          "facet_diagrams_screen"))

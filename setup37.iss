@@ -2,24 +2,21 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Fssa"
-#define MyAppVersion "1.1.6.0"
-#define MyVersionInfoVersion "1.1.6.0"
+#define MyAppVersion "{param:MyAppVersion|1.1.8.0}"
+#define VersionInfoVersion "{param:MyAppVersion|1.1.8.0}"
 #define MyAppPublisher "Raz Zeevy"
 #define MyAppURL "https://raz-zeevy.github.io/fssa/"
 #define MyAppExeName "fssa.exe"
 #define MyAppAssocName MyAppName + " File"
 #define MyAppAssocExt ".fss"
 #define MyAppAssocKey StringChange(MyAppAssocName, " ", "") + MyAppAssocExt
-#define MyVersionInfo "{#MyAppVersion}"
 #define SessionIcon "C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\lib\assets\session_icon.ico"
 
 [Setup]
-; Ensure VersionInfoVersion is correctly passed as a string
-VersionInfoVersion={#MyVersionInfoVersion}
 AppId={{A5033936-6373-4BCB-AE0E-231D3E51F327}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
-;AppVerName={#MyAppName} {#MyAppVersion}
+VersionInfoVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
@@ -28,8 +25,6 @@ DefaultDirName={pf}\{#MyAppName}
 ChangesAssociations=yes
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
-; Uncomment the following line to run in non administrative install mode (install for current user only.)
-; PrivilegesRequired=lowest
 OutputBaseFilename=FssaSetup
 OutputDir=releases
 Compression=lzma
@@ -66,3 +61,4 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: de
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: runascurrentuser nowait postinstall skipifsilent
+

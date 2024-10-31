@@ -52,7 +52,7 @@ class simple_example_gui(Controller):
         try:
             self.output_path = \
                 r"C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\tests\dj_csv_test\res\data.fss"
-            self.run_fss()
+            self.run_fss(self._run_fss)
         except Exception as e:
             print(e)
             raise(e)

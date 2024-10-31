@@ -49,6 +49,8 @@ def load_recorded_data(path, delimiter=None, lines_per_var=1, manual_format: Lis
     """
     def load_supported_formats(extension):
         header = 0 if has_header else None
+
+        # Load the file based on the extension
         if extension == ".csv":
             df = pd.read_csv(path, sep=",", header=header, dtype=str)
         elif extension == ".tsv":
@@ -60,8 +62,15 @@ def load_recorded_data(path, delimiter=None, lines_per_var=1, manual_format: Lis
                                dtype=str)
         else:
             raise Exception(f"Invalid extension: {extension}")
+
+        # Set default column names if there is no header
         if header is None:
             df.columns = [f"var{i + 1}" for i in df.columns]
+
+        # Remove rows that are completely empty
+        df.dropna(how="all", inplace=True)
+
+        # Replace NaN values with an empty string
         df.fillna("", inplace=True)
         return df
 
@@ -76,6 +85,8 @@ def load_recorded_data(path, delimiter=None, lines_per_var=1, manual_format: Lis
                     "of lines is not a multiple of the number of "
                     "lines per row")
             for i in range(0, len(lines), lines_per_var):
+                if not lines[i].strip():
+                    continue
                 try:
                     row = []
                     if manual_format:

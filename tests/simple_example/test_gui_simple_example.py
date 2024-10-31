@@ -62,7 +62,7 @@ class simple_example_gui(Controller):
             self.output_path = \
                 r"C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\output" \
                 r"\test_simple.fss"
-            self.run_fss()
+            self.run_fss(self._run_fss)
             self.enable_view_results()
         except Exception as e:
             print(e)
@@ -116,7 +116,7 @@ class simple_example_gui(Controller):
             self.output_path = \
                 r"C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\output" \
                 r"\test_simple.fss"
-            self.run_fss()
+            self.run_fss(self._run_fss)
             self.enable_view_results()
         except Exception as e:
             print(e)
