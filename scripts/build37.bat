@@ -21,15 +21,17 @@ if not "%dot_count%"=="3" (
 call venv37\Scripts\activate
 
 :: Run PyInstaller with the version passed to the .spec file
-venv37\Scripts\python.exe -m PyInstaller app.spec --noconfirm
+:: venv37\Scripts\python.exe -m PyInstaller app.spec --noconfirm
 
 :: Load the version from the .env file
 echo Version format to be used in Inno Setup: %APP_VERSION%
 
-:: Create a temporary .iss file with only the VersionInfoVersion line replaced
-(for /f "delims=" %%i in (setup37.iss) do (
+:: Create a temporary .iss file with AppVersion and VersionInfoVersion replaced
+(for /f "usebackq delims=" %%i in ("setup37.iss") do (
     set "line=%%i"
-    if "!line!"=="VersionInfoVersion={#MyAppVersion}" (
+    if "!line!"=="AppVersion={#MyAppVersion}" (
+        echo AppVersion=%APP_VERSION%
+    ) else if "!line!"=="VersionInfoVersion={#MyAppVersion}" (
         echo VersionInfoVersion=%APP_VERSION%
     ) else (
         echo !line!
@@ -37,7 +39,7 @@ echo Version format to be used in Inno Setup: %APP_VERSION%
 )) > setup_temp.iss
 
 :: Run Inno Setup with the temporary file
-"C:\Program Files (x86)\Inno Setup 6\ISCC.exe" setup_temp.iss /DMyAppVersion="%APP_VERSION%"
+"C:\Program Files (x86)\Inno Setup 6\ISCC.exe" setup_temp.iss
 :: del setup_temp.iss
 
 

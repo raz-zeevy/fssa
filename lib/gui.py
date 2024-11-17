@@ -9,7 +9,7 @@ from lib.components.form import NavigationButton
 from lib.pages.data_page import DataPage
 from lib.windows.diagram_window import DiagramWindow
 from lib.windows.loading_window import LoadingWindow
-from lib.windows.recode_window import RecodeWindow
+from lib.windows.recoding_window import RecodeWindow
 from lib.pages.dimensions_page import DimensionsPage
 from lib.pages.facet_dim_page import FacetDimPage
 from lib.pages.facet_page import FacetPage
@@ -412,9 +412,17 @@ class GUI():
     def show_recode_window(self):
         self.recode_window = RecodeWindow(self)
         recode_func = self.pages[DATA_PAGE_NAME].recode_variables
-        self.recode_window.button_recode.config(command=lambda:
-        recode_func(self.recode_window))
+        self.recode_window._apply_recoding_func = lambda : recode_func(
+            self.recode_window)
         self.recode_window.bind("<F1>", lambda x: self.show_help_windw())
+
+    @gui_only
+    def show_recode_msg(self):
+        """ show a msgbox asking the user if he wants to recode another
+        variables if so call show_recode_window otherwise do nothing"""
+        self.show_msg("Recoding applied successfully. Would you like to "
+                      "recode more variables?",
+                      yes_command=self.show_recode_window)
 
     def show_technical_options_window(self, locality_list: list):
         self.technical_options = TOWindow(self, locality_list)

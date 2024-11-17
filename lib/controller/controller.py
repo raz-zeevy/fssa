@@ -18,6 +18,8 @@ from lib.fss.fss_module import create_running_files, run_fortran
 from lib.utils import *
 import pynput.keyboard
 
+from lib.windows.recoding_window import RecodeWindow
+
 SUPPORTED_RECORDED_DATA_FORMATS = ['.csv', '.xlsx', '.xls', 'tsv']
 
 class Controller:
@@ -234,6 +236,8 @@ class Controller:
         )
         self.gui.pages[DATA_PAGE_NAME].select_variables_subset = \
         self.update_facets_var_selection
+        self.gui.pages[DATA_PAGE_NAME].get_active_variables_valid_ranges = self.gui.pages[
+            MANUAL_FORMAT_PAGE_NAME].get_vars_valid_values
         # Facet Page
         self.gui.pages[FACET_PAGE_NAME]. \
             facets_combo.bind("<<ComboboxSelected>>",
@@ -762,6 +766,8 @@ class Controller:
 
         else:
             self.data = self.org_data
+        # reset recoding
+        RecodeWindow.reset_default()
         # Commit labels to data
         self.data.columns = manual_page.get_selected_var_labels()
         # Show data on data page

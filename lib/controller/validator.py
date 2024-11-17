@@ -76,6 +76,7 @@ class Validator():
             raise Exception(
                 "Usage Error:\nAt least three variable must be"
                 " inserted in order for the fssa to run.")
+        pass
 
     @staticmethod
     @mode_dependent

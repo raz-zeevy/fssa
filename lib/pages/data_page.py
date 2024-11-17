@@ -186,32 +186,32 @@ class DataPage(ttk.Frame):
         if not recoding_details:
             recoding_details = recode_window.get_recoding_details()
         col_indices = self.parse_indices_string(recoding_details[
-                                                    'indices_string'])
+                                                    'var_indices_str'])
         recoded = False
         recoded_df = self.data
-        for col in [i - 1 for i in col_indices]:
-            rec_col = recoded_df.iloc[:, col]
-            if recoding_details['grouping']:
-                if recoding_details['grouping_type'] == GROUPING_TYPES[0]:
-                    rec_col = group_by_precentile(rec_col,
-                                                  recoding_details['grouping'])
-                elif recoding_details['grouping_type'] == GROUPING_TYPES[1]:
-                    rec_col = group_by_equal_range(rec_col,
-                                                   recoding_details[
-                                                       'grouping'])
-                elif recoding_details['grouping_type'] == GROUPING_TYPES[2]:
-                    rec_col = group_by_monotonicity(rec_col,
-                                                    recoding_details[
-                                                        'grouping'])
-            recoded = True
-            if recoding_details['inverting']:
-                rec_col = invert(rec_col)
+        for col_i in [i - 1 for i in col_indices]:
+            rec_col = recoded_df.iloc[:, col_i]
+            for recoding_pair in recoding_details['manual']:
+                for old_value in recoding_pair[0].strip().split(','):
+                    rec_col = manual_recoding(rec_col, old_value,
+                                              recoding_pair[1])
                 recoded = True
-            recoded_df.loc[:, recoded_df.columns[col]] = rec_col
+            if recoding_details['invert']:
+                valid_ranges_all = self.get_active_variables_valid_ranges()
+                rec_col = invert(rec_col, [valid_ranges_all[col_i]])
+                recoded = True
+            recoded_df.loc[:, recoded_df.columns[col_i]] = rec_col
         if recoded:
             self.show_data(recoded_df)
-        if recode_window:
-            recode_window.exit()
+
+    def get_active_variables_valid_ranges(self):
+        """
+        This function is used by the recording to get the missing values
+        of the variable for the inverting option.
+        Should be overridden by the controller.
+        :return:
+        """
+        raise Exception("This function should be override")
 
     def get_selected_rows(self):
         selected_items = self.data_table.selection()

@@ -37,12 +37,25 @@ class simple_example_gui(Controller):
             {i for i in range(3, 21)}
         )
         self.next_page()
-        self.gui.pages[DATA_PAGE_NAME].recode_variables(None, dict(
-            indices_string='9',
-            grouping = 10,
-            grouping_type=GROUPING_TYPES[2],
-            inverting = False
-        ))
+        #
+        self.gui.show_recode_window()
+        self.gui.recode_window.set_variables_indices("9")
+        recoding_pairs = [
+            (10,1),
+            (20,2),
+            (30,3),
+            (40,4),
+            (60,6),
+            ("100-10000",10),
+        ]
+        for pair in recoding_pairs:
+            self.gui.recode_window.add_pair(*pair)
+        self.gui.recode_window.apply_recoding()
+        #
+        self.gui.show_recode_window()
+        self.gui.recode_window.set_variables_indices("1-8")
+        self.gui.recode_window.set_inverse(True)
+        self.gui.recode_window.apply_recoding()
         self.next_page()
         self.next_page()
         try:
@@ -54,9 +67,9 @@ class simple_example_gui(Controller):
         except Exception as e:
             print(e)
             raise(e)
-        # run_file_path = p_FSS_DRV
-        # true_file_path = os.path.join(test_dir_path, "FSSAINP.DRV")
-        # assert diff_lines_num(run_file_path, true_file_path) == 1
+        # # run_file_path = p_FSS_DRV
+        # # true_file_path = os.path.join(test_dir_path, "FSSAINP.DRV")
+        # # assert diff_lines_num(run_file_path, true_file_path) == 1
         assert os.path.isfile(self.output_path)
 
 if __name__ == '__main__':

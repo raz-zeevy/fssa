@@ -35,6 +35,7 @@ COLUMNS = [
 
 class ManualFormatPage(ttk.Frame):
     def __init__(self, parent):
+        self.parent = parent
         self.data_table = None
         ttk.Frame.__init__(self, parent.root)
         self.coldata = None
@@ -74,7 +75,7 @@ class ManualFormatPage(ttk.Frame):
             self,
             index_col_name=SEL_VAR,
             add_check_box=True,
-            columns=self.coldata
+            columns=self.coldata,
         )
         self.data_table.column("Label", stretch=True)
         # self.data_table.place(relx=.5, rely=.49, anchor="center")
@@ -140,6 +141,7 @@ class ManualFormatPage(ttk.Frame):
             width = int(row[FIELD_WIDTH])
             valid_low = int(row[VALID_LOW])
             valid_high = int(row[VALID_HIGH])
+            lines_num = int(row[LINE_NO])
             label = row[LABEL]
             if not self.are_missing_values and width == 2:
                 valid_high = 99
@@ -155,6 +157,10 @@ class ManualFormatPage(ttk.Frame):
                 raise ValueError(f"Row {i+1}: Valid low of {valid_low} or "
                                  f"valid high of "
                                  f"{valid_high} is not between 0 and 99.")
+            max_lines_num = self.parent.pages[INPUT_PAGE_NAME].get_lines_per_var()
+            if lines_num < 1 or (max_lines_num and lines_num > max_lines_num):
+                raise ValueError("Lines number has to be an integer between 1 "
+                                 f"and {max_lines_num}.")
             if not label.isascii():
                 raise ValueError(f'Row {i+1}: Label: "{label}" is not in '
                                  f'ASCII.')

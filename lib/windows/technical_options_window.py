@@ -6,8 +6,6 @@ from lib.components.window import Window
 from lib.utils import *
 from lib.components.form import *
 
-
-
 class TOWindow(Window):
     def __init__(self, parent, locality : list, **kwargs):
         """
