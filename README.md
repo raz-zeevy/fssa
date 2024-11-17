@@ -95,7 +95,3 @@ Before starting with FSSA, it's crucial to understand the data you are working w
 ## Contact
 
 For any queries or suggestions, feel free to contact us at [raz3zeevy@gmail.com](mailto:raz3zeevy@gmail.com).
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
