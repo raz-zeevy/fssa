@@ -21,7 +21,7 @@ if not "%dot_count%"=="3" (
 call venv37\Scripts\activate
 
 :: Run PyInstaller with the version passed to the .spec file
-:: venv37\Scripts\python.exe -m PyInstaller app.spec --noconfirm
+venv37\Scripts\python.exe -m PyInstaller app.spec --noconfirm
 
 :: Load the version from the .env file
 echo Version format to be used in Inno Setup: %APP_VERSION%

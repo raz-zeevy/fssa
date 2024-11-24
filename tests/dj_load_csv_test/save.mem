@@ -1896,6 +1896,7 @@
   "facets_num": 2,
   "max_dim": 2,
   "min_dim": 2,
+  "job_name": "data",
   "additional_options": false,
   "fixed_width": "No",
   "correlation_type": "Monotonicity",

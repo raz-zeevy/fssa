@@ -649,7 +649,7 @@ class Controller:
     def run_button_click(self):
         result = self.gui.run_button_dialogue()
         if result:
-            self.job_name, self.output_path = result
+            self.output_path, self.job_name = result
             if self.matrix_input:
                 self.run_fss(self._run_matrix_fss)
             else:
@@ -883,11 +883,14 @@ class Controller:
         for var in facets_var_info:
             self.active_variables_details[var]['facets'] = facets_var_info[
                 var]
+        # output
+        self.job_name = self.job_name or os.path.basename(
+            self.output_path.split(".")[0])
 
     def _run_matrix_fss(self):
         self.init_fss_attributes()
         create_matrix_running_files(
-            job_name=os.path.basename(self.output_path.split(".")[0]),
+            job_name=self.job_name,
             matrix_details=self.matrix_details,
             iweigh=self.locality_weight[0],
             matrix_path=self.data_file_path,
@@ -904,7 +907,7 @@ class Controller:
     def _run_fss(self):
         self.init_fss_attributes()
         create_running_files(
-            job_name=os.path.basename(self.output_path.split(".")[0]),
+            job_name=self.job_name,
             nfacet=self.facets_num,
             variables_labels=self.fss_var_labels,
             iweigh=self.locality_weight[0],
