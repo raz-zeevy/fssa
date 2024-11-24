@@ -279,7 +279,11 @@ class ManualFormatPage(ttk.Frame):
         raise UserWarning("Shouldn't be called.")
 
     def set_variables_nums(self, nums):
-        self.data_table.set_index(nums)
+        """
+        given the variables indices it sets the VAR_NO column in the table
+        to the given index + 1 (1 based index)
+        """
+        self.data_table.set_index([i+1 for i in nums])
 
     def get_vars_valid_values(self):
         all_format = self.get_data_format()

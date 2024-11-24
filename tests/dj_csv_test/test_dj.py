@@ -35,6 +35,7 @@ class simple_example_gui(Controller):
         self.gui.pages[INPUT_PAGE_NAME].disable_additional_options()
         self.load_csv_init()
         self.next_page()
+        return
         self.gui.pages[MANUAL_FORMAT_PAGE_NAME].select_variables_window(
             range(3,22))
         self.next_page()

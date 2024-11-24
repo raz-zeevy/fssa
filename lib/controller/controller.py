@@ -48,6 +48,8 @@ class Controller:
         # Override the default showwarning method with your custom one
         if IS_PRODUCTION():
             warnings.showwarning = self.custom_show_warning
+        self.job_name = None
+
     def on_close(self):
         # Prompt the user with a message box
         if IS_PRODUCTION():
@@ -645,8 +647,9 @@ class Controller:
             facet_values)
 
     def run_button_click(self):
-        self.output_path = self.gui.run_button_dialogue()
-        if self.output_path:
+        result = self.gui.run_button_dialogue()
+        if result:
+            self.job_name, self.output_path = result
             if self.matrix_input:
                 self.run_fss(self._run_matrix_fss)
             else:
@@ -1005,7 +1008,8 @@ class Controller:
                     buttons=["Yes:primary", "No:primary"],
                     yes_command=lambda: self.set_header(True),
                     no_command=lambda: self.set_header(False))
-                if not res: return
+                if not res:
+                    raise UserWarning("User cancelled the operation")
             self.data_file_extension = file_extension
             self.gui.pages[INPUT_PAGE_NAME].disable_additional_options()
             self.gui.pages[INPUT_PAGE_NAME].automatic_parsable = True
@@ -1017,9 +1021,13 @@ class Controller:
     def load_recorded_data_file(self):
         data_file_path = self.gui.pages[INPUT_PAGE_NAME].browse_file()
         if data_file_path:
+            try:
+                self._suggest_parsing(interactive=True)
+            except UserWarning:
+                self.gui.pages[INPUT_PAGE_NAME].set_data_file_path("")
+                return
             self.enable_view_input()
             self.gui.pages[INPUT_PAGE_NAME].default_entry_lines()
-            self._suggest_parsing(interactive=True)
         if not self.gui.pages[
                 INPUT_PAGE_NAME].is_manual_input():
             self.load_csv_init()

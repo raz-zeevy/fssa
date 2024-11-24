@@ -2,6 +2,7 @@ import ctypes
 import os.path
 import sys
 import tkinter as tk
+from typing import Tuple
 from lib.windows.help.help_window import HelpWindow
 from tkinter import filedialog, Menu
 import ttkbootstrap as ttk
@@ -24,10 +25,10 @@ from ttkbootstrap.dialogs.dialogs import Messagebox
 from lib.windows.technical_options_window import TOWindow
 from tktooltip import ToolTip
 from tkinter import font as tkFont
-
+from lib.const import p_ICON
+from lib.windows.run_window import RunWindow
 
 THEME_NAME = 'sandstone'
-p_ICON = 'icon.ico'
 
 
 def gui_only(func, *args, **kwargs):
@@ -475,15 +476,22 @@ class GUI():
         """
         pass
 
-    def run_button_dialogue(self):
-        default_output_file_name = self.get_input_file_name().split(".")[
-                                       0] + ".fss"
-        output_file_path = self.save_file_diaglogue(
-            file_types=[('fss', '*.fss')],
-            default_extension='.fss',
-            initial_file_name=default_output_file_name,
-            title="Save Output File To...")
-        return output_file_path
+    @gui_only
+    def run_button_dialogue(self) -> Tuple[str, str]:
+        input_file_path = self.pages[INPUT_PAGE_NAME].get_data_file_path()
+        input_file_name = os.path.basename(input_file_path)
+        input_file_dir = os.path.dirname(input_file_path)
+        
+        # Create default output filename in same directory
+        default_output_name = os.path.splitext(input_file_name)[0] + ".fss"
+        default_output_file = os.path.join(input_file_dir, default_output_name)
+        
+        result = RunWindow.show_dialog(self.root, default_output_file=default_output_file)
+        if result:
+            job_name, output_file_path = result
+            self.job_name = job_name
+            return output_file_path, job_name
+        return None
 
     def save_session_dialogue(self, data_file_name=""):
         file_name = filedialog.asksaveasfilename(filetypes=[('FSSA Memory '

@@ -7,22 +7,53 @@ from lib.utils import rreal_size, get_resource, real_size
 from lib.components.form import NavigationButton
 from tkinter import messagebox
 import re
+from lib.pages.data_page import DataPage  # Add this import at the top
+import logging
+from typing import Tuple, List, Set
 
 
 class RecodeWindow(Window):
     SAVED_VALUES = dict(
         RECODED_VARS=set()  # Track variables with applied recoding
     )
+    _instance = None  # Add class variable to track instance
+
+    def __new__(cls, parent, **kwargs):
+        # If an instance exists and is valid, return it
+        if cls._instance is not None and cls._instance.winfo_exists():
+            cls._instance.focus_force()
+            cls._instance.lift()
+            return cls._instance
+        
+        # Create new instance if none exists
+        return super().__new__(cls)
 
     def __init__(self, parent, **kwargs):
-        super().__init__(**kwargs, geometry=f"{rreal_size(600)}x"
-                                            f"{rreal_size(570)}")
-        self.parent = parent
-        self.title("Recode Variables")
-        self.iconbitmap(get_resource("icon.ico"))
-        self.center_window()
-        self.create_widgets()
-        self.old_values_tracker = []  # Track all old values for mutual exclusivity check
+        # Only initialize if this is a new instance
+        if not hasattr(self, '_initialized'):
+            super().__init__(**kwargs, geometry=f"{rreal_size(600)}x{rreal_size(570)}")
+            RecodeWindow._instance = self
+            self.parent = parent
+            self.title("Recode Variables")
+            self.iconbitmap(get_resource("icon.ico"))
+            self.center_window()
+            self.create_widgets()
+            self.old_values_tracker = []
+            self._initialized = True
+
+    def on_closing(self):
+        RecodeWindow._instance = None
+        super().on_closing()
+
+    @classmethod
+    def is_open(cls):
+        return cls._instance is not None and cls._instance.winfo_exists()
+
+    @classmethod
+    def reset(cls):
+        cls._instance = None
+        cls.reset_default()
+
     def create_widgets(self):
         # Instruction Label
         instruction_label = ttk.Label(
@@ -180,25 +211,21 @@ class RecodeWindow(Window):
             return
 
         if not self.validate_old_values(old_values):
-            messagebox.showwarning("Invalid Input", "Old values must be a "
-                                                    "comma-separated list of numbers or ranges.")
+            messagebox.showwarning("Invalid Input", "Old values must be a comma-separated list of numbers or ranges.")
             return
 
         # Validate old values and exclusivity
         if not self.check_exclusivity(old_values):
-            messagebox.showwarning("Invalid Input",
-                                   "Old values may appear only once.")
+            messagebox.showwarning("Invalid Input", "Old values may appear only once.")
             return
 
         # Validate new value
         if not self.validate_new_value(new_value):
-            messagebox.showwarning("Invalid Input",
-                                   "New value must be a number between 0 and 99.")
+            messagebox.showwarning("Invalid Input", "New value must be a number between 0 and 99.")
             return
 
-        # Add new pair to treeview and tracker
+        # Add new pair to treeview
         self.pair_tree.insert('', 'end', values=(old_values, new_value))
-        self.old_values_tracker.append(old_values)
         self.old_values_entry.delete(0, 'end')
         self.new_value_entry.delete(0, 'end')
 
@@ -211,11 +238,15 @@ class RecodeWindow(Window):
             re.match(r'^\s*(\d+(-\d+)?)(\s*,\s*\d+(-\d+)?)*\s*$', var_index))
 
     def check_exclusivity(self, old_values):
-        current_ranges = self.parse_ranges(old_values)
-        for existing_range in map(self.parse_ranges, self.old_values_tracker):
-            if set(current_ranges) & set(existing_range):
-                return False
-        return True
+        # Get current values from treeview instead of tracker
+        existing_values = set()
+        for item in self.pair_tree.get_children():
+            old_vals = str(self.pair_tree.item(item)['values'][0])
+            existing_values.update(self.parse_ranges(old_vals))
+        
+        # Check if new values overlap with existing ones
+        current_ranges = set(self.parse_ranges(old_values))
+        return not (current_ranges & existing_values)
 
     def validate_new_value(self, new_value):
         try:
@@ -234,26 +265,108 @@ class RecodeWindow(Window):
                 ranges.append(int(part))
         return ranges
 
+    def validate_recoding_request(self) -> Tuple[bool, str, List[int]]:
+        """
+        Validates the recoding request and returns validation status, error message, and parsed indices
+        Returns:
+            Tuple[bool, str, List[int]]: (is_valid, error_message, parsed_indices)
+        """
+        var_indices = self.var_index_entry.get().strip()
+        
+        # Validate input format
+        if not var_indices or not self.validate_variable_index(var_indices):
+            return False, "Please enter valid variable indices.", []
+
+        try:
+            # Get DataPage and validate data availability
+            data_page = next(page for page in self.parent.pages.values() 
+                           if isinstance(page, DataPage))
+            
+            if not hasattr(data_page, 'data') or data_page.data is None:
+                return False, "No data available for recoding.", []
+            
+            max_var_index = len(data_page.data.columns)
+            logging.debug(f"Found {max_var_index} variables in data")
+
+        except (StopIteration, AttributeError) as e:
+            logging.error(f"Error accessing data page: {str(e)}")
+            return False, "Cannot access data. Please ensure data is loaded.", []
+
+        # Parse and validate indices
+        try:
+            indices = self.parse_ranges(var_indices)
+            out_of_range = [idx for idx in indices if idx > max_var_index or idx < 1]
+            
+            if out_of_range:
+                error_msg = (f"Variable indices {', '.join(map(str, out_of_range))} "
+                           f"are out of range.\nAvailable variables are 1-{max_var_index}.")
+                return False, error_msg, []
+
+            # Check for already recoded variables
+            already_recoded = [idx for idx in indices if idx in self.SAVED_VALUES['RECODED_VARS']]
+            if already_recoded:
+                error_msg = (f"Variable(s) {', '.join(map(str, already_recoded))} already recoded. "
+                           "To recode again, please press 'Cancel' and 'Previous'")
+                return False, error_msg, []
+
+            logging.debug(f"Validated indices for recoding: {indices}")
+            return True, "", list(indices)
+
+        except ValueError as e:
+            logging.error(f"Error parsing indices: {str(e)}")
+            return False, "Please enter valid variable indices.", []
+
+    def parse_ranges(self, value_range: str) -> Set[int]:
+        """
+        Parse a string of ranges into a set of integers
+        Args:
+            value_range: String containing ranges (e.g., "1-3,5,7-9")
+        Returns:
+            Set of integers
+        """
+        try:
+            ranges = []
+            for part in value_range.split(','):
+                part = part.strip()
+                if '-' in part:
+                    start, end = map(int, part.split('-'))
+                    if start > end:
+                        raise ValueError(f"Invalid range: {start}-{end}")
+                    ranges.extend(range(start, end + 1))
+                else:
+                    ranges.append(int(part))
+            return set(ranges)
+        except ValueError as e:
+            logging.error(f"Error parsing range '{value_range}': {str(e)}")
+            raise
 
     def apply_recoding(self):
-        var_indices = self.var_index_entry.get().strip()
-        if not var_indices or not self.validate_variable_index(var_indices):
-            messagebox.showerror("Recoding Error",
-                                 "Please enter valid variable indices.")
+        """Apply recoding with validation and error handling"""
+        logging.debug("Starting recoding application")
+        
+        is_valid, error_msg, indices = self.validate_recoding_request()
+        
+        if not is_valid:
+            messagebox.showerror("Recoding Error", error_msg)
             return
 
-        for idx in self.parse_ranges(var_indices):
-            if idx in self.SAVED_VALUES['RECODED_VARS']:
-                messagebox.showerror("Recoding Error",
-                                     f"Variable {idx} has already been "
-                                     f"recoded. To recode this variable "
-                                     f"again, please press 'Cancel' and "
-                                     f"'Previous'")
-                return
-            self.SAVED_VALUES['RECODED_VARS'].add(idx)
-        self._apply_recoding_func()
-        self.destroy()
-        self.parent.show_recode_msg()
+        try:
+            # Add validated indices to saved values
+            self.SAVED_VALUES['RECODED_VARS'].update(indices)
+            
+            # Apply the recoding
+            self._apply_recoding_func()
+            self.destroy()
+            self.parent.show_recode_msg()
+            
+            logging.info(f"Successfully applied recoding for indices: {indices}")
+            
+        except Exception as e:
+            logging.error(f"Error during recoding application: {str(e)}")
+            messagebox.showerror(
+                "Recoding Error",
+                f"An error occurred while applying recoding: {str(e)}"
+            )
 
     def _apply_recoding_func(self):
         """
@@ -268,6 +381,13 @@ class RecodeWindow(Window):
         selected_items = self.pair_tree.selection()
         for item in selected_items:
             self.pair_tree.delete(item)
+
+    def _sync_tracker(self):
+        """Synchronize the old_values_tracker with current treeview items"""
+        self.old_values_tracker = []
+        for item in self.pair_tree.get_children():
+            old_values = str(self.pair_tree.item(item)['values'][0])
+            self.old_values_tracker.append(old_values)
 
     #######
     # API #

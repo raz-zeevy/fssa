@@ -6,7 +6,7 @@ from lib.components.form import NavigationButton, DataButton
 import matplotlib
 from lib.components.window import Window
 from lib.components.shapes import Line, Circle, DivideAxis
-from lib.utils import get_resource, rreal_size
+from lib.utils import get_resource, real_size, rreal_size
 
 G_COLOR = '#a4aab3'
 DPI_SAVE = 300
@@ -95,7 +95,7 @@ class DiagramWindow(Window):
         self.legend_canvas = tk.Canvas(self.main_frame,
                                        borderwidth=BORDER_WIDTH,
                                        background="red",
-                                       width=175)
+                                       width=real_size(175))
         self.diagram_labels_frame = ttk.Frame(self.legend_canvas,
                                               borderwidth=BORDER_WIDTH,
                                               relief="solid", )
@@ -168,16 +168,16 @@ class DiagramWindow(Window):
             self.diagram_labels_frame.pack(side=tk.RIGHT,
                                            expand=True,
                                            fill=tk.BOTH,
-                                           padx=(0, 10))
+                                           padx=real_size((0, 10)))
         self.diagram_labels_frame.config(
-            width=40)
+            width=real_size(40))
         self.plot_legend(self.graph_data_lst[i])
 
     def plot_legend(self, graph_data):
         diagram_title_frame = ttk.Frame(self.diagram_labels_frame,
                                         borderwidth=BORDER_WIDTH)
         diagram_title_frame.pack(side=tk.TOP, fill=tk.X, expand=False,
-                                 pady=(10, 0))
+                                 pady=real_size((10, 0)))
         diagram_label = ttk.Label(diagram_title_frame,
                                   text=graph_data["title"],
                                   font='Helvetica 11 bold')
@@ -188,7 +188,7 @@ class DiagramWindow(Window):
         # be done in a loop and serve like a legend for the diagram
         legend_items_frame = ttk.Frame(self.diagram_labels_frame, )
         legend_items_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True,
-                                pady=(5, 0))
+                                pady=real_size((5, 0)))
         for item in graph_data["legend"]:
             space = "     " if item["index"] < 10 else "   "
             label = ttk.Label(legend_items_frame,
@@ -241,7 +241,7 @@ class DiagramWindow(Window):
         y = graph_data["y"]
         z = graph_data["annotations"]
         # create a figure and axis
-        self.figure = Figure(figsize=(4, 4), dpi=100)
+        self.figure = Figure(figsize=real_size((4, 4)), dpi=100)
         figure_canvas = FigureCanvasTkAgg(self.figure,
                                           self.diagram_frame)
         axes = self.figure.add_subplot()
@@ -280,10 +280,10 @@ class DiagramWindow(Window):
         frame_navigation = ttk.Frame(self)
         # pack the navigation at the bottom of the screen but above the help
         # bar
-        frame_navigation.pack(side=ttk.BOTTOM, fill='x', padx=10,
-                              pady=(0, 40))
+        frame_navigation.pack(side=ttk.BOTTOM, fill='x', padx=real_size(10),
+                              pady=real_size((0, 40)))
         center_frame = ttk.Frame(frame_navigation)
-        center_frame.pack(pady=5, expand=False)
+        center_frame.pack(pady=real_size(5), expand=False)
         self.button_previous = NavigationButton(center_frame,
                                                 text="Previous",
                                                 command=self.previous_graph, )
@@ -298,5 +298,11 @@ class DiagramWindow(Window):
         self.button_exit = NavigationButton(center_frame, text="Exit",
                                             bootstyle='secondary',
                                             command=self.exit, )
-        self.button_exit.pack(side=ttk.LEFT, padx=20)
+        self.button_exit.pack(side=ttk.LEFT, padx=real_size(20))
 
+if __name__ == "__main__":
+    root = ttk.Window(themename="sandstone")
+    root.title("Diagram Window Test")
+    dummy_data = [{"x": [1, 2, 3, 4, 5], "y": [1, 2, 3, 4, 5], "annotations": ["A", "B", "C", "D", "E"], "title": "Test Diagram", "legend": [{"index": 1, "value": "A"}, {"index": 2, "value": "B"}, {"index": 3, "value": "C"}, {"index": 4, "value": "D"}, {"index": 5, "value": "E"}]}]
+    window = DiagramWindow(root, dummy_data, "Test Diagram")
+    root.mainloop() 

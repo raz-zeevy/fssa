@@ -1,5 +1,6 @@
 # app.py
 from lib.controller.controller import Controller
+from lib.version import __version__
 
 def main():
     controller = Controller()
