@@ -13,3 +13,6 @@ lib/scripts/run_files
 lib/scripts/simaple_example
 **/__pycache__/
 
+.vscode/launch.json
+lib/__pycache__/utils.cpython-38.pyc
+lib/scripts/fssa-21/FCA212.SCR
