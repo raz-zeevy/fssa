@@ -10,6 +10,10 @@ on:
       - 'releases/website/**'
   workflow_dispatch:  # Allows manual trigger from GitHub UI
 
+permissions:
+  contents: write
+  issues: write    # For creating issues on failure
+
 jobs:
   update-website:
     runs-on: windows-latest
@@ -70,5 +74,6 @@ jobs:
         git config --local user.name "GitHub Action"
         git add releases/website/index.html
         git commit -m "Update website with current version and date"
+        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
         git push
       shell: pwsh
