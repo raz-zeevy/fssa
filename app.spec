@@ -9,7 +9,6 @@ a = Analysis(['app.py'],
              datas=[('lib/assets', 'lib/assets'), ('lib/assets/toolbar', 'lib/assets/toolbar'),
 			 ('lib/scripts/fssa-21/*','lib/scripts/fssa-21/'),
 			 ('README.txt', '.'),
-            ('.env', '.')  # Include .env file in the root of the bundle
 			 ],
              hiddenimports=[],
              hookspath=[],

@@ -236,6 +236,7 @@ def run_matrix_fortran(output_path: str):
             raise Exception(f"FSSA script failed : {result.stderr}")
         print("Output:", result.stdout)
         print("Error:", result.stderr)
+        
 def run_fortran(corr_type,
                 output_path,
                 create_simplified_matrix_file="NUL"):
@@ -335,6 +336,8 @@ def run_fortran(corr_type,
                                                    'Cannot write to file opened for READ':
                     exception = result.stderr.split('\n')[2]
                     raise Exception(exception)
+                else:
+                    raise Exception(f"FSSA script failed : {result.stderr}")
             else:
                 raise Exception(f"FSSA script failed : {result.stderr}")
         else:

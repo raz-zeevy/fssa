@@ -1,10 +1,14 @@
 @echo off
+setlocal EnableExtensions EnableDelayedExpansion
 cd ../
-:: Load the version from the .env file
-for /f "tokens=2 delims==" %%A in ('findstr APP_VERSION .env') do set APP_VERSION=%%A
+
+:: Enable immediate exit on error (like set -e in bash)
+set "ErrorActionPreference=Stop"
+
+:: Load the version from version.py using Python
+for /f "tokens=*" %%i in ('venv37\Scripts\python.exe -c "from lib.version import __version__; print(__version__)"') do set APP_VERSION=%%i
 
 :: Ensure that APP_VERSION has 4 components (e.g., 1.1.6.0)
-setlocal enabledelayedexpansion
 set dot_count=0
 for /l %%i in (1,1,255) do (
     if "!APP_VERSION:~%%i,1!"=="" goto check_done
@@ -23,7 +27,7 @@ call venv37\Scripts\activate
 :: Run PyInstaller with the version passed to the .spec file
 venv37\Scripts\python.exe -m PyInstaller app.spec --noconfirm
 
-:: Load the version from the .env file
+:: Load the version from version.py
 echo Version format to be used in Inno Setup: %APP_VERSION%
 
 :: Create a temporary .iss file with AppVersion and VersionInfoVersion replaced
@@ -40,6 +44,7 @@ echo Version format to be used in Inno Setup: %APP_VERSION%
 
 :: Run Inno Setup with the temporary file
 "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" setup_temp.iss
+
 del setup_temp.iss
 
 
