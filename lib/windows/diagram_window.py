@@ -5,7 +5,7 @@ from tkinter import filedialog
 from lib.components.form import NavigationButton, DataButton
 import matplotlib
 from lib.components.window import Window
-from lib.components.shapes import Line, Circle, DivideAxis
+from lib.components.shapes import Line, Circle, DivideAxis, VerticalLine
 from lib.utils import get_resource, real_size, rreal_size
 
 G_COLOR = '#a4aab3'
@@ -28,8 +28,7 @@ class DiagramWindow(Window):
         should contain "x", "y", "annotations", "title", "legend",
          "captions", "geom" keys
         """
-        super().__init__(**kwargs, geometry=f"{rreal_size(900)}x"
-                                            f"{rreal_size(700)}")
+        super().__init__(**kwargs, geometry=f"{rreal_size(900)}x{rreal_size(700)}")
         self.title(title)
         # self.iconbitmap(get_resource("icon.ico"))
         # sets the geometry of toplevel
@@ -47,7 +46,7 @@ class DiagramWindow(Window):
         self.bind("<BackSpace>", lambda x: self.previous_graph())
         self.bind("<Left>", lambda x: self.previous_graph())
         self.bind("<Escape>", lambda x: self.exit())
-
+        self.resizable(True, True)
     def create_menu(self):
         # create a file menu with save figure command to save the current graph
         self.menu = tk.Menu(self)
@@ -85,7 +84,7 @@ class DiagramWindow(Window):
             # I don't use the self.get_name because it would cause that
             # some figures would not be saved
             path = os.path.join(dir, "figure_" + str(i + 1) + ".png")
-            self.figure.set_size_inches(5, 5)
+            self.figure.set_size_inches(real_size(5), real_size(5))
             self.figure.savefig(path, dpi=DPI_SAVE)
             self.next_graph()
         self.index = current_page
@@ -95,7 +94,7 @@ class DiagramWindow(Window):
         self.legend_canvas = tk.Canvas(self.main_frame,
                                        borderwidth=BORDER_WIDTH,
                                        background="red",
-                                       width=real_size(175))
+                                       width=rreal_size(175))
         self.diagram_labels_frame = ttk.Frame(self.legend_canvas,
                                               borderwidth=BORDER_WIDTH,
                                               relief="solid", )
@@ -170,7 +169,7 @@ class DiagramWindow(Window):
                                            fill=tk.BOTH,
                                            padx=real_size((0, 10)))
         self.diagram_labels_frame.config(
-            width=real_size(40))
+            width=rreal_size(40))
         self.plot_legend(self.graph_data_lst[i])
 
     def plot_legend(self, graph_data):
@@ -180,7 +179,7 @@ class DiagramWindow(Window):
                                  pady=real_size((10, 0)))
         diagram_label = ttk.Label(diagram_title_frame,
                                   text=graph_data["title"],
-                                  font='Helvetica 11 bold')
+                                  font=f'Helvetica {rreal_size(11)} bold')
         diagram_label.pack(side=tk.TOP,
                            expand=True,
                            fill='x')
@@ -194,7 +193,7 @@ class DiagramWindow(Window):
             label = ttk.Label(legend_items_frame,
                               text=f'{item["index"]}{space}{item["value"]}',
                               borderwidth=BORDER_WIDTH,
-                              font='Helvetica 11',
+                              font=f'Helvetica {rreal_size(11)}',
                               relief="solid", )
             label.pack(side=tk.TOP, fill=tk.BOTH)
 
@@ -234,6 +233,8 @@ class DiagramWindow(Window):
                     add_circle(axes, geom)
                 elif isinstance(geom, DivideAxis):
                     add_divide_axis(axes, geom)
+                elif isinstance(geom, VerticalLine):
+                    add_line(x, axes, geom)
                 else:
                     raise ValueError(f"Unknown geometry type: {type(geom)}")
 
@@ -253,7 +254,7 @@ class DiagramWindow(Window):
             caption = graph_data["caption"]
         # set the title text to be smaller
         axes.text(0, -0.1, caption, ha='left', va='top',
-                  transform=axes.transAxes, fontsize=8)
+                  transform=axes.transAxes, fontsize=rreal_size(8))
         self.figure.subplots_adjust(left=0.1,
                                     right=0.85,
                                     top=0.95,
@@ -263,7 +264,7 @@ class DiagramWindow(Window):
         for i, txt in enumerate(z):
             axes.annotate(txt, (x[i], y[i] - annot_offset),
                           ha='center',
-                          fontsize=9)
+                          fontsize=rreal_size(9))
         # add geom
         add_geoms(x, axes, graph_data)
         # Adjust the plot limits to make sure it fits
@@ -287,14 +288,14 @@ class DiagramWindow(Window):
         self.button_previous = NavigationButton(center_frame,
                                                 text="Previous",
                                                 command=self.previous_graph, )
-        self.button_previous.pack(side=ttk.LEFT, padx=20)
+        self.button_previous.pack(side=ttk.LEFT, padx=real_size(20))
         self.button_next = NavigationButton(center_frame, text="Next",
                                             command=self.next_graph, )
-        self.button_next.pack(side=ttk.LEFT, padx=20, )
+        self.button_next.pack(side=ttk.LEFT, padx=real_size(20))
         self.button_save_figure = NavigationButton(center_frame,
                                                     text="Save Figure",
                                                     command=self.save_figure, )
-        self.button_save_figure.pack(side=ttk.LEFT, padx=20)
+        self.button_save_figure.pack(side=ttk.LEFT, padx=real_size(20))
         self.button_exit = NavigationButton(center_frame, text="Exit",
                                             bootstyle='secondary',
                                             command=self.exit, )

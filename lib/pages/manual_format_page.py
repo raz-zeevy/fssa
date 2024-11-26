@@ -116,7 +116,10 @@ class ManualFormatPage(ttk.Frame):
         self.button_select = DataButton(self.frame_data_buttons, text="Select "
                                                                  "Vars.",
                                         command=self.select_variables_window)
-        ToolTip(self.button_select, msg="You can cancel the selection by "
+        ToolTip(self.button_select, msg="Press here if you want to select "
+                                        "a subset of variables for the "
+                                        "current run\nYou "
+                                        "can cancel the selection by "
                                         "clicking\non the 'Reload Vars.' "
                                         "button",
                 delay=TOOL_TIP_DELAY)

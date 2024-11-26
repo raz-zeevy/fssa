@@ -40,6 +40,8 @@ class RecodeWindow(Window):
             self.create_widgets()
             self.old_values_tracker = []
             self._initialized = True
+            self.resizable(True, True)
+
 
     def on_closing(self):
         RecodeWindow._instance = None

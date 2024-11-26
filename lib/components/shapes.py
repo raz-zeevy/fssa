@@ -12,9 +12,16 @@ class ShapeFactory:
     def shape_from_dict(shape_dict):
         shape_type = shape_dict["shape"]
         if shape_type == "LINE":
-            slope = -(shape_dict['x'] / shape_dict['y'])
-            intercept = shape_dict['n'] / shape_dict['y']
-            return Line(slope=slope, intercept=intercept)
+            if shape_dict['y'] == 0:  # Handle vertical line
+                if shape_dict['x'] == 0:
+                    raise ValueError("Invalid parameters for a vertical line: x and y cannot both be zero.")
+                slope = None  # Undefined slope for vertical line
+                intercept = shape_dict['n'] / shape_dict['x']  # This represents the x-coordinate of the vertical line
+                return VerticalLine(intercept=intercept)
+            else:
+                slope = -(shape_dict['x'] / shape_dict['y'])
+                intercept = shape_dict['n'] / shape_dict['y']
+                return Line(slope=slope, intercept=intercept)
         elif shape_type == "CIRCLE":
             return Circle(center=shape_dict['center'],
                           radius = shape_dict['radius'])
@@ -39,6 +46,15 @@ class Line(Shape):
         y_values = self.slope * x_values + self.intercept
         return x_values, y_values
 
+class VerticalLine(Shape):
+    def __init__(self, intercept):
+        self.intercept = intercept  # This is the x-coordinate of the vertical line
+
+    def get_points(self, start, end) -> Tuple[np.array, np.array]:
+        # Vertical line: x is constant, y spans the range
+        x_values = np.full(1000, self.intercept)  # x is constant
+        y_values = np.linspace(start, end, 1000)  # y spans the range
+        return x_values, y_values
 
 class Circle(Shape):
     def __init__(self, center, radius):

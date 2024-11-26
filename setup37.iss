@@ -13,7 +13,7 @@
 #define SessionIcon "C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\lib\assets\session_icon.ico"
 
 [Setup]
-AppId={{A5033936-6373-4BCB-AE0E-231D3E51F327}
+AppId={A5033936-6373-4BCB-AE0E-231D3E51F327}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 VersionInfoVersion={#MyAppVersion}

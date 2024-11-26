@@ -30,8 +30,8 @@ jobs:
           # Get current date in desired format
           $current_date = Get-Date -Format "yyyy-MM-dd"
           
-          # Read current version from version.py
-          $version = Get-Content lib/version.py | Select-String -Pattern "__version__ = ""([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)""" | ForEach-Object { $_.Matches.Groups[1].Value }
+          # Read current version from version.py and trim to 3 digits
+          $version = Get-Content lib/version.py | Select-String -Pattern "__version__ = ""([0-9]+\.[0-9]+\.[0-9]+)\.[0-9]+""" | ForEach-Object { $_.Matches.Groups[1].Value }
           if (-not $version) {
               throw "Could not read version from version.py"
           }
