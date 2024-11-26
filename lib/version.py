@@ -4,4 +4,4 @@
 # PATCH: Bug fixes, backwards compatible
 
 # Version moved from .env file
-__version__ = "1.0.1.0"  # Use your current version from .env
+__version__ = "1.0.2.0"  # Incrementing minor version for testing
