@@ -1,0 +1,150 @@
+# Name of the workflow as it will appear in GitHub Actions UI
+name: Build and Release
+
+# Defines when this workflow will run
+on:
+  push:
+    branches: [ main ]  # Triggers only when pushing to main branch
+    # You could also add:
+    # tags: [ 'v*' ]  # Triggers on version tags
+    # paths: [ 'src/**' ]  # Triggers only when specific files change
+
+# A workflow can have multiple jobs that run in parallel by default
+jobs:
+  # Name of this specific job
+  build-and-release:
+    # Specifies the type of runner (machine) to run the job on
+    # windows-latest is needed for Windows-specific builds and testing
+    runs-on: windows-latest
+    
+    # Sequential steps that make up the job
+    steps:
+    # Checks out your repository code to the runner
+    - uses: actions/checkout@v2  # Official GitHub action for checking out code
+      with:
+        fetch-depth: 0  # Fetches all history for all branches and tags
+    
+    # Sets up Python environment on the runner
+    - name: Set up Python
+      uses: actions/setup-python@v2  # Official GitHub action for Python setup
+      with:
+        python-version: '3.7'  # Specifies Python version to use
+    
+    # Installs required Python packages
+    - name: Install dependencies
+      run: |  # Pipe character allows multiple commands
+        python -m pip install --upgrade pip  # Updates pip
+        pip install -r requirements.txt  # Installs project dependencies
+    
+    # Reads and updates version number
+    - name: Bump version
+      id: bump_version  # ID to reference this step later
+      run: |
+        # PowerShell commands (pwsh)
+        # Reads current version from version.py using regex
+        $version = Get-Content lib/version.py | Select-String -Pattern "__version__ = ""([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)""" | ForEach-Object { $_.Matches.Groups[1].Value }
+        $major, $minor, $patch, $revision = $version.Split('.')
+        
+        # Increments minor version number
+        $new_minor = [int]$minor + 1
+        $new_version = "$major.$new_minor.0.0"
+        
+        # Updates version.py with new version
+        $content = Get-Content lib/version.py
+        $content = $content -replace "__version__ = ""$version""", "__version__ = ""$new_version"""
+        Set-Content lib/version.py $content
+        
+        # Makes new version available to other steps
+        echo "::set-output name=new_version::$new_version"
+      shell: pwsh  # Specifies PowerShell as the shell to use
+    
+    # After the Bump version step and before creating the release
+    - name: Update Website Version
+      run: |
+        # Get current date in desired format
+        $current_date = Get-Date -Format "yyyy-MM-dd"
+        
+        # Read the HTML file
+        $html_path = "releases/website/index.html"
+        $content = Get-Content $html_path -Raw
+        
+        # Replace version and date placeholders
+        $content = $content -replace "v__VERSION__", "v${{ steps.bump_version.outputs.new_version }}"
+        $content = $content -replace "__DATE__", "$current_date"
+        
+        # Write updated content back to file
+        Set-Content $html_path $content -NoNewline
+        
+        # Add website changes to commit
+        git add $html_path
+      shell: pwsh
+    
+    # Runs your build script
+    - name: Run build script
+      run: |
+        cd scripts
+        .\build37.bat
+      env:  # Sets environment variables for the step
+        APP_VERSION: ${{ steps.bump_version.outputs.new_version }}  # Uses version from previous step
+    
+    # Gets commit messages
+    - name: Get Commit Messages
+      id: get_commits
+      run: |
+        $messages = git log --pretty=format:"%s" $(git describe --tags --abbrev=0)..HEAD
+        $messages = $messages -join "`n"
+        $messages = $messages -replace '"','\"'
+        echo "::set-output name=messages::$messages"
+      shell: pwsh
+    
+    # Creates a new GitHub release
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1  # Official GitHub action for creating releases
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Automatic GitHub token for authentication
+      with:
+        tag_name: v${{ steps.bump_version.outputs.new_version }}
+        release_name: Release v${{ steps.bump_version.outputs.new_version }}
+        body: |
+          Changes in this release:
+          ${{ steps.get_commits.outputs.messages }}
+        draft: false  # Creates as a published release, not a draft
+        prerelease: false  # Marks as full release, not prerelease
+    
+    # Copies the installer to the release assets
+    - name: Copy Installer to Release Assets
+      run: |
+        Copy-Item "releases/FssaSetup.exe" -Destination "FSSA_Setup_v${{ steps.bump_version.outputs.new_version }}.exe"
+      shell: pwsh
+    
+    # Uploads the built installer to the release
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1  # Official GitHub action for uploading release assets
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        # URL comes from the create_release step
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        # Path to the file to upload
+        asset_path: ./FSSA_Setup_v${{ steps.bump_version.outputs.new_version }}.exe
+        # Name of the file in the release
+        asset_name: FSSA_Setup_v${{ steps.bump_version.outputs.new_version }}.exe
+        # MIME type of the file
+        asset_content_type: application/vnd.microsoft.portable-executable
+    
+    # Commits the version bump back to the repository
+    - name: Commit version bump
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add lib/version.py releases/website/index.html
+        git commit -m "Bump version to ${{ steps.bump_version.outputs.new_version }} and update website"
+        git push
+
+# Additional features you might want to add:
+# - conditions: if: ${{ success() }} to run steps only if previous steps succeeded
+# - matrix builds: to test on multiple Python versions or OS platforms
+# - caching: to speed up dependency installation
+# - environment secrets: for sensitive data
+# - workflow dispatch: to run manually from GitHub UI
