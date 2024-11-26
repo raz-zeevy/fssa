@@ -7,7 +7,7 @@ on:
     branches: [ main ]
     paths:
       - 'lib/version.py'
-      - 'releases/website/**'
+      - 'docs/**'
   workflow_dispatch:  # Allows manual trigger from GitHub UI
 
 permissions:
@@ -36,8 +36,8 @@ jobs:
               throw "Could not read version from version.py"
           }
           
-          # Read the HTML file
-          $html_path = "releases/website/index.html"
+          # Read the HTML file with new path
+          $html_path = "docs/index.html"
           $content = Get-Content $html_path -Raw
           
           # Replace version and date placeholders
@@ -72,7 +72,7 @@ jobs:
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git add releases/website/index.html
+        git add docs/index.html
         git commit -m "Update website with current version and date"
         git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
         git push
