@@ -2,6 +2,7 @@
 import unittest  # Python's built-in testing framework
 import logging   # For handling log messages during tests
 from lib.windows.recoding_window import RecodeWindow  # The class we're testing
+from lib.windows.recoding_window import RecodingOperation  # The model we're testing
 
 class TestRecodeWindow(unittest.TestCase):  # Create a test class that inherits from unittest.TestCase
     def setUp(self):
@@ -53,6 +54,27 @@ class TestRecodeWindow(unittest.TestCase):  # Create a test class that inherits 
                 # assertRaises checks that the specified exception is raised
                 with self.assertRaises(ValueError):
                     self.window.parse_ranges(invalid_input)
+
+    def test_recoding_history(self):
+        """Test that recoding operations are properly saved to history"""
+        # Create a mock recoding operation
+        self.window.set_variables_indices("1,2,3")
+        self.window.add_pair("1-5", "9")
+        self.window.set_inverse(False)
+        
+        # Get the details and create operation
+        details = self.window.get_recoding_details()
+        operation = RecodingOperation.from_recoding_details(details)
+        
+        # Add to history
+        RecodeWindow.SAVED_VALUES['RECODING_HISTORY'].append(operation)
+        
+        # Verify the operation was saved correctly
+        saved_op = RecodeWindow.SAVED_VALUES['RECODING_HISTORY'][0]
+        self.assertEqual(saved_op.variables, "1,2,3")
+        self.assertEqual(saved_op.old_values, "1-5")
+        self.assertEqual(saved_op.new_value, "9")
+        self.assertEqual(saved_op.invert, False)
 
 # This allows running the tests directly from this file
 if __name__ == '__main__':

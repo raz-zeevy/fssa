@@ -56,6 +56,9 @@ class simple_example_gui(Controller):
         self.gui.recode_window.set_variables_indices("1-8")
         self.gui.recode_window.set_inverse(True)
         self.gui.recode_window.apply_recoding()
+        self.gui.show_recode_history_window()
+        # close the recoding history window
+        self.gui.recode_history_window.destroy()
         self.next_page()
         self.next_page()
         try:

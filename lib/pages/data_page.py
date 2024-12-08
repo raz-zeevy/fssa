@@ -16,6 +16,7 @@ from tktooltip import ToolTip
 class DataPage(ttk.Frame):
     def __init__(self, parent):
         ttk.Frame.__init__(self, parent.root)
+        self.parent = parent
         self.colors = parent.root.style.colors
         self.create_data_buttons()
         self.vars_i = None
@@ -61,17 +62,6 @@ class DataPage(ttk.Frame):
 
     def on_double_click(self, event):
         return
-        region = self.data_table.view.identify("region", event.x, event.y)
-        column = self.data_table.view.identify_column(event.x)
-        if region == "heading":
-            # Editing a column name
-            col_id = int(column.replace('#', '')) - 1
-            old_col_name = self.get_var_label(col_id)
-            new_col_name = askstring("Edit Variable Label",
-                                     "Edit the variable label:",
-                                     initialvalue=old_col_name)
-            if new_col_name is not None:
-                self.set_var_label(col_id, new_col_name)
 
     def create_data_buttons(self):
         # Data Buttons Frame
@@ -79,21 +69,12 @@ class DataPage(ttk.Frame):
         # Pack the frame for data buttons at the bottom of the screen
         frame_data_buttons.pack(side=tk.BOTTOM, fill='x', padx=rreal_size(15),
                                 pady=rreal_size(10))
-        # Data Buttons
-        self.button_reload = DataButton(frame_data_buttons, text="Reload "
-                                                                 "Input",
-                                        width=11)
-        # self.button_reload.pack(side=tk.LEFT, padx=5)
-        self.button_select = DataButton(frame_data_buttons, text="Select "
-                                                                 "Vars.",
-                                        command=self.select_variables,
-                                        bootstyle="secondary")
-        # self.button_select.pack(side=tk.RIGHT, padx=5)
-        ToolTip(self.button_select, msg="You can return to the previous page "
-                                        "in\norder to cancel the selection",
-                delay=TOOL_TIP_DELAY)
-        self.button_recode = DataButton(frame_data_buttons, text="Recode "
-                                                                 "Vars.",
+        
+        # Left side buttons
+        left_buttons_frame = ttk.Frame(frame_data_buttons)
+        left_buttons_frame.pack(side=tk.LEFT)
+        
+        self.button_recode = DataButton(left_buttons_frame, text="Recode Vars.",
                                         command=self.select_variables,
                                         width=11)
         self.button_recode.pack(side=tk.LEFT, padx=5)
@@ -101,8 +82,20 @@ class DataPage(ttk.Frame):
                                         "be\nrecoded differently. If no "
                                         "recoding is\nnecessary press \"Next\"",
                 delay=TOOL_TIP_DELAY)
-        self.button_save = DataButton(frame_data_buttons, text="Save Active "
-                                                               "Data To..",
+
+        # Add the new View Present Recoding button
+        self.button_recode_history = DataButton(left_buttons_frame, 
+                                              text="View Present Recoding",
+                                              width=rreal_size(20),
+                                              bootstyle="secondary",
+                                              command=self.parent.show_recode_history_window)
+        self.button_recode_history.pack(side=tk.LEFT, padx=5)
+        ToolTip(self.button_recode_history, 
+                msg="View the history of all recoding operations\napplied to the current data",
+                delay=TOOL_TIP_DELAY)
+
+        # Right side button
+        self.button_save = DataButton(frame_data_buttons, text="Save Active Data To..",
                                       width=rreal_size(18),
                                       bootstyle="secondary")
         self.button_save.pack(side=tk.RIGHT, padx=5)

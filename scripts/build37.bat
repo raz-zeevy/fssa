@@ -45,6 +45,6 @@ echo Version format to be used in Inno Setup: %APP_VERSION%
 :: Run Inno Setup with the temporary file
 "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" setup_temp.iss
 
-del setup_temp.iss
+@REM del setup_temp.iss
 
 

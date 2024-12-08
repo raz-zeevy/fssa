@@ -27,6 +27,7 @@ from tktooltip import ToolTip
 from tkinter import font as tkFont
 from lib.const import p_ICON
 from lib.windows.run_window import RunWindow
+from lib.windows.recode_history_window import RecodeHistoryWindow
 
 THEME_NAME = 'sandstone'
 
@@ -264,6 +265,8 @@ class GUI():
         self.view_menu.add_separator()
         self.view_menu.add_command(label="Input File",
                                    state="disabled")
+        self.view_menu.add_command(label="Recoding History",
+                                  command=self.show_recode_history_window)
         self.view_menu.add_separator()
         self.view_menu.add_command(label="Output File",
                                    state="disabled")
@@ -416,7 +419,7 @@ class GUI():
         self.recode_window._apply_recoding_func = lambda : recode_func(
             self.recode_window)
         self.recode_window.bind("<F1>", lambda x: self.show_help_windw())
-
+    
     @gui_only
     def show_recode_msg(self):
         """ show a msgbox asking the user if he wants to recode another
@@ -508,6 +511,11 @@ class GUI():
                                                              'File', f'*{SAVE_EXTENSION}')],
                                                title="Open FSSA Session")
         return file_name
+
+    def show_recode_history_window(self):
+        """Show window displaying history of recoding operations"""
+        self.recode_history_window = RecodeHistoryWindow(self.root)
+        self.recode_history_window.bind("<F1>", lambda x: self.show_help_windw())
 
 
 if __name__ == '__main__':

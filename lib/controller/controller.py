@@ -92,7 +92,6 @@ class Controller:
         self.facet_details = []
         self.facet_dim_details = {}
         #
-        self.gui.pages
         self.gui.pages[MANUAL_FORMAT_PAGE_NAME].create_data_table()
         self.gui.pages[MANUAL_FORMAT_PAGE_NAME].unset_limited_edit_mode()
         self.gui.pages[INPUT_PAGE_NAME].reset_entries()
@@ -234,8 +233,7 @@ class Controller:
             button_save.bind("<Button-1>",
                              lambda x: self.save_data())
         self.gui.pages[DATA_PAGE_NAME].button_recode.config(
-            command=lambda: self.gui.show_recode_window()
-        )
+            command=lambda: self.gui.show_recode_window())
         self.gui.pages[DATA_PAGE_NAME].select_variables_subset = \
         self.update_facets_var_selection
         self.gui.pages[DATA_PAGE_NAME].get_active_variables_valid_ranges = self.gui.pages[
@@ -1083,6 +1081,8 @@ class Controller:
         self.gui.diagram_window.bind("<F1>",
                                      lambda e: controller.show_help(
                                          "facet_diagrams_screen"))
+
+
 
 
 

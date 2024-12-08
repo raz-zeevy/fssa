@@ -12,9 +12,29 @@ import logging
 from typing import Tuple, List, Set
 
 
+class RecodingOperation:
+    """Stores details of a single recoding operation"""
+    def __init__(self, variables: str, old_values: str, new_value: str, invert: bool):
+        self.variables = variables
+        self.old_values = old_values 
+        self.new_value = new_value
+        self.invert = invert
+
+    @classmethod
+    def from_recoding_details(cls, details: dict):
+        """Create RecodingOperation from recoding window details"""
+        return cls(
+            variables=details['var_indices_str'],
+            old_values=', '.join(old for old, _ in details['manual']),
+            new_value=details['manual'][0][1] if details['manual'] else '',
+            invert=details['invert']
+        )
+
+
 class RecodeWindow(Window):
     SAVED_VALUES = dict(
-        RECODED_VARS=set()  # Track variables with applied recoding
+        RECODED_VARS=set(),  # Track variables with applied recoding
+        RECODING_HISTORY=[]  # List of RecodingOperation objects
     )
     _instance = None  # Add class variable to track instance
 
@@ -346,6 +366,17 @@ class RecodeWindow(Window):
         """Apply recoding with validation and error handling"""
         logging.debug("Starting recoding application")
         
+        # Check if any recoding actions were selected
+        details = self.get_recoding_details()
+        if not details['manual'] and not details['invert']:
+            messagebox.showwarning(
+                "No Recoding Action",
+                "Please select at least one recoding action:\n" +
+                "- Add value pairs for recoding, or\n" +
+                "- Select the inversion option"
+            )
+            return
+        
         is_valid, error_msg, indices = self.validate_recoding_request()
         
         if not is_valid:
@@ -357,6 +388,8 @@ class RecodeWindow(Window):
             self.SAVED_VALUES['RECODED_VARS'].update(indices)
             
             # Apply the recoding
+            operation = RecodingOperation.from_recoding_details(details)
+            self.SAVED_VALUES['RECODING_HISTORY'].append(operation)
             self._apply_recoding_func()
             self.destroy()
             self.parent.show_recode_msg()
@@ -371,10 +404,13 @@ class RecodeWindow(Window):
             )
 
     def _apply_recoding_func(self):
-        """
-        This function should be overridden by the data page
-        """
-        raise Exception("Shouldn't be called")
+        """Should be set by the GUI class"""
+        # Call the original function that was set by the controller
+        original_func = getattr(self, '_original_apply_func', None)
+        if original_func:
+            original_func()
+        else:
+            raise Exception("No recoding function set")
 
     def cancel_recoding(self):
         self.destroy()
@@ -426,7 +462,8 @@ class RecodeWindow(Window):
     @classmethod
     def reset_default(cls):
         cls.SAVED_VALUES = dict(
-            RECODED_VARS=set()
+            RECODED_VARS=set(),
+            RECODING_HISTORY=[]
         )
 
 if __name__ == "__main__":
