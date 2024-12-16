@@ -1078,9 +1078,8 @@ class Controller:
         else:
             title = "FSSA Solution Diagrams"
         self.gui.show_diagram_window(graph_data_list, title)
-        self.gui.diagram_window.bind("<F1>",
-                                     lambda e: controller.show_help(
-                                         "facet_diagrams_screen"))
+        self.gui.diagram_window.bind("<F1>", 
+            lambda e: controller.show_help("facet_diagrams_screen"))
 
 
 

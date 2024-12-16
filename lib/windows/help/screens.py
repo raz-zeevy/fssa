@@ -25,6 +25,7 @@ s_FACETS_DEFINITION_SCREEN = "facets_definition_screen"
 s_VARIABLE_DEFINITION_SCREEN = "variable_definition_screen"
 s_FACET_DIAGRAMS_SCREEN = "facet_diagrams_screen"
 s_HYPOTHESES_SCREEN = "hypotheses_screen"
+s_RECODING_SCREEN = "recoding_variables_screen"
 
 ###################################
 ############ COMMANDS #############
@@ -618,3 +619,47 @@ class ScreensGenerator():
         self.master.add_heading("Dimensions and Coefficients Screen")
         self.master.add_line_break()
         self.master.add_paragraph(DIMENSIONS_AND_COEFFICIENTS_SCREEN_p1)
+
+    def section_recoding_variables_screen(self):
+        """Description of the Recode function"""
+        self.master.add_heading("Recoding Variables", H1)
+        self.master.add_line_break()
+        
+        # Main description
+        self.master.add_paragraph(RECODING_DESCRIPTION)
+        
+        # Example 1
+        self.master.add_heading("Example 1: Grouping Values", H2)
+        self.master.add_paragraph(RECODING_EXAMPLE_1)
+        
+        # Example 2
+        self.master.add_heading("Example 2: Reversing Values", H2)
+        self.master.add_paragraph(RECODING_EXAMPLE_2)
+        
+        # Example 3
+        self.master.add_heading("Example 3: Grouping and Reversing Values", H2)
+        self.master.add_paragraph(RECODING_EXAMPLE_3)
+        
+        # Steps
+        self.master.add_heading("Steps to Recode a Variable", H2)
+        self.master.add_paragraph(RECODING_STEPS)
+        
+        # Example table
+        self.master.add_heading("Example:", H2)
+        for old_val, new_val in RECODING_EXAMPLE_TABLE:
+            self.master.add_row(old_val, right=new_val)
+        
+        # Example note
+        self.master.add_paragraph(RECODING_EXAMPLE_NOTE)
+        
+        # Reference
+        self.master.add_heading("Reference", H2)
+        self.master.add_paragraph(RECODING_REFERENCE, TEXT_SMALL)
+
+if __name__ == '__main__':
+    from lib.windows.help.help_window import HelpWindow
+    import tkinter as tk
+    
+    root = tk.Tk()
+    help_window = HelpWindow(root, "recoding_variables_screen")
+    root.mainloop()

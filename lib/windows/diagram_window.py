@@ -4,7 +4,7 @@ import tkinter as tk
 from tkinter import filedialog
 from lib.components.form import NavigationButton, DataButton
 import matplotlib
-from lib.components.window import Window
+from lib.windows.window import Window
 from lib.components.shapes import Line, Circle, DivideAxis, VerticalLine
 from lib.utils import get_resource, real_size, rreal_size
 

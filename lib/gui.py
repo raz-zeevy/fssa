@@ -418,7 +418,7 @@ class GUI():
         recode_func = self.pages[DATA_PAGE_NAME].recode_variables
         self.recode_window._apply_recoding_func = lambda : recode_func(
             self.recode_window)
-        self.recode_window.bind("<F1>", lambda x: self.show_help_windw())
+        self.recode_window.bind("<F1>", lambda x: self.show_help_windw("recoding_variables_screen"))
     
     @gui_only
     def show_recode_msg(self):
@@ -479,7 +479,6 @@ class GUI():
         """
         pass
 
-    @gui_only
     def run_button_dialogue(self) -> Tuple[str, str]:
         input_file_path = self.pages[INPUT_PAGE_NAME].get_data_file_path()
         input_file_name = os.path.basename(input_file_path)
@@ -515,7 +514,7 @@ class GUI():
     def show_recode_history_window(self):
         """Show window displaying history of recoding operations"""
         self.recode_history_window = RecodeHistoryWindow(self.root)
-        self.recode_history_window.bind("<F1>", lambda x: self.show_help_windw())
+        self.recode_history_window.bind("<F1>", lambda x: self.show_help_windw("recoding_variables_screen"))
 
 
 if __name__ == '__main__':

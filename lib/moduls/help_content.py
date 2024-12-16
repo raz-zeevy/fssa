@@ -157,3 +157,50 @@ When working with Recorded Data, you can select between Monotonicity and Pearson
 When working with a Coefficient Matrix, you can select between Similarity and Dissimilarity.Specify whether the matrix-entries represent similarity between the objects (e.g. correlation coefficients, indices of confusion, judged similarity) or dissimilarity between the objects (e.g., distance or indices of alienation).
 
 Lowest dimensionality and Highest dimensionality specify the range of dimensionalities to be tested. Dimensionalities may be between 2 and 10 with the lower being less than or equal to the higher. If only one dimensionality is desired, for example, two-dimensional, enter that dimensionality in both fields (i.e. 2 and 2 in the example)."""
+
+RECODING_DESCRIPTION = """The Recode function allows you to modify the numerical values of a variable or a set of variables according to your specifications.\nBelow are examples illustrating how this function can be used:"""
+
+RECODING_EXAMPLE_1 = """If a variable is defined with values 1, 2, 3, 4, and 5, you may want to group these values into new categories. For instance:
+• Change 1 and 2 to the new value 1
+• Change 3 to 2
+• Change 4 and 5 to 3
+
+This type of recoding can be useful, for example, to reduce the number of distinct values, which is often advisable when running analyses like POSAC."""
+
+RECODING_EXAMPLE_2 = """If a variable is defined with values 1, 2, 3, 4, and 5, you might want to reverse the order of these values. Thus:
+• Change 1 to 5
+• Change 2 to 4
+• Keep 3 as 3
+• Change 4 to 2
+• Change 5 to 1
+
+Reversing values may be needed ensure that all processed variables have a Common Meaning Range (See Shye & Elizur, 1994), which\naligns with the principles of Facet Theory."""
+
+RECODING_EXAMPLE_3 = """If a variable is defined with values 1, 2, 3, 4, 5, and 6, you might want to both group and reverse these values. For example:
+• Group 1 and 2 into 3
+• Change 3 to 2
+• Group 4, 5, and 6 into 1"""
+
+RECODING_STEPS = """To recode a variable or a set of variables, follow these steps:
+1. Specify the variable(s): Identify the variable(s) you wish to recode.
+2. List recoding operations: Define the current ("old") values and the new values to which they should be changed."""
+
+RECODING_EXAMPLE_TABLE = [
+    ("Old Value(s)", "New Value"),
+    ("1, 2", "3"),
+    ("3", "2"),
+    ("4–6", "1")
+]
+
+RECODING_EXAMPLE_NOTE = """By following this process, you can efficiently recode variables to meet the specific requirements of your analysis.
+If you only need to reverse the valid values of a variable (or a set of variables), you can use the Reverse Values shortcut function.
+
+However, keep in mind that this function only reverses the values that actually appear in the input data file. For example, if a variable is define\nto include the values 1, 2, 3, 4, 5, and 6, but only the values 3, 4, 5, and 6 are present in the data file,\nthe Reverse Values function will perform the following changes:
+• 3 becomes 6
+• 4 becomes 5
+• 5 becomes 4
+• 6 becomes 3
+
+Unused values (e.g., 1 and 2 in this example) will not be considered or reversed."""
+
+RECODING_REFERENCE = """Shye, S. & Elizur. D. (1994). Introduction to Facet Theory: Content design and intrinsic data analysis in behavioral research. Thousand Oaks, CA: Sage."""

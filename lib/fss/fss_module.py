@@ -328,7 +328,8 @@ def run_fortran(corr_type,
         if result.returncode != 0:
             raise Exception(f"FSSA script failed : {result.stderr}")
         if result.stderr not in [RESULTS_SUCCESS_STDERR,
-                                 RESULTS_SUCCESS_STDERR2]:
+                                 RESULTS_SUCCESS_STDERR2,
+                                 RESULTS_SUCCESS_STDERR3]:
             if "Fortran runtime error:" in result.stderr:
                 raise Exception(f"FSSA script failed : {result.stderr}")
             if len(result.stderr.split("\n")) >= 3:
@@ -340,8 +341,6 @@ def run_fortran(corr_type,
                     raise Exception(f"FSSA script failed : {result.stderr}")
             else:
                 raise Exception(f"FSSA script failed : {result.stderr}")
-        else:
-            raise Exception(f"FSSA script failed : {result.stderr}")
         print("Output:", result.stdout)
         print("Error:", result.stderr)
 

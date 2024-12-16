@@ -1,5 +1,5 @@
 import ttkbootstrap as ttk
-from lib.components.window import Window
+from lib.windows.window import Window
 from lib.windows.recoding_window import RecodeWindow, RecodingOperation
 from lib.utils import real_size, rreal_size
 

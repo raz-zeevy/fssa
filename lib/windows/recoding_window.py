@@ -2,7 +2,7 @@ import ttkbootstrap as ttk
 import tkinter as tk
 from ttkbootstrap.constants import *
 from tktooltip import ToolTip
-from lib.components.window import Window
+from lib.windows.window import Window
 from lib.utils import rreal_size, get_resource, real_size
 from lib.components.form import NavigationButton
 from tkinter import messagebox

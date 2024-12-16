@@ -13,7 +13,7 @@ from lib.utils import *
 
 DATA_PATH = 'data.csv'
 SET_MODE_TEST()
-SET_MODE_PRODUCTION()
+# SET_MODE_PRODUCTION()
 
 class simple_example_gui(Controller):
     def __init__(self):

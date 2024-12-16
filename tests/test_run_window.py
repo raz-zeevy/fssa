@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 import tkinter as tk
 from tkinter import messagebox
 from lib.windows.run_window import RunWindow
-from lib.components.window import Window
+from lib.windows.window import Window
 from lib.utils import IS_PRODUCTION
 
 class TestRunWindow(unittest.TestCase):

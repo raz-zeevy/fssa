@@ -1,7 +1,7 @@
 import ttkbootstrap as ttk
 import tkinter as tk
 from tktooltip import ToolTip
-from lib.components.window import Window
+from lib.windows.window import Window
 from lib.components.form import NavigationButton
 from tkinter import filedialog, messagebox
 from lib.utils import rreal_size

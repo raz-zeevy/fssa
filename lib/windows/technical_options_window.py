@@ -2,7 +2,7 @@ import os
 import ttkbootstrap as ttk
 import tkinter as tk
 from lib.moduls.help_content import *
-from lib.components.window import Window
+from lib.windows.window import Window
 from lib.utils import *
 from lib.components.form import *
 
