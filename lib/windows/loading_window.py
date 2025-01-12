@@ -25,7 +25,7 @@ class LoadingWindow:
             # Add a text label above the spinner
             self.loading_label = ttk.Label(self.loading_window,
                                          text=self.label_text,
-                                         font=('Helvetica', rreal_size(12)))  # Integer font size
+                                         font=('Helvetica', rreal_size(10)))  # Integer font size
             self.loading_label.pack(pady=real_size(10))
 
             # Add a spinner inside

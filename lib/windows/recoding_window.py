@@ -4,7 +4,7 @@ from ttkbootstrap.constants import *
 from tktooltip import ToolTip
 from lib.windows.window import Window
 from lib.utils import rreal_size, get_resource, real_size
-from lib.components.form import NavigationButton
+from lib.components.form import NavigationButton, SelectionBox
 from tkinter import messagebox
 import re
 from lib.pages.data_page import DataPage  # Add this import at the top
@@ -51,7 +51,7 @@ class RecodeWindow(Window):
     def __init__(self, parent, **kwargs):
         # Only initialize if this is a new instance
         if not hasattr(self, '_initialized'):
-            super().__init__(**kwargs, geometry=f"{rreal_size(600)}x{rreal_size(570)}")
+            super().__init__(**kwargs, geometry=f"{rreal_size(600)}x{rreal_size(530)}")
             RecodeWindow._instance = self
             self.parent = parent
             self.title("Recode Variables")
@@ -77,56 +77,96 @@ class RecodeWindow(Window):
         cls.reset_default()
 
     def create_widgets(self):
+        # Create action buttons first and pack them at the bottom
+        self.create_action_buttons()
+        
+        # Create a main content frame to hold everything else
+        main_content = ttk.Frame(self)
+        main_content.pack(fill='both', expand=True)
+        
         # Instruction Label
+        instruction_frame = ttk.Frame(main_content)
+        instruction_frame.pack(fill='x', padx=10, pady=(0, 5))
         instruction_label = ttk.Label(
-            self,
+            instruction_frame,
             text=(
-                "To recode variables, enter the indices of selected variables "
-                "(e.g., 1, 3, 5-7) in the 'Variable Indices' box, then you can use the manual "
-                "recoding option for recoding by manual values, or if for a "
-                "subset of "
-                "variables, you want simple inversion of existing values, "
-                "select the inverse option below."
+                "To recode variables:\n"
+                "1. Enter the indices of variables to modify (e.g., 1, 5, 8-13) in the 'Variable Indices' box.\n"
+                "2. Select a recoding type:\n"
+                "   • Free Recoding: Assign new values to existing values\n"
+                "   • Value Reversal: Reverse the order of existing valid values"
             ),
             wraplength=rreal_size(580),
             justify="left"
         )
-        instruction_label.pack(pady=(10, 5), padx=10)
+        instruction_label.pack(side="left", pady=(10, 5), padx=10)
 
-        # Frame for Variable Index Entry
-        var_index_frame = ttk.Frame(self)
-        var_index_frame.pack(fill='x', padx=10, pady=real_size(3))
+        # Top section frame (for variables and radio buttons)
+        top_section = ttk.Frame(main_content)
+        top_section.pack(fill='x', padx=10, pady=real_size(3))
 
-        # Variable Index Input
+        # Variable Index Input Frame
+        var_index_frame = ttk.Frame(top_section)
+        var_index_frame.pack(fill='x', pady=(0, 5))
         ttk.Label(var_index_frame, text="Variable Indices:").pack(
             side='left', padx=(10, 5))
-        self.var_index_entry = ttk.Entry(var_index_frame, width=20)
+        self.var_index_entry = ttk.Entry(var_index_frame, width=30)  # Increased width
         self.var_index_entry.pack(side='left', padx=10, pady=5)
         ToolTip(self.var_index_entry,
                 msg="Enter variable indices for this recoding operation (e.g., 1, 3, 5-7)")
 
-        manual_recoding_frame = ttk.LabelFrame(self, text="Manual Recoding")
-        manual_recoding_frame.pack(fill='both', expand=True, padx=10,
-                                   pady=(0, 10))
-        manual_recoding_label_frame = ttk.Frame(manual_recoding_frame)
+        # Radio buttons frame
+        radio_frame = ttk.Frame(top_section)
+        radio_frame.pack(fill='x', pady=5)
+        
+        ttk.Label(radio_frame, text="Recoding Type:").pack(
+            side='left', padx=(10, 5))
+        
+        # Radio button variable
+        self.operation_type = tk.StringVar(value="Free Recoding")
+        
+        # Create radio buttons
+        ttk.Radiobutton(radio_frame, 
+                        text="Free Recoding",
+                        variable=self.operation_type,
+                        value="Free Recoding",
+                        command=self._on_operation_changed).pack(side='left', padx=5)
+                        
+        ttk.Radiobutton(radio_frame,
+                        text="Value Reversal",
+                        variable=self.operation_type,
+                        value="Value Reversal",
+                        command=self._on_operation_changed).pack(side='left', padx=5)
+
+        # Frame for recoding operations (will contain both frames but show only one)
+        self.operations_frame = ttk.Frame(main_content)
+        self.operations_frame.pack(fill='both', expand=True)
+
+        # Create both frames but only show free recoding initially
+        self._create_free_recoding_frame()
+        self._create_value_reversal_frame()
+        self.show_selected_frame()
+
+    def _create_free_recoding_frame(self):
+        self.free_recoding_frame = ttk.LabelFrame(self.operations_frame, text="Free Recoding")
+        manual_recoding_label_frame = ttk.Frame(self.free_recoding_frame)
         manual_recoding_label_frame.pack(fill='x', padx=10, pady=(5, 5))
         manual_recoding_label = ttk.Label(
             manual_recoding_label_frame,
-            text=("Specify "
-                  "old values (e.g., 2-8, 11) and the new value you want to "
-                  "assign. Old "
-                  "values must be mutually exclusive. Click 'Add' to add the "
-                  "mapping in the list below, or Select one or more "
-                  "pairs and click 'Remove' to delete them from the list."
-                  ),
+            text=(
+                "To assign new values:\n"
+                "1. Enter existing value(s) to change in 'Old Values' (e.g., 2-7, 11)\n"
+                "2. Specify the new value to assign in 'New Value'\n"
+                "3. Click 'Add' to enter this assignment\n\n"
+                "Repeat for additional changes. Select an entry and click 'Remove' to delete it."
+            ),
             wraplength=rreal_size(550),
             justify="left"
         )
-        manual_recoding_label.pack(side="left", pady=(5, 5),
-                                   padx=real_size(10))
+        manual_recoding_label.pack(side="left", pady=(5, 5), padx=real_size(10))
 
         # Frame for Old and New Value Inputs
-        input_frame = ttk.Frame(manual_recoding_frame)
+        input_frame = ttk.Frame(self.free_recoding_frame)
         input_frame.pack(fill='x', padx=10, pady=real_size((0, 10)))
 
         # Old Values Entry
@@ -144,13 +184,45 @@ class RecodeWindow(Window):
         ToolTip(self.new_value_entry, msg="Enter the new value for recoding")
 
         # Treeview for Pairs
-        self.create_treeview(manual_recoding_frame)
+        self.create_treeview(self.free_recoding_frame)
 
-        # Inversion Option
-        self.create_inversion_option()
+    def _create_value_reversal_frame(self):
+        self.value_reversal_frame = ttk.LabelFrame(self.operations_frame, text="Value Reversal")
+        inversion_frame = ttk.LabelFrame(self.value_reversal_frame, text="Value Reversal")
+        inversion_frame.pack(fill='x', padx=10, pady=(0, 10))
 
-        # Action Buttons
-        self.create_action_buttons()
+        invert_label = ttk.Label(
+            inversion_frame,
+            text=(
+                "Check the box to reverse the order of existing valid values for the selected variables.\n\n"
+                "Note: This will only affect values that actually appear in your data."
+            ),
+            wraplength=rreal_size(450),
+            justify="left"
+        )
+        invert_label.pack(side='left', padx=real_size(10), pady=real_size(3))
+
+        self.invert_var = tk.BooleanVar()
+        invert_check = ttk.Checkbutton(inversion_frame,
+                                       variable=self.invert_var,
+                                       bootstyle="round-toggle")
+        invert_check.pack(side='right', padx=real_size((0, 40)))
+        ToolTip(invert_check, msg="Select to invert values after recoding")
+
+    def _on_operation_changed(self, event=None):
+        self.show_selected_frame()
+
+    def show_selected_frame(self):
+        operation = self.operation_type.get()  # Changed from operation_selection_box.get()
+        
+        if operation == "Free Recoding":
+            self.value_reversal_frame.pack_forget()
+            self.invert_var.set(False)  # Reset value reversal state
+            self.free_recoding_frame.pack(fill='both', expand=True, padx=10, pady=(0, 10))
+        else:  # Value Reversal
+            self.free_recoding_frame.pack_forget()
+            self.invert_var.set(True)  # Set value reversal to True when shown
+            self.value_reversal_frame.pack(fill='both', expand=True, padx=10, pady=(0, 10))
 
     def create_treeview(self, frame):
         # Frame for Treeview and scrollbar
@@ -188,31 +260,9 @@ class RecodeWindow(Window):
         self.pair_tree.configure(yscroll=scrollbar.set)
         scrollbar.pack(side='right', fill='y')
 
-    def create_inversion_option(self):
-        inversion_frame = ttk.LabelFrame(self, text="Inversion")
-        inversion_frame.pack(fill='x', padx=10, pady=(0, 10))
-
-        invert_label = ttk.Label(
-            inversion_frame,
-            text=(
-                "Select to reverse the values after recoding. If no recoding pairs are defined, "
-                "the inversion will apply to the original values."
-            ),
-            wraplength=rreal_size(450),
-            justify="left"
-        )
-        invert_label.pack(side='left', padx=real_size(10), pady=real_size(3))
-
-        self.invert_var = tk.BooleanVar()
-        invert_check = ttk.Checkbutton(inversion_frame,
-                                       variable=self.invert_var,
-                                       bootstyle="round-toggle")
-        invert_check.pack(side='right', padx=real_size((0, 40)))
-        ToolTip(invert_check, msg="Select to invert values after recoding")
-
     def create_action_buttons(self):
         action_frame = ttk.Frame(self)
-        action_frame.pack(pady=(10, 10))
+        action_frame.pack(side='bottom', pady=(0, 10))
 
         apply_button = NavigationButton(action_frame, text="Apply",
                                         command=self.apply_recoding)

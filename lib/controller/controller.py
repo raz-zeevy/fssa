@@ -22,6 +22,8 @@ from lib.windows.recoding_window import RecodeWindow
 
 SUPPORTED_RECORDED_DATA_FORMATS = ['.csv', '.xlsx', '.xls', 'tsv']
 
+# SET_MODE_TEST()
+
 class Controller:
     def __init__(self):
         self.gui = GUI()
@@ -49,6 +51,7 @@ class Controller:
         if IS_PRODUCTION():
             warnings.showwarning = self.custom_show_warning
         self.job_name = None
+        
 
     def on_close(self):
         # Prompt the user with a message box
@@ -187,6 +190,7 @@ class Controller:
             self.navigator.hide_page(DATA_PAGE_NAME)
             self.navigator.show_page(MANUAL_FORMAT_PAGE_NAME)
             self.gui.set_menu_matrix_data()
+            self.enable_view_input()
         else:
             self.navigator.hide_page(MATRIX_INPUT_PAGE_NAME)
             self.gui.set_menu_recorded_data()
@@ -394,8 +398,12 @@ class Controller:
 
     def enable_view_input(self):
         def view_input():
-            self.data_file_path = self.gui.pages[
-                INPUT_PAGE_NAME].get_data_file_path()
+            if self.matrix_input:
+                self.data_file_path = self.gui.pages[
+                    MATRIX_INPUT_PAGE_NAME].get_data_file_path()
+            else:
+                self.data_file_path = self.gui.pages[
+                    INPUT_PAGE_NAME].get_data_file_path()
             if not self.data_file_path:
                 raise FileNotFoundError("No input file was loaded")
             if not os.path.exists(self.data_file_path):
@@ -479,6 +487,8 @@ class Controller:
         # Matrix Input page
         elif cur_page == MATRIX_INPUT_PAGE_NAME:
             self.load_matrix()
+            self.gui.pages[MANUAL_FORMAT_PAGE_NAME].load_missing_values(
+                False)
         # Manual Format Page
         elif cur_page == MANUAL_FORMAT_PAGE_NAME:
             # for recorded data
@@ -495,6 +505,7 @@ class Controller:
                 self.gui.pages[DIMENSIONS_PAGE_NAME].set_number_of_variables(
                     self.gui.pages[MANUAL_FORMAT_PAGE_NAME]
                     .get_len_selected_vars())
+                self.commit_data()
         # Data Page
         elif cur_page == DATA_PAGE_NAME:
             Validator.validate_data_page(
@@ -711,6 +722,7 @@ class Controller:
             # add to manual format with the real-index "var_i = i"
             self.gui.pages[MANUAL_FORMAT_PAGE_NAME].add_variable(
                 label=var, var_i=i)
+            
     def load_fixed_width(self):
         """
         Called on manual input when clicking "next" on "Manual Page"
@@ -750,6 +762,13 @@ class Controller:
         # where because of selection they may be not at synch
         label_i = 0
         labels = manual_page.get_labels()
+         # This if is needed for the case of matrix input
+        if not self.active_variables_details:
+            self.active_variables_details = [
+                dict(label=var, index=i, facets=[],
+                              show=True, remove=False)
+                for i, var in enumerate(manual_page.get_selected_var_labels())
+            ]
         for var in self.active_variables_details:
             # commit toggle
             var['show'] = var['index'] in selected_vars_i
@@ -770,9 +789,11 @@ class Controller:
         # reset recoding
         RecodeWindow.reset_default()
         # Commit labels to data
-        self.data.columns = manual_page.get_selected_var_labels()
-        # Show data on data page
-        self.load_data_page(self.data)
+        # This if is needed for the case of matrix input
+        if self.data is not None:
+            self.data.columns = manual_page.get_selected_var_labels()
+            # Show data on data page
+            self.load_data_page(self.data)
         # Change the facets selection
         self.update_facets_var_selection(selected_vars_i)
 
@@ -994,7 +1015,8 @@ class Controller:
         if self.data_file_path != data_file_path:
             self.init_controller_attributes()
             self.data_file_path = data_file_path
-
+        self.enable_view_input()
+        
     def _suggest_parsing(self, interactive=True):
         path = self.gui.pages[
             INPUT_PAGE_NAME].get_data_file_path()

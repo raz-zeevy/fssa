@@ -31,7 +31,6 @@ from lib.windows.recode_history_window import RecodeHistoryWindow
 
 THEME_NAME = 'sandstone'
 
-
 def gui_only(func, *args, **kwargs):
     def wrapper(self, *args, **kwargs):
         if IS_PRODUCTION():

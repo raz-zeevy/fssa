@@ -13,7 +13,7 @@
 #define SessionIcon "C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\lib\assets\session_icon.ico"
 
 [Setup]
-AppId={{A5033936-6373-4BCB-AE0E-231D3E51F327}
+AppId={{A5033936-6373-4BCB-AE0E-231D3E51F328}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 VersionInfoVersion={#MyAppVersion}
@@ -21,7 +21,8 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
-DefaultDirName={pf}\{#MyAppName}
+DefaultDirName={userappdata}\{#MyAppName}
+DisableDirPage=yes
 ChangesAssociations=yes
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes

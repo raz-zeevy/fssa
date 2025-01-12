@@ -233,7 +233,7 @@ def run_matrix_fortran(output_path: str):
             else:
                 raise Exception(f"FSSA script failed : {result.stderr}")
         else:
-            raise Exception(f"FSSA script failed : {result.stderr}")
+            raise Exception(f"FSSA script failed : {result.stderr}\n{result.stdout}")
         print("Output:", result.stdout)
         print("Error:", result.stderr)
         
@@ -338,9 +338,9 @@ def run_fortran(corr_type,
                     exception = result.stderr.split('\n')[2]
                     raise Exception(exception)
                 else:
-                    raise Exception(f"FSSA script failed : {result.stderr}")
+                    raise Exception(f"FSSA script failed : {result.stderr} {result.stdout}")
             else:
-                raise Exception(f"FSSA script failed : {result.stderr}")
+                raise Exception(f"FSSA script failed : {result.stderr} {result.stdout}")
         print("Output:", result.stdout)
         print("Error:", result.stderr)
 

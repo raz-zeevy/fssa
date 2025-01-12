@@ -322,6 +322,7 @@ class ManualFormatPage(ttk.Frame):
         else:
             self.data_table.hide_column(VALID_LOW)
             self.data_table.hide_column(VALID_HIGH)
+            
     def remove_variable(self):
         # removes the last row from the table
         self.data_table.remove_row(-1)

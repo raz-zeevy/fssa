@@ -8,24 +8,16 @@ TEST_LABELS = [
 ]
 
 SET_MODE_TEST()
+SIMPLE_DATA_PATH = r"simple\ACHIEVEMENT CORRELATIONS MATRIX.txt"
+ACHMOT_DATA_PATH = r"achmot\ACHIVMAT.txt"
 
-###
-test_facets = [
-    ["figural", "verbal", "numeral", "social"],
-    ["fluency", "flexibility", "orginality", "elaboration", "closure"],
-    ["titles", "appropriateness"],
-    ["creativity", "torrance"],
-]
 
-class simple_example_gui(Controller):
+class MatrixTest(Controller):
     def __init__(self):
         super().__init__()
-        self.test_simple_example()
+        self.gui.pages[START_PAGE_NAME].button_matrix_data.invoke()
 
     def test_simple_example(self):
-        # get the absoult path of the data file
-        self.gui.pages[START_PAGE_NAME].button_matrix_data.invoke()
-        #
         matrix_page = self.gui.pages[MATRIX_INPUT_PAGE_NAME]
         matrix_page.set_var_num(18)
         matrix_page.set_entries_num_in_row(18)
@@ -35,7 +27,7 @@ class simple_example_gui(Controller):
 
         test_dir_path = os.path.dirname(os.path.abspath(__file__))
         data_file_path = os.path.join(test_dir_path,
-                                      DATA_PATH)
+                                      SIMPLE_DATA_PATH)
         matrix_page.set_data_file_path(
             data_file_path)
         self.gui.button_next.invoke()
@@ -59,15 +51,47 @@ class simple_example_gui(Controller):
         # true_file_path = os.path.join(test_dir_path, "FSSAINP.DRV")
         # # assert diff_lines_num(run_file_path, true_file_path) == 1
         # assert os.path.isfile(self.output_path)
-
-def test():
-    a = simple_example_gui()
-    try:
-        a.test_simple_example()
-    except Exception as e:
-        return False
-    return True
+   
+    def test_achmot(self):
+        test_facets = [
+            ["a1","a2"], ["b1","b2", "b3"]
+        ]
+        facets_var = [[1, 2],
+                      [1, 2],
+                      [1, 3],
+                      [2, 1],
+                      [2, 2],
+                      [2,3]]*3
+        test_dir_path = os.path.dirname(os.path.abspath(__file__))
+        self.reset_session(matrix=True)
+        data_file_path = os.path.join(test_dir_path,
+                                      ACHMOT_DATA_PATH)
+        self.gui.pages[MATRIX_INPUT_PAGE_NAME].set_data_file_path(data_file_path)
+        self.gui.pages[MATRIX_INPUT_PAGE_NAME].set_var_num(18)
+        self.gui.pages[MATRIX_INPUT_PAGE_NAME].set_entries_num_in_row(18)
+        self.gui.pages[MATRIX_INPUT_PAGE_NAME].set_field_width(4)
+        self.gui.pages[MATRIX_INPUT_PAGE_NAME].set_decimal_places(0)
+        self.gui.pages[MATRIX_INPUT_PAGE_NAME].set_missing_ranges([[99.5, 99.5]] * 5)
+        self.next_page()
+        self.next_page()
+        self.gui.pages[DIMENSIONS_PAGE_NAME].set_dims(2,2)
+        self.next_page()
+        # The duplication is on purpose to avoid some bug with the on_facets_num_change
+        self.gui.pages[FACET_PAGE_NAME].set_facets_details(test_facets)
+        self.on_facet_num_change(None)
+        self.gui.pages[FACET_PAGE_NAME].set_facets_details(test_facets)
+        self.next_page()
+        self.gui.pages[FACET_VAR_PAGE_NAME].set_facets_vars(facets_var)
+        try:
+            self.output_path = r'C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\tests\matrix_test\achmot\output\achmot.fss'
+            self._run_matrix_fss()
+            self.enable_view_results()
+        except Exception as e:
+            raise (e)
+            assert False
 
 if __name__ == '__main__':
-    a = simple_example_gui()
+    a = MatrixTest()
+    # a.test_simple_example
+    a.test_achmot()
     a.run_process()

@@ -51,12 +51,12 @@ class DimensionsPage(ttk.Frame):
         dimension_label = Label(frame_dimension_combo,
                                     text="Dimensionality: ",
                                     )
-        dimension_label.pack(side=ttk.LEFT)
+        # dimension_label.pack(side=ttk.LEFT)
         #
         self.dimension_combo = ttk.Combobox(frame_dimension_combo,
                                             state="readonly",
                                        values=DIMENSION_OPTIONS,)
-        self.dimension_combo.pack(side=ttk.RIGHT)
+        # self.dimension_combo.pack(side=ttk.RIGHT)
         self.dimension_combo.bind("<<ComboboxSelected>>",
                                   self.dimension_combo_selected)
         ###
@@ -64,13 +64,13 @@ class DimensionsPage(ttk.Frame):
         self.frame_dimensions_band.pack(fill='x', padx=ENTRIES_PADX,
                                         pady=(0, 0))
         ###
-        self.dimension_combo.current(0)
+        self.dimension_combo.set(DIMENSION_OPTIONS[1])
         self.dimension_combo_selected(None)
 
     def dimension_combo_selected(self, event):
         for widget in self.frame_dimensions_band.winfo_children():
             widget.destroy()
-        if self.dimension_combo.get() == DIMENSION_OPTIONS[0]:
+        if self.dimension_combo.get() == DIMENSION_OPTIONS[0] and False:
             self.dimension_boxes = [self.create_dim_selection_box(
                 self.frame_dimensions_band,
                                   "Dimension:")]
