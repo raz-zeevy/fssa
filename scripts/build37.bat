@@ -50,10 +50,13 @@ del setup_temp.iss
 :: Update the version and date in index.html
 venv37\Scripts\python.exe -c "import re, datetime; \
 content = open('docs/index.html', 'r').read(); \
+print('Original content:', content[:200]); \
 today = datetime.datetime.now().strftime('%%Y-%%m-%%d'); \
 content = re.sub(r'<td>v[\d\.]+</td>', f'<td>v%APP_VERSION%</td>', content); \
 content = re.sub(r'<td>\d{4}-\d{2}-\d{2}</td>', f'<td>{today}</td>', content); \
-open('docs/index.html', 'w').write(content)"
+print('Modified content:', content[:200]); \
+open('docs/index.html', 'w').write(content); \
+print('File written successfully')"
 
 echo Updated version to %APP_VERSION% and date to %date% in index.html
 
