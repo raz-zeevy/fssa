@@ -47,4 +47,14 @@ echo Version format to be used in Inno Setup: %APP_VERSION%
 
 del setup_temp.iss
 
+:: Update the version and date in index.html
+venv37\Scripts\python.exe -c "import re, datetime; \
+content = open('docs/index.html', 'r').read(); \
+today = datetime.datetime.now().strftime('%%Y-%%m-%%d'); \
+content = re.sub(r'<td>v[\d\.]+</td>', f'<td>v%APP_VERSION%</td>', content); \
+content = re.sub(r'<td>\d{4}-\d{2}-\d{2}</td>', f'<td>{today}</td>', content); \
+open('docs/index.html', 'w').write(content)"
+
+echo Updated version to %APP_VERSION% and date to %date% in index.html
+
 
