@@ -9,6 +9,9 @@ from lib.fss.fss_corr_input_writer import CorrelationInputWriter
 from lib.fss.fss_input_writer import FssInputWriter
 from lib.utils import *
 
+OUT_HEADER = r"""ECHO OFF \nECHO is off.\n            *******************************************************\n            *                                                     *\n            *              F A C E T E D    S S A                 *\n            *                                                     *\n            *******************************************************\n"""
+
+
 def validate_input(i, var, lines):
     if i + var["line"] - 1 > len(lines):
         raise Exception(
@@ -185,6 +188,30 @@ def get_random_data() -> pd.DataFrame:
     df = pd.DataFrame(data, columns=[i + 1 for i in range(len(data[0]))])
     return df
 
+def parse_fortran_output(result: subprocess.CompletedProcess):
+        # Print the output and error, if any
+    if result.returncode != 0:
+        raise Exception(f"FSSA script failed : {result.stderr}")
+    if "SSA terminated successfully" in result.stderr:
+        return
+    edited_output = result.stdout.replace(OUT_HEADER, "")
+    if result.stderr not in [RESULTS_SUCCESS_STDERR,
+                                RESULTS_SUCCESS_STDERR2,
+                                RESULTS_SUCCESS_STDERR3]:
+        if "Fortran runtime error:" in result.stderr:
+            raise Exception(f"FSSA script failed : {result.stderr}")
+        if len(result.stderr.split("\n")) >= 3:
+            if result.stderr.split("\n")[2] == 'Fortran runtime error: ' \
+                                                'Cannot write to file opened for READ':
+                exception = result.stderr.split('\n')[2]
+                raise Exception(exception)
+            else:
+                raise Exception(f"FSSA script failed : {result.stderr} {edited_output}")
+        else:
+            raise Exception(f"FSSA script failed : {result.stderr} {edited_output}")
+    print("Output:", result.stdout)
+    print("Error:", result.stderr)
+
 def run_matrix_fortran(output_path: str):
     def get_path(path: str):
         if os.path.exists(path):
@@ -222,20 +249,8 @@ def run_matrix_fortran(output_path: str):
         result = subprocess.run(full_command, shell=True, stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE, text=True)
         # Print the output and error, if any
-        if result.returncode != 0:
-            raise Exception(f"FSSA script failed : {result.stderr}")
-        if RESULTS_SUCCESS_STDERR in result.stderr:
-            if len(result.stderr.split("\n")) >= 3:
-                if result.stderr.split("\n")[2] == 'Fortran runtime error: ' \
-                                                   'Cannot write to file opened for READ':
-                    exception = result.stderr.split('\n')[2]
-                    raise Exception(exception)
-            else:
-                raise Exception(f"FSSA script failed : {result.stderr}")
-        else:
-            raise Exception(f"FSSA script failed : {result.stderr}\n{result.stdout}")
-        print("Output:", result.stdout)
-        print("Error:", result.stderr)
+        parse_fortran_output(result)
+
         
 def run_fortran(corr_type,
                 output_path,
@@ -325,24 +340,7 @@ def run_fortran(corr_type,
         result = subprocess.run(full_command, shell=True, stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE, text=True)
         # Print the output and error, if any
-        if result.returncode != 0:
-            raise Exception(f"FSSA script failed : {result.stderr}")
-        if result.stderr not in [RESULTS_SUCCESS_STDERR,
-                                 RESULTS_SUCCESS_STDERR2,
-                                 RESULTS_SUCCESS_STDERR3]:
-            if "Fortran runtime error:" in result.stderr:
-                raise Exception(f"FSSA script failed : {result.stderr}")
-            if len(result.stderr.split("\n")) >= 3:
-                if result.stderr.split("\n")[2] == 'Fortran runtime error: ' \
-                                                   'Cannot write to file opened for READ':
-                    exception = result.stderr.split('\n')[2]
-                    raise Exception(exception)
-                else:
-                    raise Exception(f"FSSA script failed : {result.stderr} {result.stdout}")
-            else:
-                raise Exception(f"FSSA script failed : {result.stderr} {result.stdout}")
-        print("Output:", result.stdout)
-        print("Error:", result.stderr)
+        parse_fortran_output(result)
 
 
 @contextmanager
