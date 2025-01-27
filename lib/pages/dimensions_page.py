@@ -109,6 +109,8 @@ class DimensionsPage(ttk.Frame):
         return self.correlation_combo.get()
 
     def set_correlation_type(self, type):
+        if type not in [MONO, PEARSON, SIMILARITY, DISSIMILARITY]:
+            raise ValueError(f"Invalid correlation type: {type}")
         self.correlation_combo.set(type)
 
     def create_dim_selection_box(self, master, text):

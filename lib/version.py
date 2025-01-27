@@ -4,4 +4,4 @@
 # PATCH: Bug fixes, backwards compatible
 
 # Version moved from .env file
-__version__ = "1.2.3.6"  
+__version__ = "1.2.4.0"  

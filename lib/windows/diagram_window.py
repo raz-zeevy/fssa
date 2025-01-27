@@ -47,6 +47,7 @@ class DiagramWindow(Window):
         self.bind("<Left>", lambda x: self.previous_graph())
         self.bind("<Escape>", lambda x: self.exit())
         self.resizable(True, True)
+        
     def create_menu(self):
         # create a file menu with save figure command to save the current graph
         self.menu = tk.Menu(self)
@@ -154,22 +155,26 @@ class DiagramWindow(Window):
     def load_page(self, i):
         for widget in self.main_frame.winfo_children():
             widget.destroy()
-        # this is not needed cause we have circular paging
-        # self.navigate_control()
-        #
+
+        # Configure grid weights to control space allocation
+        self.main_frame.grid_columnconfigure(0, weight=3)  # Graph gets 3/4 of width
+        self.main_frame.grid_columnconfigure(1, weight=1)  # Legend gets 1/4 of width
+        self.main_frame.grid_rowconfigure(0, weight=1)     # Row expands to fill height
+
+        # Create frames using grid instead of pack
         self.diagram_frame = ttk.Frame(self.main_frame)
-        self.diagram_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        self.plot_scatter(self.graph_data_lst[i])
+        self.diagram_frame.grid(row=0, column=0, sticky='nsew')
+
         if len(self.graph_data_lst[i]["legend"]) > 20:
             self.init_scrollable_legend()
+            self.legend_canvas.grid(row=0, column=1, sticky='nsew')
+            self.vsb.grid(row=0, column=2, sticky='ns')
         else:
             self.diagram_labels_frame = ttk.Frame(self.main_frame)
-            self.diagram_labels_frame.pack(side=tk.RIGHT,
-                                           expand=True,
-                                           fill=tk.BOTH,
-                                           padx=real_size((0, 10)))
-        self.diagram_labels_frame.config(
-            width=rreal_size(40))
+            self.diagram_labels_frame.grid(row=0, column=1, sticky='nsew', padx=real_size((0, 10)))
+            self.diagram_labels_frame.config(width=rreal_size(40))
+
+        self.plot_scatter(self.graph_data_lst[i])
         self.plot_legend(self.graph_data_lst[i])
 
     def plot_legend(self, graph_data):
@@ -243,8 +248,7 @@ class DiagramWindow(Window):
         z = graph_data["annotations"]
         # create a figure and axis
         self.figure = Figure(figsize=real_size((4, 4)), dpi=100)
-        figure_canvas = FigureCanvasTkAgg(self.figure,
-                                          self.diagram_frame)
+        figure_canvas = FigureCanvasTkAgg(self.figure, self.diagram_frame)
         axes = self.figure.add_subplot()
         # plot the data
         axes.scatter(x, y, alpha=0)
@@ -274,7 +278,11 @@ class DiagramWindow(Window):
                              (end_y - start_y) * OC * 0.75
         axes.set_xlim([start_x - x_offset, end_x + x_offset])
         axes.set_ylim([start_y - y_offset, end_y + y_offset])
-        figure_canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+        figure_canvas.get_tk_widget().grid(row=0, column=0, sticky='nsew')
+        
+        # Configure the diagram_frame grid weights
+        self.diagram_frame.grid_columnconfigure(0, weight=1)
+        self.diagram_frame.grid_rowconfigure(0, weight=1)
 
     def create_bottom_panel(self):
         # Navigation Buttons Frame
@@ -300,6 +308,13 @@ class DiagramWindow(Window):
                                             bootstyle='secondary',
                                             command=self.exit, )
         self.button_exit.pack(side=ttk.LEFT, padx=real_size(20))
+        # modify permanent state of the buttons
+        if len(self.graph_data_lst) == 1:
+            self.button_previous.state(["disabled"])
+            self.button_next.state(["disabled"])
+        else:
+            self.button_previous.state(["!disabled"])
+            self.button_next.state(["!disabled"])
 
 if __name__ == "__main__":
     root = ttk.Window(themename="sandstone")

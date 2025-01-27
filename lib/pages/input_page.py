@@ -236,7 +236,15 @@ class InputPage(ttk.Frame):
         self.additional_options = True
 
     def browse_file(self):
-        filename = filedialog.askopenfilename()
+        filetypes = [
+            ("Data files", "*.dat;*.txt;*.prn;*.csv;*.xlsx;*.xls;*.tsv"),
+            ("All files", "*.*")
+        ]
+        filename = filedialog.askopenfilename(
+            title="Select Data File",
+            filetypes=filetypes,
+            initialdir="."  # Starts in current directory
+        )
         if filename:
             self.entry_data_file.delete(0, ttk.END)
             self.entry_data_file.insert(0, filename)

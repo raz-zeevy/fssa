@@ -145,6 +145,7 @@ class Controller:
     #############
     # User Flow #
     #############
+    
     def reset_session(self, matrix):
         while self.navigator.get_prev():
             self.previous_page()
@@ -709,6 +710,8 @@ class Controller:
          - inits the active variables details []
         :return:
         """
+        if not self.delimiter:
+            self._suggest_parsing(interactive=False)
         self.load_csv()
         # clear manual format (todo: for cases of reloading?)
         self.gui.pages[MANUAL_FORMAT_PAGE_NAME].clear_all_vars()
@@ -1040,6 +1043,7 @@ class Controller:
             self.gui.pages[INPUT_PAGE_NAME].enable_additional_options()
             self.gui.pages[INPUT_PAGE_NAME].automatic_parsable = False
         self.enable_view_input()
+        
     @error_handler
     def load_recorded_data_file(self):
         data_file_path = self.gui.pages[INPUT_PAGE_NAME].browse_file()

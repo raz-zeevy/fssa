@@ -14,10 +14,9 @@ from typing import Tuple, List, Set
 
 class RecodingOperation:
     """Stores details of a single recoding operation"""
-    def __init__(self, variables: str, old_values: str, new_value: str, invert: bool):
+    def __init__(self, variables: str, value_pairs: List[Tuple[str, str]], invert: bool):
         self.variables = variables
-        self.old_values = old_values 
-        self.new_value = new_value
+        self.value_pairs = value_pairs
         self.invert = invert
 
     @classmethod
@@ -25,8 +24,7 @@ class RecodingOperation:
         """Create RecodingOperation from recoding window details"""
         return cls(
             variables=details['var_indices_str'],
-            old_values=', '.join(old for old, _ in details['manual']),
-            new_value=details['manual'][0][1] if details['manual'] else '',
+            value_pairs=details['manual'],
             invert=details['invert']
         )
 

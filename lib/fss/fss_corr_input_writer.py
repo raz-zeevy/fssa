@@ -15,6 +15,7 @@ class CorrelationInputWriter:
         if not os.path.exists(RUN_FILES_DIR):
             os.makedirs(RUN_FILES_DIR)
         file_path = self.get_corr_input_file_path(correlation_type)
+        var_width = 'F' if correlation_type == PEARSON else 'I'
         with open(file_path, "w") as f:
             f.write("FSSA\n")
             f.write(
@@ -24,7 +25,7 @@ class CorrelationInputWriter:
             var_txt = "("
             for i, var in enumerate(variables_details):
                 if i > 0: var_txt += ","
-                var_txt += f"T{ENTRY_WIDTH * i + 1}I{ENTRY_WIDTH}"
+                var_txt += f"T{ENTRY_WIDTH * i + 1}{var_width}{ENTRY_WIDTH}"
             # add "\n"
             for i in range(80, len(var_txt), 81):
                 var_txt = var_txt[:i] + "\n" + var_txt[i:]

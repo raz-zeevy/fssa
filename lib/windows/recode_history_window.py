@@ -54,12 +54,22 @@ class RecodeHistoryWindow(Window):
             
         # Add history items
         for operation in RecodeWindow.SAVED_VALUES['RECODING_HISTORY']:
-            self.tree.insert('', 'end', values=(
-                operation.variables,
-                operation.old_values,
-                operation.new_value,
-                'Yes' if operation.invert else 'No'
-            ))
+            for value_pair in operation.value_pairs:
+                old_values = value_pair[0]
+                new_value = value_pair[1]
+                self.tree.insert('', 'end', values=(
+                    operation.variables,
+                    old_values,
+                    new_value,
+                    'No' 
+                ))
+            if not operation.value_pairs:
+                self.tree.insert('', 'end', values=(
+                    operation.variables,
+                    '',
+                    '',
+                    'Yes'
+                ))
 
 if __name__ == '__main__':
     # Test code with mock data
@@ -67,9 +77,9 @@ if __name__ == '__main__':
     
     # Add some mock history
     RecodeWindow.SAVED_VALUES['RECODING_HISTORY'] = [
-        RecodingOperation("1,2,3", "1-5", "9", False),
-        RecodingOperation("4,5", "2,4,6", "1", True),
-        RecodingOperation("7", "1-3,5,7", "4", False)
+        RecodingOperation("1,2,3", [("1-5", "9"), ("2-6", "10")], False),
+        RecodingOperation("4,5", [("2,4,6", "1"), ("3,5,7", "2")], True),
+        RecodingOperation("7", [("1-3,5,7", "4")], False)
     ]
     
     # Show window

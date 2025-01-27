@@ -9,8 +9,9 @@ from lib.fss.fss_corr_input_writer import CorrelationInputWriter
 from lib.fss.fss_input_writer import FssInputWriter
 from lib.utils import *
 
-OUT_HEADER = r"""ECHO OFF \nECHO is off.\n            *******************************************************\n            *                                                     *\n            *              F A C E T E D    S S A                 *\n            *                                                     *\n            *******************************************************\n"""
+OUT_HEADER = """ECHO OFF \nECHO is off.\n            *******************************************************\n            *                                                     *\n            *              F A C E T E D    S S A                 *\n            *                                                     *\n            *******************************************************\n"""
 
+OUT_HEADER_PEASEON = "ECHO OFF \nECHO is off.\n            *******************************************************\n            *                                                     *\n            *              F A C E T E D    S S A                 *\n            *                                                     *\n            *******************************************************\nECHO is off.\nECHO is off.\n"""
 
 def validate_input(i, var, lines):
     if i + var["line"] - 1 > len(lines):
@@ -194,7 +195,7 @@ def parse_fortran_output(result: subprocess.CompletedProcess):
         raise Exception(f"FSSA script failed : {result.stderr}")
     if "SSA terminated successfully" in result.stderr:
         return
-    edited_output = result.stdout.replace(OUT_HEADER, "")
+    edited_output = result.stdout.replace(OUT_HEADER, "").replace(OUT_HEADER_PEASEON, "").replace("ECHO is off.", "")
     if result.stderr not in [RESULTS_SUCCESS_STDERR,
                                 RESULTS_SUCCESS_STDERR2,
                                 RESULTS_SUCCESS_STDERR3]:
@@ -211,6 +212,16 @@ def parse_fortran_output(result: subprocess.CompletedProcess):
             raise Exception(f"FSSA script failed : {result.stderr} {edited_output}")
     print("Output:", result.stdout)
     print("Error:", result.stderr)
+
+
+def create_fssacmd_bat(fss_dir: str, arguments: List[str]):
+    """
+    arguments: the arguments to run the fssa program can be of different lengths
+    """
+    fssacmd_path = os.path.join(os.path.dirname(p_DATA_FILE), "fssacmd.bat")
+    with open(fssacmd_path, "w") as f:
+        f.write(f"cd {fss_dir}\n")
+        f.write(f"FASSA.BAT {' '.join(arguments)}")
 
 def run_matrix_fortran(output_path: str):
     def get_path(path: str):
@@ -242,9 +253,9 @@ def run_matrix_fortran(output_path: str):
 
     # Combine the command and arguments into a single list
     full_command = [command] + arguments
-
     # Run the command
     fss_dir = get_script_dir_path()
+    create_fssacmd_bat(fss_dir, arguments)
     with cwd(fss_dir):
         result = subprocess.run(full_command, shell=True, stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE, text=True)
@@ -330,12 +341,12 @@ def run_fortran(corr_type,
     ]
     # command = r"C:\Users\Raz_Z\Desktop\shmuel-project\fssa-21\FASSA.BAT"
     command = "FASSA.BAT"
-
     # Combine the command and arguments into a single list
     full_command = [command] + arguments
 
     # Run the command
     fss_dir = get_script_dir_path()
+    create_fssacmd_bat(fss_dir, arguments)
     with cwd(fss_dir):
         result = subprocess.run(full_command, shell=True, stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE, text=True)

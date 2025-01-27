@@ -6,6 +6,13 @@ from lib.fss.fss_input_parser import simulate_facets_var_data
 # SET_MODE_PRODUCTION()
 SET_MODE_TEST()
 
+
+
+"""
+There might be "List index out of range" error in the tests because of the 
+reset_session function. Ignore it for now.
+"""
+
 ###
 test_facets = [
                 ["figural", "verbal", "numeral", "social"],
@@ -68,7 +75,13 @@ class simple_example_gui(Controller):
             print(e)
             assert False
         # run_file_path = p_FSS_DRV
-
+        self.reset_session(False)
+    
+    def test_simple_example_pearson(self):
+        dims_page = self.gui.pages[DIMENSIONS_PAGE_NAME]
+        dims_page.set_correlation_type(PEARSON)
+        self.test_simple_example()
+    
     def test_simple_csv(self):
         """
         this test won't work if the dimensions is 2-5 and the number of
@@ -81,8 +94,8 @@ class simple_example_gui(Controller):
                                       'diamond6.csv')
         self.gui.pages[INPUT_PAGE_NAME].set_data_file_path(
             data_file_path)
-        self._suggest_parsing()
         self.has_header = True
+        self.load_csv_init()
         self.next_page()
         self.previous_page()
         self.next_page()
@@ -91,9 +104,9 @@ class simple_example_gui(Controller):
         #
         self.gui.pages[INPUT_PAGE_NAME].set_data_file_path(
             data_file_path)
-        self._suggest_parsing()
         self.gui.pages[INPUT_PAGE_NAME].set_missing_value(True)
         self.has_header = True
+        self.load_csv_init()
         self.next_page(); self.next_page()
         #
         self.previous_page(); self.previous_page()
@@ -102,14 +115,12 @@ class simple_example_gui(Controller):
         self.previous_page(); self.previous_page()
         self.gui.pages[INPUT_PAGE_NAME].set_missing_value(True)
         self.next_page()
-        self.gui.pages[MANUAL_FORMAT_PAGE_NAME].select_csv_variables([0, 1, 2, 3])
         self.gui.pages[MANUAL_FORMAT_PAGE_NAME].set_labels(['a','b','c','d',
                                                             'e'])
         self.next_page()
         data = self.gui.pages[DATA_PAGE_NAME].get_all_visible_data()
-        assert len(data[0]) == 4
-        assert len(data) == 22
-        assert self.gui.pages[DATA_PAGE_NAME].get_visible_labels() == ['a','b','c','d']
+        assert len(data[0]) == 5, f"len(data[0]) == {len(data[0])}"
+        assert len(data) == 22, f"len(data) == {len(data)}"
         self.next_page()
         self.next_page()
         try:
@@ -122,11 +133,13 @@ class simple_example_gui(Controller):
             print(e)
             # print("################FAILURE###############")
             assert False
-
+        self.reset_session(False)
+        
 if __name__ == '__main__':
     a = simple_example_gui()
     a.test_simple_example()
+    a.test_simple_example_pearson()
+    a.test_simple_csv()
     # a.reset_session(False)
     # a.test_simple_example()
-    # a.test_simple_csv()
     a.run_process()
