@@ -28,7 +28,7 @@ class RecodeHistoryWindow(Window):
             relief='flat'          # Flat appearance
         )
         
-        columns = ('Variables', 'Old Values', 'New Value', 'Invert')
+        columns = ('Variables', 'Old Values', 'New Value', 'Reversal')
         self.tree = ttk.Treeview(self, columns=columns, show='headings', height=15)
         
         # Configure columns with center alignment
