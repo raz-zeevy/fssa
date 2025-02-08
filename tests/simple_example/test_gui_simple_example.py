@@ -2,11 +2,12 @@ from lib.controller.controller import *
 from lib.controller.controller import Controller
 from const import *
 from lib.fss.fss_input_parser import simulate_facets_var_data
+import time
+
+from lib.fss.fss_module import open_fss_files_dir
 
 # SET_MODE_PRODUCTION()
 SET_MODE_TEST()
-
-
 
 """
 There might be "List index out of range" error in the tests because of the 
@@ -75,7 +76,9 @@ class simple_example_gui(Controller):
             print(e)
             assert False
         # run_file_path = p_FSS_DRV
+        print('reset_session')
         self.reset_session(False)
+
     
     def test_simple_example_pearson(self):
         dims_page = self.gui.pages[DIMENSIONS_PAGE_NAME]
@@ -127,7 +130,7 @@ class simple_example_gui(Controller):
             self.output_path = \
                 r"C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\output" \
                 r"\test_simple.fss"
-            self.run_fss(self._run_fss)
+            self.run_fss(lambda : self._run_fss(debug=False))
             self.enable_view_results()
         except Exception as e:
             print(e)
@@ -142,4 +145,5 @@ if __name__ == '__main__':
     a.test_simple_csv()
     # a.reset_session(False)
     # a.test_simple_example()
+    print("Test finished")
     a.run_process()

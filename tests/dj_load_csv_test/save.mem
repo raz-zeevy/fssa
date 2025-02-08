@@ -1886,17 +1886,21 @@
     "2": [
       1,
       2
+    ],
+    "3": [
+      1,
+      2
     ]
   },
   "manual_input": false,
   "matrix_input": false,
   "are_missing_values": false,
   "lines_per_var": 0,
-  "output_path": "C:\\Users\\Raz_Z\\Projects\\Shmuel\\fssaDist\\fssa\\tests\\dj_csv_test\\res\\data.fss",
+  "output_path": "C:\\Users\\Raz_Z\\Projects\\Shmuel\\fssaDist\\fssa\\tests\\dj_csv_test\\data.fss",
   "facets_num": 2,
-  "max_dim": 2,
+  "max_dim": 3,
   "min_dim": 2,
-  "job_name": "data",
+  "job_name": "",
   "additional_options": false,
   "fixed_width": "No",
   "correlation_type": "Monotonicity",

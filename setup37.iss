@@ -49,10 +49,10 @@ Root: HKCU; Subkey: "Software\Classes\{#MyAppAssocKey}"; ValueType: string; Valu
 Root: HKCU; Subkey: "Software\Classes\{#MyAppAssocKey}\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\{#MyAppExeName},0"
 Root: HKCU; Subkey: "Software\Classes\{#MyAppAssocKey}\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""
 Root: HKCU; Subkey: "Software\Classes\Applications\{#MyAppExeName}\SupportedTypes"; ValueType: string; ValueName: ".myp"; ValueData: ""
-Root: HKCU; Subkey: ".mem"; ValueType: string; ValueName: ""; ValueData: "FssaSession"; Flags: uninsdeletevalue
-Root: HKCU; Subkey: "FssaSession"; ValueType: string; ValueName: ""; ValueData: "Fssa Session"; Flags: uninsdeletekey
+Root: HKCU; Subkey: ".mms"; ValueType: string; ValueName: ""; ValueData: "FssaSession"; Flags: uninsdeletevalue
+Root: HKCU; Subkey: "FssaSession"; ValueType: string; ValueName: ""; ValueData: "Fssa Session File"; Flags: uninsdeletekey
 Root: HKCU; Subkey: "FssaSession\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: """{#SessionIcon}"""
-Root: HKCU; Subkey: "MyProgramFile\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""
+Root: HKCU; Subkey: "FssaSession\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"

@@ -52,7 +52,7 @@ class Validator():
     def validate_input_page(data_path, lines_num, is_manual_input,
                             additional_options):
         if not data_path:
-            raise FileNotFoundError("Please chose a data file for the "
+            raise FileNotFoundError("Please choose a data file for the "
                                     "analysis.")
         if additional_options and not lines_num:
             raise ValueError(f"You must state the lines per case in order to "
@@ -64,7 +64,7 @@ class Validator():
     @mode_dependent
     def validate_matrix_input_page(data_path):
         if not data_path:
-            raise FileNotFoundError("Please chose a data file for the "
+            raise FileNotFoundError("Please choose a data file for the "
                                     "analysis.")
         if not os.path.isfile(data_path):
             raise FileNotFoundError(f"Data File not found: {data_path}.")

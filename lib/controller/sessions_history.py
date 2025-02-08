@@ -13,16 +13,21 @@ class SessionsHistory:
 
     def load_history(self):
         if os.path.exists(self.file_path):
-            self.read_file()
+            self.read_from_file()
 
     # Read and Write
     def write_to_file(self):
-        with open(self.file_path, 'w') as file:
+        with open(SESSIONS_HISTORY, 'w', encoding='utf-8') as file:
             file.write("\n".join(self.history[-1*MAX_LENGTH:]))
 
-    def read_file(self):
-        with open(self.file_path, 'r') as file:
-            self.history = [line.strip() for line in file.readlines()]
+    def read_from_file(self):
+        try:
+            with open(SESSIONS_HISTORY, 'r', encoding='utf-8') as file:
+                content = file.read()
+                if content:
+                    self.history = content.split("\n")
+        except FileNotFoundError:
+            self.history = []
 
     # Setters
     def add(self, path):

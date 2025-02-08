@@ -110,7 +110,5 @@ class FacetDimPage(ttk.Frame):
             raise ValueError("The number of facets cannot exceed 4")
         if max_dim > 9:
             raise ValueError("The number of dimensions cannot exceed 9")
-        if num_facets < 1:
-            raise ValueError("The number of facets cannot be less than 1")
         if min_dim < 2:
             raise ValueError("The number of dimensions cannot be less than 2")

@@ -265,7 +265,7 @@ def run_matrix_fortran(output_path: str):
         
 def run_fortran(corr_type,
                 output_path,
-                create_simplified_matrix_file="NUL"):
+                create_simplified_matrix_file="NUL", debug=False):
     def get_path(path: str):
         if os.path.exists(path):
             return os.path.abspath(path)
@@ -347,6 +347,10 @@ def run_fortran(corr_type,
     # Run the command
     fss_dir = get_script_dir_path()
     create_fssacmd_bat(fss_dir, arguments)
+    if debug:
+        print(f"full_command: {full_command}")
+        open_fss_files_dir()
+        input("Press Enter to continue...")
     with cwd(fss_dir):
         result = subprocess.run(full_command, shell=True, stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE, text=True)
@@ -515,7 +519,8 @@ def create_matrix_running_files(
     # Create the FSSA Partial Matrix File
     create_fss_matrix_file(matrix_details, matrix_path)
 
-
+def open_fss_files_dir():
+    os.startfile(os.path.dirname(p_DATA_FILE))
 
 if __name__ == '__main__':
     # Example usage

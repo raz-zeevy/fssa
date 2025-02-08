@@ -1,5 +1,12 @@
 from lib.components.shapes import ShapeFactory
 
+NO_FACET_TITLE = "No Partition"
+
+MODEL_NAMES = {
+    1 : "Axial Partition",
+    2 : "Angular Partition",
+    3 : "Radial Partition",
+}
 
 def generate_graphs(controller, dim, facet):
     """
@@ -28,7 +35,7 @@ def generate_graphs(controller, dim, facet):
             x=x,
             y=y,
             annotations=index,
-            title=f"FSS Solution d={dim} {a + 1}X{b + 1}",
+            title=f"{NO_FACET_TITLE}\nFSS Solution d={dim} {a + 1}X{b + 1}",
             legend=legend
         )
         graph_data_list.append(graph)
@@ -57,7 +64,7 @@ def generate_graphs(controller, dim, facet):
                     m_graph = dict(x=x,
                                    y=y,
                                    annotations=annotations,
-                                   title=f"Facet {chr(64 + facet)}: d={dim} {a + 1}X{b + 1}",
+                                   title=f"{MODEL_NAMES[model['model']]}\nFacet {chr(64 + facet)}: d={dim} {a + 1}X{b + 1}",
                                    legend=legend)
                     m_graph["geoms"] = ShapeFactory.shapes_from_list(model[
                                                                          "divide_geoms"])

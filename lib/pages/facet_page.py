@@ -168,3 +168,8 @@ class FacetPage(ttk.Frame):
                 entry.delete(0, ttk.END)
                 entry.insert(0, new_value)
 
+    def reset(self):
+        self.facets_combo.current(0)
+        self.update_facet_count()
+
+

@@ -150,6 +150,7 @@ class Controller:
         while self.navigator.get_prev():
             self.previous_page()
         self.init_controller_attributes()
+        self.gui.reset()
         self.on_facet_num_change(None)
         self.disable_view_results()
         if matrix:
@@ -394,7 +395,7 @@ class Controller:
         self.gui.view_menu.entryconfig("2D Diagram ", state="disabled")
         self.gui.view_menu.entryconfig("3D Diagram ", state="disabled")
         for menu in [self.gui.diagram_2d_menu, self.gui.diagram_3d_menu]:
-            for i in range(self.facets_num):
+            for i in range(4):
                 menu.entryconfig("Facet " + chr(65 + i), state="disabled")
 
     def enable_view_input(self):
@@ -906,8 +907,7 @@ class Controller:
             self.active_variables_details[var]['facets'] = facets_var_info[
                 var]
         # output
-        self.job_name = self.job_name or os.path.basename(
-            self.output_path.split(".")[0])
+        self.job_name = ''
 
     def _run_matrix_fss(self):
         self.init_fss_attributes()
@@ -926,7 +926,7 @@ class Controller:
             facet_dim_details=self.facet_dim_details)
         run_matrix_fortran(self.output_path)
 
-    def _run_fss(self):
+    def _run_fss(self, debug=False):
         self.init_fss_attributes()
         create_running_files(
             job_name=self.job_name,
@@ -942,14 +942,22 @@ class Controller:
             facet_dim_details=self.facet_dim_details,
             valid_values_range=self.valid_values_range
         )
-        run_fortran(self.correlation_type, self.output_path)
+        run_fortran(self.correlation_type, self.output_path, debug=debug)
 
     @error_handler
     def run_fss(self, fss_function):
         """Run FSSA in a separate thread for the FSSA process and manage the loading window on the main thread."""
-
+        if not IS_PRODUCTION():
+            try:
+                self.gui.loading_window.show()
+                fss_function()  # Run FSS directly
+                self.enable_view_results()
+            finally:
+                self.gui.loading_window.hide()
+            return
         # Create a queue to communicate between threads
         result_queue = queue.Queue()
+        completed = threading.Event()  # Add completion flag
 
         def run_fssa_and_hide_loading():
             """Function to run FSSA and hide the loading window after completion."""
@@ -972,31 +980,38 @@ class Controller:
                 # If the queue is empty, check again after 100 milliseconds
                 self.gui.root.after(100, process_queue)
                 return
-
+    
             # Handle the result from the queue
             if result["status"] == "success":
                 self.enable_view_results()
-                # Show success message, but don't block the loading window from hiding
-                self.gui.root.after(0, lambda: self.gui.show_msg(
-                    "Finished running FSS Successfully.\n"
-                    'To see results click "View" in the menu',
-                    title="Job Finished Successfully",
-                    buttons=["Ok:primary"]
+                if IS_PRODUCTION():
+                    # Show success message, but don't block the loading window from hiding
+                    self.gui.root.after(0, lambda: self.gui.show_msg(
+                        "Finished running FSS Successfully.\n"
+                        'To see results click "View" in the menu',
+                        title="Job Finished Successfully",
+                        buttons=["Ok:primary"]
                 ))
             elif result["status"] == "error":
-                # Handle errors by showing a message box on the main thread
-                self.gui.show_error("Error Occurred", result["message"])
+                if IS_PRODUCTION():
+                    # Handle errors by showing a message box on the main thread
+                    self.gui.show_error("Error Occurred", result["message"])
+                else:
+                    raise Exception(result["message"])  # Re-raise for tests
                 self.disable_view_results()
 
             # Always hide the loading window if a message is received to do so
             if result["status"] == "hide_loading":
+                completed.set()  # Signal completion
                 self.gui.loading_window.hide()
 
             # Continue checking the queue after handling the current message
             self.gui.root.after(100, process_queue)
-
+            
         # Show loading window on the main thread
-        self.gui.root.after(0, self.gui.loading_window.show)
+        # self.gui.root.after(0, self.gui.loading_window.show)
+        self.gui.loading_window.show()
+
 
         # Create a thread to run the FSSA process
         fssa_thread = threading.Thread(target=run_fssa_and_hide_loading)

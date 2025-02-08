@@ -513,9 +513,11 @@ class GUI():
     def show_recode_history_window(self):
         """Show window displaying history of recoding operations"""
         self.recode_history_window = RecodeHistoryWindow(self.root)
-        self.recode_history_window.bind("<F1>", lambda x: self.show_help_windw("recoding_variables_screen"))
-
-
+        self.recode_history_window.bind("<F1>", lambda x: self.show_help_windw("recoding_variables_screen"))    
+    
+    def reset(self):
+        self.pages[FACET_PAGE_NAME].reset()
+    
 if __name__ == '__main__':
     gui = GUI()
     # gui.show_technical_options_window()

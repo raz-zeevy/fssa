@@ -5,7 +5,6 @@ contains:
 - Different types of variables, some of them are numerical and some aren't
 - numerical variables that need recoding
 """
-
 from lib.controller.controller import *
 from lib.controller.controller import Controller
 from lib.fss.fss_input_parser import *
@@ -56,15 +55,11 @@ class simple_example_gui(Controller):
         except Exception as e:
             print(e)
             raise(e)
-        run_file_path = p_FSS_DRV
+        # run_file_path = p_FSS_DRV
         # true_file_path = os.path.join(test_dir_path, "FSSAINP.DRV")
         # assert diff_lines_num(run_file_path, true_file_path) == 1
         # assert os.path.exists(self.output_path)
-        self.save_session_click(r"C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa"
-                          r"\tests\dj_load_csv_test\save.mem")
-        print(self.gui.pages[
-            FACET_VAR_PAGE_NAME].get_all_var_facets_indices())
-        print(*self.active_variables_details, sep="\n")
+
 
 if __name__ == '__main__':
     a = simple_example_gui()
