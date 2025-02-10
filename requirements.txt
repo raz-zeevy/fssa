@@ -13,3 +13,4 @@ openpyxl==3.1.2
 python-dotenv
 jsonpickle
 tkinter-tooltip
+loguru

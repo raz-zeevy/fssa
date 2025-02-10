@@ -13,16 +13,15 @@ from const import *
 
 
 DATA_PATH = 'data.csv'
-# SET_MODE_TEST()
-SET_MODE_PRODUCTION()
+SET_MODE_TEST()
+# SET_MODE_PRODUCTION()
 
-class simple_example_gui(Controller):
+class dj_csv_test(Controller):
     def __init__(self):
         super().__init__()
-        self.test_simple_example()
-
-    def test_simple_example(self):
         self.gui.pages[START_PAGE_NAME].button_recorded_data.invoke()
+        
+    def test(self):
         # get the absoult path of the data file
         test_dir_path = os.path.dirname(os.path.abspath(__file__))
         data_file_path = os.path.join(test_dir_path,
@@ -56,11 +55,29 @@ class simple_example_gui(Controller):
             print(e)
             raise(e)
         # run_file_path = p_FSS_DRV
-        # true_file_path = os.path.join(test_dir_path, "FSSAINP.DRV")
-        # assert diff_lines_num(run_file_path, true_file_path) == 1
-        # assert os.path.exists(self.output_path)
-
-
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        if not IS_PRODUCTION():
+            self.save_session(os.path.join(current_dir, "test_dj_csv_test.mms"))
+            self.reset_session(matrix=False)
+            self.load_session(os.path.join(current_dir, "Escape no missing csv.mms"))
+            self.gui.pages[INPUT_PAGE_NAME].set_data_file_path(
+                os.path.join(current_dir, "Escape-comma delimited-new.csv")
+            )
+            self.load_csv()
+            self.next_page()
+            try:
+                self.next_page()
+            except DataLoadingException as e:
+                print("Error loading data. This is expected :)\nAll tests passed")
+            
+    def test_prod_and_dev(self):
+        SET_MODE_PRODUCTION()
+        self.test()
+        self.reset_session(matrix=False)
+        SET_MODE_TEST()
+        self.test()
+            
 if __name__ == '__main__':
-    a = simple_example_gui()
+    a = dj_csv_test()
+    a.test_prod_and_dev()
     a.run_process()

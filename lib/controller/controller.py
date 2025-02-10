@@ -176,7 +176,6 @@ class Controller:
         self.history.add(path)
         session.save(path)
 
-
     def load_session(self, path):
         self.history.add(path)
         session = Session(path=path)
@@ -782,11 +781,12 @@ class Controller:
                 label_i += 1
         # Remove toggled off columns only on csv
         if not self.gui.pages[INPUT_PAGE_NAME].is_manual_input():
-            # try:
-            self.data = self.org_data.iloc[:, [i for i in selected_vars_i]]
-            # except Exception:
-            #     raise DataLoadingException("Error loading data."
-         #                                "Are you sure the variables match the columns in the data file?")
+            try:  
+                self.data = self.org_data.iloc[:, [i for i in selected_vars_i]]
+            except Exception:
+                raise DataLoadingException("Error loading data."
+                                        "Are you sure the variables match the columns in the data file? "
+                                        "You can inspect the data file with the 'View' menu.")
 
         else:
             self.data = self.org_data

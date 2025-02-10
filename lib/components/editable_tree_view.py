@@ -356,11 +356,14 @@ class EditableTreeView(ttk.Treeview):
         """index start in 1"""
         if row < 0:
             row = len(self) + row
-        self._on_check_click(None, row_id=f"I00{row+1}")
+        self._on_check_click(None, row_id=self.get_row_id_by_index(row))
 
     def toggle_all(self):
         for row in range(len(self.get_children())):
             self.toggle_row(row)
+
+    def get_row_id_by_index(self, index):
+        return self.get_children()[index]
 
     #####################
     # Add/Remove/Insert #

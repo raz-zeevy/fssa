@@ -16,8 +16,7 @@ from const import *
 DATA_PATH = 'data.csv'
 SET_MODE_TEST()
 # SET_MODE_PRODUCTION()
-save_path= r"C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\tests" \
-           r"\dj_load_csv_test\dj_test_all.mms"
+save_path= r"C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\tests\dj_csv_test\test_dj_csv_test.mms"
 facets_var_indices = {2: [1, 2], 3: [1, 1], 4: [1, 2], 5: [1, 1], 6: [1, 2], 7: [1, 1], 8: [1, 2], 9: [1, 1], 10: [1, 2], 11: [2, 1], 12: [1, 2], 13: [1, 1], 14: [2, 2], 15: [1, 1], 16: [1, 2], 17: [2, 1], 18: [1, 2], 19: [1, 1], 20: [2, 2]}
 
 class simple_example_gui(Controller):

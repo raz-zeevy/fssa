@@ -16,7 +16,7 @@ class Session:
     def _attributes_from_controller(self, controller):
         controller.init_fss_attributes()
         controller_dict = controller.__dict__.copy()
-        for key in ['gui', 'keyboard', 'navigator', 'history']:
+        for key in ['gui', 'keyboard', 'navigator', 'history', 'data', 'org_data']:
             controller_dict.pop(key, None)
         controller_dict['data'] = []
         controller_dict['fss_data'] = []
@@ -75,7 +75,8 @@ class Session:
             controller._suggest_parsing(interactive=False)
             if not controller.gui.pages[
                 INPUT_PAGE_NAME].is_manual_input():
-                controller.load_csv()
+                pass
+                # controller.load_csv()
             if state["lines_per_var"]:
                 input_page.set_entry_lines(state["lines_per_var"])
             if self.state['are_missing_values']:

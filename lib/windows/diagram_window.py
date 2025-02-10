@@ -92,22 +92,30 @@ class DiagramWindow(Window):
         self.load_page(current_page)
 
     def init_scrollable_legend(self):
+        # Create canvas with grid instead of pack
         self.legend_canvas = tk.Canvas(self.main_frame,
                                        borderwidth=BORDER_WIDTH,
                                        background="red",
                                        width=rreal_size(175))
         self.diagram_labels_frame = ttk.Frame(self.legend_canvas,
                                               borderwidth=BORDER_WIDTH,
-                                              relief="solid", )
-        # Adjust the width as needed
+                                              relief="solid")
+        
+        # Create scrollbar and use grid
         self.vsb = ttk.Scrollbar(self.main_frame, orient="vertical",
                                  command=self.legend_canvas.yview)
         self.legend_canvas.configure(yscrollcommand=self.vsb.set)
-        self.vsb.pack(side="right", fill="y")
-        self.legend_canvas.pack(side="right", fill="y", expand=False)
+        
+        # Use grid for both canvas and scrollbar
+        self.legend_canvas.grid(row=0, column=1, sticky='nsew')
+        self.vsb.grid(row=0, column=2, sticky='ns')
+        
+        # Create the window for the canvas content
         self.canvas_frame = self.legend_canvas.create_window((0, 0),
                                                              window=self.diagram_labels_frame,
                                                              anchor="nw")
+        
+        # Keep the existing bindings
         self.diagram_labels_frame.bind("<Configure>", self.onFrameConfigure)
         self.legend_canvas.bind('<Configure>', self.FrameWidth)
 
@@ -167,7 +175,6 @@ class DiagramWindow(Window):
 
         if len(self.graph_data_lst[i]["legend"]) > 20:
             self.init_scrollable_legend()
-            self.legend_canvas.grid(row=0, column=1, sticky='nsew')
             self.vsb.grid(row=0, column=2, sticky='ns')
         else:
             self.diagram_labels_frame = ttk.Frame(self.main_frame)
