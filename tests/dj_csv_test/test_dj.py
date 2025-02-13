@@ -69,15 +69,50 @@ class dj_csv_test(Controller):
                 self.next_page()
             except DataLoadingException as e:
                 print("Error loading data. This is expected :)\nAll tests passed")
-            
+            else:
+                raise Exception("No error was raised or the error was not the expected one")
+            self.previous_page()
+            self.gui.pages[INPUT_PAGE_NAME].set_data_file_path(
+                os.path.join(current_dir, "Escape no missing csv.csv")
+            )
+            self.load_csv()
+            self.next_page()
+            self.gui.show_recode_window()
+            self.next_page()
+            self.gui.recode_window.set_variables_indices("1-5")
+            recoding_pairs = [
+                (1,2),
+                (0,1),
+            ]
+            for pair in recoding_pairs:
+                self.gui.recode_window.add_pair(*pair)
+            self.gui.recode_window.apply_recoding()
+            self.next_page()
+            self.next_page()
+            self.next_page()
+        try:
+            self.output_path = \
+                r"C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\tests\dj_csv_test\res\Escape no missing csv.fss"
+            self.run_fss(lambda: self._run_fss(debug=True))
+        except Exception as e:
+            print(e)
+            raise(e)
+
     def test_prod_and_dev(self):
+        self.test_prod()
+        self.reset_session(matrix=False)
+        self.test_dev()
+    
+    def test_prod(self):
         SET_MODE_PRODUCTION()
         self.test()
-        self.reset_session(matrix=False)
+        
+    def test_dev(self):
         SET_MODE_TEST()
         self.test()
-            
+    
 if __name__ == '__main__':
     a = dj_csv_test()
     a.test_prod_and_dev()
+    # a.test_dev()
     a.run_process()

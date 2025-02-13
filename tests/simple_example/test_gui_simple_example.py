@@ -136,7 +136,7 @@ class simple_example_gui(Controller):
             print(e)
             # print("################FAILURE###############")
             assert False
-        self.reset_session(False)
+        # self.reset_session(False)
         
 if __name__ == '__main__':
     a = simple_example_gui()

@@ -206,6 +206,8 @@ def parse_fortran_output(result: subprocess.CompletedProcess):
                                                 'Cannot write to file opened for READ':
                 exception = result.stderr.split('\n')[2]
                 raise Exception(exception)
+            elif "Segmentation fault - invalid memory reference" in result.stderr:
+                raise Exception(f"FSSA script failed : Memory error. Please check the input file, variables and the missing values (if not specified, set to '0')")
             else:
                 raise Exception(f"FSSA script failed : {result.stderr} {edited_output}")
         else:

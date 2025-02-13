@@ -35,10 +35,14 @@ class DiagramWindow(Window):
         self.graph_data_lst = graph_data_lst
         self.index = 0
         # init
-        self.create_bottom_panel()
-        self.create_menu()
-        self.main_frame = ttk.Frame(self)
+        # Create main container with padding
+        self.container = ttk.Frame(self, padding=rreal_size(10))
+        self.container.pack(fill=tk.BOTH, expand=True)
+        
+        self.main_frame = ttk.Frame(self.container)
         self.main_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        self.create_menu()
+        self.create_bottom_panel()
         self.load_page(self.index)
         # Bind key presses to the respective methods
         self.bind("<Return>", lambda x: self.next_graph())
@@ -47,7 +51,9 @@ class DiagramWindow(Window):
         self.bind("<Left>", lambda x: self.previous_graph())
         self.bind("<Escape>", lambda x: self.exit())
         self.resizable(True, True)
-        
+        # set default to maximize 
+        self.state("zoomed")
+
     def create_menu(self):
         # create a file menu with save figure command to save the current graph
         self.menu = tk.Menu(self)
@@ -64,7 +70,7 @@ class DiagramWindow(Window):
 
     def get_default_fig_file_name(self):
         label = self.graph_data_lst[self.index]["title"]
-        clean_label = label.replace(" ", "_").replace(":","_")
+        clean_label = label.replace(" ", "_").replace(":","_").replace("\n","_")
         default_name = f"{clean_label}.png"
         return default_name
 
@@ -257,6 +263,8 @@ class DiagramWindow(Window):
         self.figure = Figure(figsize=real_size((4, 4)), dpi=100)
         figure_canvas = FigureCanvasTkAgg(self.figure, self.diagram_frame)
         axes = self.figure.add_subplot()
+        # Force square aspect ratio
+        axes.set_aspect('equal', adjustable='box')
         # plot the data
         axes.scatter(x, y, alpha=0)
         # set the title
@@ -266,10 +274,10 @@ class DiagramWindow(Window):
         # set the title text to be smaller
         axes.text(0, -0.1, caption, ha='left', va='top',
                   transform=axes.transAxes, fontsize=rreal_size(8))
-        self.figure.subplots_adjust(left=0.1,
-                                    right=0.85,
+        self.figure.subplots_adjust(left=0.12,
+                                    right=0.88,
                                     top=0.95,
-                                    bottom=0.15)
+                                    bottom=0.12)
         # create annotations
         annot_offset = (max(y) - min(y)) / 100
         for i, txt in enumerate(z):
@@ -293,7 +301,7 @@ class DiagramWindow(Window):
 
     def create_bottom_panel(self):
         # Navigation Buttons Frame
-        frame_navigation = ttk.Frame(self)
+        frame_navigation = ttk.Frame(self.container)
         # pack the navigation at the bottom of the screen but above the help
         # bar
         frame_navigation.pack(side=ttk.BOTTOM, fill='x', padx=real_size(10),

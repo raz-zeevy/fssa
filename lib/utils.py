@@ -87,8 +87,6 @@ def SET_MODE_NO_VALIDATION():
     import os
     os.environ['MODE'] = config.MODE_NO_VALIDATION
 
-
-
 def IS_PRODUCTION():
     return GET_MODE() == config.MODE_PRODUCTION
 

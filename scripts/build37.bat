@@ -1,6 +1,5 @@
 @echo off
 setlocal EnableExtensions EnableDelayedExpansion
-cd ../
 
 :: Enable immediate exit on error (like set -e in bash)
 set "ErrorActionPreference=Stop"

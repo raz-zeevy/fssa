@@ -1,0 +1,48 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build37",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/build37.bat",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new",
+                "clear": true,
+                "showReuseMessage": false
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Run Tests",
+            "type": "shell",
+            "command": "${config:python.defaultInterpreterPath}",
+            "args": [
+                "-m",
+                "pytest",
+                "tests/"
+            ],
+            "group": "test"
+        },
+        {
+            "label": "Clean Build Directories",
+            "type": "shell",
+            "command": "rm -rf ${workspaceFolder}/dist ${workspaceFolder}/build",
+            "windows": {
+                "command": "if exist dist rd /s /q dist && if exist build rd /s /q build"
+            }
+        },
+        {
+            "label": "Full Build Process",
+            "dependsOn": [
+                "Clean Build Directories",
+                "Build37"
+            ],
+            "dependsOrder": "sequence"
+        }
+    ]
+}
