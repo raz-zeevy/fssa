@@ -43,6 +43,23 @@
                 "Build37"
             ],
             "dependsOrder": "sequence"
+        },
+        {
+            "label": "Send Update Email",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "scripts/email/send_update_email.py"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": []
         }
     ]
 }

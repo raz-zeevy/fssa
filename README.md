@@ -1,14 +1,44 @@
 # FSSA (Faceted SSA)
 
 [![Website](https://img.shields.io/website?url=https://raz-zeevy.github.io/fssa/)](https://raz-zeevy.github.io/fssa/)
-
-
+[![Version](https://img.shields.io/badge/version-1.2.4.3-blue.svg)](https://github.com/raz-zeevy/fssa/releases)
 
 ## Introduction
 
-Welcome to the `fssa` application! This desktop application is dedicated to providing a robust and user-friendly framework for facilitating the analysis and visualization of statistical data. Our goal is to make data analysis more accessible and efficient for researchers, data scientists, and statisticians.
+Welcome to the `fssa` application! This desktop application provides a robust and user-friendly framework for statistical data analysis and visualization, with a focus on Faceted Smallest Space Analysis (FSSA). Our goal is to make complex data analysis more accessible and efficient for researchers, data scientists, and statisticians.
 
-for more details [🌐 Visit the FSSA Website](https://raz-zeevy.github.io/fssa/)
+For more details, visit the [🌐 FSSA Website](https://raz-zeevy.github.io/fssa/)
+
+## Key Features
+
+- **Robust Data Support**: Import data from various formats including CSV, Excel, and TSV
+- **Built-in Data Processing**: Perform data recoding and variable parsing directly within the program
+- **Advanced Visualization**: Generate and analyze facet diagrams with intuitive controls
+- **User-Friendly Interface**: Modern, easy-to-use interface designed for both beginners and experts
+
+## Installation
+
+Installing `fssa` is straightforward:
+
+1. Download the latest version:
+
+   | Version | Date       | Download                                                                                                                                  |
+   | ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+   | 1.2.4.3 | 2024-02-13 | [![Setup](https://img.shields.io/badge/setup-exe-blue.svg)](https://raw.githubusercontent.com/raz-zeevy/fssa/main/releases/FssaSetup.exe) |
+
+2. Run the downloaded `FssaSetup.exe` file
+3. Follow the installation wizard instructions
+
+## Quick Start Guide
+
+1. Launch FSSA by double-clicking the application icon
+2. Choose your data source:
+   - Import a similarity/dissimilarity matrix
+   - Or load raw data for analysis
+3. Configure analysis parameters
+4. Run the analysis and explore the visualizations
+
+_For detailed usage instructions, please visit our [website](https://raz-zeevy.github.io/fssa/)._
 
 ## About the Project
 
@@ -18,30 +48,6 @@ The `fssa` project, inspired by the original Faceted SSA for Windows (FSSAWIN), 
 
 Faceted Smallest Space Analysis (FSSA) is a Multidimensional Scaling (MDS) procedure that optionally allows for the incorporation of content classifications (=facets) of the mapped objects into the analysis and testing their validity. FSSA maps objects (typically variables) in a space of prespecified dimensionality to represent pairwise similarity or dissimilarity observed between them. The (dis)similarity measures are either precomputed or computed by the program from data files.
 
-## Installation
-
-Installing `fssa` only requires a few simple steps:
-
-1. Download the installation package:
-
-   | Version  | Date       | Download |
-   |----------|------------|----------|
-   | alpha 0.97 | 2024-01-25 | [![Setup](https://img.shields.io/badge/setup-exe-blue.svg)](http://u.pc.cd/mHXctalK) |
-
-2. Run the downloaded `FssaSetup.exe` file to start the installation wizard.
-
-3. Follow the on-screen instructions provided by the installation wizard to complete the setup.
-
-Once installed, `fssa` is ready to use on your system.
-## Usage
-
-Here's how to get started with `fssa`:
-
-1. Run the application: double click on `fss`
-
- 2. Follow the on-screen instructions to input your data and configure the analysis parameters.
-
-*Note: Detailed usage instructions will be added soon.*
 ## Data Analysis and Visualization
 
 ### Understanding Your Data
@@ -49,6 +55,7 @@ Here's how to get started with `fssa`:
 Before starting with FSSA, it's crucial to understand the data you are working with:
 
 #### CASE I: Matrix Material
+
 - Ensure the (dis)similarity matrix is accessible on your computer.
 - Know the matrix file's name and full path (e.g., `\mydir\simil.mat`).
 - Understand the matrix format in the file, including the number of fields per row, columns per field, and decimal places used.
@@ -56,29 +63,33 @@ Before starting with FSSA, it's crucial to understand the data you are working w
 - Identify any missing values in the matrix.
 
 #### CASE II: Data
+
 - Verify the data set is in an ASCII file of fixed format and recoded appropriately.
 - Know the data file's name and full path (e.g., `A:\mydir\recod.dat`).
 - Understand the structure of the data file, including records per case and the location of each variable.
 - Identify valid and missing values for each variable.
 
 #### Facet Option
+
 - You may choose to run a simple SSA without facets or use the facet option for more complex analysis.
 - For the facet option, have a substantive criterion for classifying the variables.
 
 ### Results and Output
+
 - By default, FSSA results are saved in `FSSA.RES`.
 - You can change the file names, save to different directories, or direct output to a printer.
 
 ### Inspecting and Printing Diagrams
+
 - The program produces screen diagrams of the solution and facet diagrams.
 - After completion, these diagrams can be re-displayed for inspection.
 - To print the diagrams, use the view menu and follow the instructions for your specific printer.
 
 ## Screenshots
 
-*Placeholder for screenshots*
+_Placeholder for screenshots_
 
-*More screenshots will be added soon.*
+_More screenshots will be added soon._
 
 ## References
 
@@ -92,6 +103,21 @@ Before starting with FSSA, it's crucial to understand the data you are working w
 - Shye, S. (In Press) Facet Theory. Encyclopedia of Statistical Sciences (Update). New York: Wiley
 - Shye, S. and Elizur, D. Introduction to Facet Theory. Newbury Park, California: Sage, 1994.
 
+## Contributing
+
+We welcome contributions! If you'd like to improve FSSA, please feel free to:
+
+- Report bugs
+- Suggest new features
+- Submit pull requests
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
 ## Contact
 
-For any queries or suggestions, feel free to contact us at [raz3zeevy@gmail.com](mailto:raz3zeevy@gmail.com).
+For questions, suggestions, or support:
+
+- Email: [raz3zeevy@gmail.com](mailto:raz3zeevy@gmail.com)
+- Website: [FSSA Website](https://raz-zeevy.github.io/fssa/)
