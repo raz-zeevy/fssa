@@ -84,7 +84,7 @@ class MatrixTest(Controller):
         self.gui.pages[FACET_VAR_PAGE_NAME].set_facets_vars(facets_var)
         try:
             self.output_path = r'C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\tests\matrix_test\achmot\output\achmot.fss'
-            self.run_fss(lambda : self._run_matrix_fss(debug=True))
+            self.run_fss(lambda : self._run_matrix_fss(debug=False))
             self.enable_view_results()
         except Exception as e:
             raise (e)

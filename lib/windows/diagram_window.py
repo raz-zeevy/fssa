@@ -202,7 +202,7 @@ class DiagramWindow(Window):
         diagram_label = ttk.Label(diagram_title_frame,
                                 text=graph_data["title"],
                                 font=f'Helvetica {rreal_size(11)} bold',
-                                wraplength=rreal_size(150))  # Add wraplength to handle long titles
+                                wraplength=rreal_size(200))  # Add wraplength to handle long titles
         diagram_label.pack(side=tk.TOP, fill='x')
         
         # Legend items frame directly below the title

@@ -18,6 +18,12 @@
             "problemMatcher": []
         },
         {
+            "label": "Run Dist Exe",
+            "type": "shell",
+            "command": "${workspaceFolder}/dist/fssa/fssa.exe",
+            "group": "test"
+        },
+        {
             "label": "Run Tests",
             "type": "shell",
             "command": "${config:python.defaultInterpreterPath}",
