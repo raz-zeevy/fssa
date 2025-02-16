@@ -225,7 +225,7 @@ def create_fssacmd_bat(fss_dir: str, arguments: List[str]):
         f.write(f"cd {fss_dir}\n")
         f.write(f"FASSA.BAT {' '.join(arguments)}")
 
-def run_matrix_fortran(output_path: str):
+def run_matrix_fortran(output_path: str, debug=False):
     def get_path(path: str):
         if os.path.exists(path):
             return os.path.abspath(path)
@@ -258,6 +258,10 @@ def run_matrix_fortran(output_path: str):
     # Run the command
     fss_dir = get_script_dir_path()
     create_fssacmd_bat(fss_dir, arguments)
+    if debug:
+        print(f"full_command: {full_command}")
+        open_fss_files_dir()
+        input("Press Enter to continue...")
     with cwd(fss_dir):
         result = subprocess.run(full_command, shell=True, stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE, text=True)

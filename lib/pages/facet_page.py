@@ -42,6 +42,7 @@ class FacetPage(ttk.Frame):
                                                  "4 Facets"])
         self.facets_combo.pack(side=ttk.RIGHT)
         self.facets_combo.current(0)
+        
     def create_facet_table(self, parent, facet_index):
         """
         create facet table

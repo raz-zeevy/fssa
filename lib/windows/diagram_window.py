@@ -191,29 +191,34 @@ class DiagramWindow(Window):
         self.plot_legend(self.graph_data_lst[i])
 
     def plot_legend(self, graph_data):
-        diagram_title_frame = ttk.Frame(self.diagram_labels_frame,
-                                        borderwidth=BORDER_WIDTH)
-        diagram_title_frame.pack(side=tk.TOP, fill=tk.X, expand=False,
-                                 pady=real_size((10, 0)))
+        # Create a container frame for all legend content
+        legend_container = ttk.Frame(self.diagram_labels_frame)
+        legend_container.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        
+        # Title frame at the top of the container
+        diagram_title_frame = ttk.Frame(legend_container, borderwidth=BORDER_WIDTH)
+        diagram_title_frame.pack(side=tk.TOP, fill=tk.X, pady=real_size((10, 5)))
+        
         diagram_label = ttk.Label(diagram_title_frame,
-                                  text=graph_data["title"],
-                                  font=f'Helvetica {rreal_size(11)} bold')
-        diagram_label.pack(side=tk.TOP,
-                           expand=True,
-                           fill='x')
-        # now create labels for all the variables and their labels, this will
-        # be done in a loop and serve like a legend for the diagram
-        legend_items_frame = ttk.Frame(self.diagram_labels_frame, )
-        legend_items_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True,
-                                pady=real_size((5, 0)))
+                                text=graph_data["title"],
+                                font=f'Helvetica {rreal_size(11)} bold',
+                                wraplength=rreal_size(150))  # Add wraplength to handle long titles
+        diagram_label.pack(side=tk.TOP, fill='x')
+        
+        # Legend items frame directly below the title
+        legend_items_frame = ttk.Frame(legend_container)
+        legend_items_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        
         for item in graph_data["legend"]:
             space = "     " if item["index"] < 10 else "   "
-            label = ttk.Label(legend_items_frame,
-                              text=f'{item["index"]}{space}{item["value"]}',
-                              borderwidth=BORDER_WIDTH,
-                              font=f'Helvetica {rreal_size(11)}',
-                              relief="solid", )
-            label.pack(side=tk.TOP, fill=tk.BOTH)
+            item_frame = ttk.Frame(legend_items_frame)
+            item_frame.pack(side=tk.TOP, fill=tk.X, pady=real_size(1))
+            
+            label = ttk.Label(item_frame,
+                            text=f'{item["index"]}{space}{item["value"]}',
+                            borderwidth=BORDER_WIDTH,
+                            font=f'Helvetica {rreal_size(11)}')
+            label.pack(side=tk.LEFT, fill=tk.X, expand=True)
 
     def plot_scatter(self, graph_data):
         def add_geoms(x, axes, graph_data):
@@ -331,9 +336,29 @@ class DiagramWindow(Window):
             self.button_previous.state(["!disabled"])
             self.button_next.state(["!disabled"])
 
-if __name__ == "__main__":
-    root = ttk.Window(themename="sandstone")
-    root.title("Diagram Window Test")
-    dummy_data = [{"x": [1, 2, 3, 4, 5], "y": [1, 2, 3, 4, 5], "annotations": ["A", "B", "C", "D", "E"], "title": "Test Diagram", "legend": [{"index": 1, "value": "A"}, {"index": 2, "value": "B"}, {"index": 3, "value": "C"}, {"index": 4, "value": "D"}, {"index": 5, "value": "E"}]}]
-    window = DiagramWindow(root, dummy_data, "Test Diagram")
-    root.mainloop() 
+def test_diagram_window(n=35):
+    # Create dummy data with 35 points
+    import random
+    num_points = n
+    x_coords = [random.uniform(0, 100) for _ in range(num_points)]
+    y_coords = [random.uniform(0, 100) for _ in range(num_points)]
+    annotations = [chr(65 + i) if i < 26 else f'AA{i-25}' for i in range(num_points)]
+    legend_items = [{"index": i+1, "value": f"Variable {annotations[i]}"} for i in range(num_points)]
+    
+    dummy_data = [{
+        "x": x_coords,
+        "y": y_coords,
+        "annotations": annotations,
+        "title": "No Partition\nSSA Solution d=1X3",
+        "legend": legend_items,
+        "caption": f"This is a test diagram with {num_points} variables"
+    }]
+    
+    return DiagramWindow(None, dummy_data, "Test Diagram")
+
+
+if __name__ == "__main__":    
+    # Create two separate windows
+    window1 = test_diagram_window(n=35)
+    window1.mainloop()
+    

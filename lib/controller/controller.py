@@ -21,7 +21,7 @@ import pynput.keyboard
 from lib.windows.recoding_window import RecodeWindow
 
 SUPPORTED_RECORDED_DATA_FORMATS = ['.csv', '.xlsx', '.xls', 'tsv']
-
+# SET_MODE_PRODUCTION()
 # SET_MODE_TEST()
 
 class Controller:
@@ -176,6 +176,7 @@ class Controller:
         self.history.add(path)
         session.save(path)
 
+    @error_handler
     def load_session(self, path):
         self.history.add(path)
         session = Session(path=path)
@@ -781,6 +782,10 @@ class Controller:
                 label_i += 1
         # Remove toggled off columns only on csv
         if not self.gui.pages[INPUT_PAGE_NAME].is_manual_input():
+            # in cases where session is loaded from mms file and not changes in 
+            # input data file were made, no loading, the load_csv is not called
+            if self.org_data is None:
+                self.load_csv()
             try:  
                 self.data = self.org_data.iloc[:, [i for i in selected_vars_i]]
             except Exception:
@@ -870,26 +875,34 @@ class Controller:
         self.iweigh = self.locality_weight[0]
         self.hypotheses_details = self.gui.pages[
             HYPOTHESIS_PAGE_NAME].get_hypotheses()
+        # Facets Pages
         self.facet_details = self.gui.pages[
             FACET_PAGE_NAME].get_facets_details()
-        self.facet_var_details = self.gui.pages[
-            FACET_VAR_PAGE_NAME].get_all_var_facets_indices_values()
-        self.facet_dim_details = self.gui.pages[
-            FACET_DIM_PAGE_NAME].get_facets_dim()
+        if self.facet_details:
+            self.facet_var_details = self.gui.pages[
+                FACET_VAR_PAGE_NAME].get_all_var_facets_indices_values()
+            self.facet_dim_details = self.gui.pages[
+                FACET_DIM_PAGE_NAME].get_facets_dim()
+        else:
+            self.facet_var_details = []
+            self.facet_dim_details = {}
         # Manual Format Page
         if self.manual_input:
             self.manual_format_details = self.gui.pages[
                 MANUAL_FORMAT_PAGE_NAME].get_data_format()
+        # Matrix Input Page
         if self.matrix_input:
             self.data_file_path = self.gui.pages[
                 MATRIX_INPUT_PAGE_NAME].get_data_file_path()
             self.matrix_details = self.gui.pages[MATRIX_INPUT_PAGE_NAME]. \
                 get_matrix_details()
+        # Data Page
         else:
             self.fss_data = self.gui.pages[
                 DATA_PAGE_NAME].get_all_visible_data()
             self.valid_values_range = self.gui.pages[
                 MANUAL_FORMAT_PAGE_NAME].get_vars_valid_values()
+        # Manual Format Page
         self.fss_labels = []
         self.get_labels()
         if self.var_labels:
@@ -909,7 +922,7 @@ class Controller:
         # output
         self.job_name = ''
 
-    def _run_matrix_fss(self):
+    def _run_matrix_fss(self, debug=False):
         self.init_fss_attributes()
         create_matrix_running_files(
             job_name=self.job_name,
@@ -924,7 +937,7 @@ class Controller:
             facet_var_details=self.facet_var_details,
             hypotheses_details=self.hypotheses_details,
             facet_dim_details=self.facet_dim_details)
-        run_matrix_fortran(self.output_path)
+        run_matrix_fortran(self.output_path, debug=debug)
 
     def _run_fss(self, debug=False):
         self.init_fss_attributes()

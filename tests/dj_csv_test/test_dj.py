@@ -7,6 +7,7 @@ contains:
 """
 from lib.controller.controller import *
 from lib.controller.controller import Controller
+from lib.controller.session import SessionException
 from lib.fss.fss_input_parser import *
 from lib.utils import *
 from const import *
@@ -93,7 +94,7 @@ class dj_csv_test(Controller):
         try:
             self.output_path = \
                 r"C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\tests\dj_csv_test\res\Escape no missing csv.fss"
-            self.run_fss(lambda: self._run_fss(debug=True))
+            self.run_fss(lambda: self._run_fss(debug=False))
         except Exception as e:
             print(e)
             raise(e)
@@ -111,8 +112,20 @@ class dj_csv_test(Controller):
         SET_MODE_TEST()
         self.test()
     
+    def test_1facet_load_session(self):
+        SET_MODE_TEST()
+        try:
+            self.load_session("C:/Users/Raz_Z/Projects/Shmuel/fssaDist/fssa/tests/dj_csv_test/dj_all -1facet.mms")
+        except SessionException:
+            print("SessionException was raised as expected")
+        else:
+            raise Exception("Test failed, SessionException was not raised")
+        self.reset_session(matrix=False)
+    
 if __name__ == '__main__':
     a = dj_csv_test()
-    a.test_prod_and_dev()
+    a.test_1facet_load_session()
+    a.test_dev()
+    # a.test_prod_and_dev()
     # a.test_dev()
     a.run_process()

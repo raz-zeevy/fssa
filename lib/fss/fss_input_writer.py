@@ -86,7 +86,7 @@ class FssInputWriter():
             # hypotheses details
             self.write_hypotheses(f, facet_dim_details, hypotheses_details)
 
-    def write_hypotheses(self, f, facet_dim_details, hypotheses_details):
+    def write_hypotheses(self, f, facet_dim_details : Dict, hypotheses_details : List):
         """
         This function writes the hypotheses details to the FSSA input file
         :param facet_dim_details:

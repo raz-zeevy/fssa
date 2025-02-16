@@ -18,26 +18,8 @@ SET_MODE_TEST()
 class simple_example_gui(Controller):
     def __init__(self):
         super().__init__()
-        self.test_simple_example()
 
-    def test_simple_example(self):
-        self.gui.pages[START_PAGE_NAME].button_recorded_data.invoke()
-        # get the absoult path of the data file
-        test_dir_path = os.path.dirname(os.path.abspath(__file__))
-        data_file_path = os.path.join(test_dir_path,
-                                      DATA_PATH)
-        self.gui.pages[INPUT_PAGE_NAME].set_data_file_path(
-            data_file_path)
-        self.set_header(True)
-        self.data_file_extension = ".csv"
-        self.load_csv_init()
-        self.gui.pages[INPUT_PAGE_NAME].disable_additional_options()
-        self.next_page()
-        self.gui.pages[MANUAL_FORMAT_PAGE_NAME].select_variables_window(
-            {i for i in range(3, 21)}
-        )
-        self.next_page()
-        #
+    def run_recoding(self):
         self.gui.show_recode_window()
         self.gui.recode_window.set_variables_indices("9")
         recoding_pairs = [
@@ -59,6 +41,25 @@ class simple_example_gui(Controller):
         self.gui.show_recode_history_window()
         # close the recoding history window
         self.gui.recode_history_window.destroy()
+    
+    def test_simple_example(self):
+        self.gui.pages[START_PAGE_NAME].button_recorded_data.invoke()
+        # get the absoult path of the data file
+        test_dir_path = os.path.dirname(os.path.abspath(__file__))
+        data_file_path = os.path.join(test_dir_path,
+                                      DATA_PATH)
+        self.gui.pages[INPUT_PAGE_NAME].set_data_file_path(
+            data_file_path)
+        self.set_header(True)
+        self.data_file_extension = ".csv"
+        self.load_csv_init()
+        self.gui.pages[INPUT_PAGE_NAME].disable_additional_options()
+        self.next_page()
+        self.gui.pages[MANUAL_FORMAT_PAGE_NAME].select_variables_window(
+            {i for i in range(3, 21)}
+        )
+        self.next_page()
+        self.run_recoding()
         self.next_page()
         self.next_page()
         try:
@@ -74,7 +75,28 @@ class simple_example_gui(Controller):
         # # true_file_path = os.path.join(test_dir_path, "FSSAINP.DRV")
         # # assert diff_lines_num(run_file_path, true_file_path) == 1
         assert os.path.isfile(self.output_path)
-
+        # select facets nums to 1
+        self.gui.pages[FACET_PAGE_NAME].set_facets_num(1)
+        self.on_facet_num_change(None)
+        self.next_page()
+        self.gui.pages[FACET_VAR_PAGE_NAME].set_facets_vars([[1],[2]])
+        mms_path = r"C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\tests\real_csv_test\mms\facet_1.mms"
+        self.save_session(mms_path)
+        self.load_session(mms_path)
+        self.next_page()
+        self.next_page()
+        self.run_recoding()
+        self.next_page()
+        self.next_page()
+        self.gui.pages[FACET_PAGE_NAME].set_facets_num(0)
+        self.on_facet_num_change(None)
+        self.save_session(mms_path)
+        self.load_session(mms_path)
+        assert not self.facet_var_details, "facet_var_details should be empty"
+        assert not self.facet_dim_details, "facet_dim_details should be empty"
+        assert not self.facet_details, "facet_details should be empty"
+        
 if __name__ == '__main__':
     a = simple_example_gui()
+    a.test_simple_example()
     a.run_process()

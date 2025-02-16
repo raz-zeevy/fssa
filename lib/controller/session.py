@@ -2,16 +2,22 @@ import jsonpickle
 import pandas as pd
 
 from lib.utils import *
+from loguru import logger
+
+class SessionException(Exception):
+    def __init__(self, msg = ""):
+        super().__init__("Failed to process job details, .mms file is corrupted or missing. " + msg)
 
 class Session:
     def __init__(self, controller=None, path=None):
         if controller:
             controller = controller
-            self.state = self._attributes_from_controller(controller)
+            self.state : dict = self._attributes_from_controller(controller)
         elif path:
-            self.state = self._attributes_from_save(path)
+            self.state : dict = self._attributes_from_save(path)
         else:
             raise ValueError('Either controller or path must be provided')
+        self.validate_session()
 
     def _attributes_from_controller(self, controller):
         controller.init_fss_attributes()
@@ -89,9 +95,11 @@ class Session:
             if state["manual_input"]:
                 # controller.next_page()
                 #   Manual Format Page
+                controller.gui.pages[MANUAL_FORMAT_PAGE_NAME].unset_limited_edit_mode()
                 for var in state["manual_format_details"]:
                     manual_page.add_variable(**var)
             else:
+                controller.gui.pages[MANUAL_FORMAT_PAGE_NAME].set_limited_edit_mode()
                 for i, var in enumerate(controller.active_variables_details):
                     if not var['remove']:
                         manual_page.add_variable(label=var['label'],
@@ -128,3 +136,8 @@ class Session:
         facet_dim_page = controller.gui.pages[FACET_DIM_PAGE_NAME]
         facet_dim_page.set_facets_dim(state["facet_dim_details"])
         controller.active_variables_details = state['active_variables_details']
+
+    def validate_session(self):
+        if self.state.get('facets_num') and not self.state.get('facet_details'):
+            logger.exception("Cannot load session, facets_num > 0 but facet details are missing")
+            raise SessionException()

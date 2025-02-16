@@ -1,4 +1,5 @@
 from tkinter import filedialog, Menu
+from loguru import logger
 import ttkbootstrap as ttk
 from typing import List
 from lib.components.form import *
@@ -142,7 +143,11 @@ class FacetVarPage(ttk.Frame):
 
 
     def set_facets_vars(self, facets_vars : List[list]):
+        if len(facets_vars) != len(self.combo_by_var):
+            logger.warning(f"Number of facets variables {len(facets_vars)} does not match the number of variables {len(self.combo_by_var)}")
         for i, var in enumerate(self.combo_by_var):
+            if i >= len(facets_vars):
+                break
             for j, facet in enumerate(var):
                 if facets_vars[i]:
                     self.combo_by_var[i][j].current(facets_vars[i][j])

@@ -35,7 +35,7 @@ def generate_graphs(controller, dim, facet):
             x=x,
             y=y,
             annotations=index,
-            title=f"{NO_FACET_TITLE}\nFSS Solution d={dim} {a + 1}X{b + 1}",
+            title=f"{NO_FACET_TITLE}\nSSA Solution d={a + 1}X{b + 1}",
             legend=legend
         )
         graph_data_list.append(graph)
@@ -55,7 +55,7 @@ def generate_graphs(controller, dim, facet):
                 x=x,
                 y=y,
                 annotations=annotations,
-                title=f"Facet {chr(64 + facet)}: d={dim} {a + 1}X{b + 1}",
+                title=f"Facet {chr(64 + facet)} Diagram d={a + 1}X{b + 1}",
                 legend=legend,
             )
             if dim == 2:
@@ -64,7 +64,7 @@ def generate_graphs(controller, dim, facet):
                     m_graph = dict(x=x,
                                    y=y,
                                    annotations=annotations,
-                                   title=f"{MODEL_NAMES[model['model']]}\nFacet {chr(64 + facet)}: d={dim} {a + 1}X{b + 1}",
+                                   title=f"Facet {chr(64 + facet)} Diagram d={a + 1}X{b + 1}\n{MODEL_NAMES[model['model']]}",
                                    legend=legend)
                     m_graph["geoms"] = ShapeFactory.shapes_from_list(model[
                                                                          "divide_geoms"])
