@@ -3,4 +3,4 @@
 # MINOR: New features, backwards compatible
 # PATCH: Bug fixes, backwards compatible
 
-__version__ = "1.2.4.3"  
+__version__ = "1.2.4.4"  
