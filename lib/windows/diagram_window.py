@@ -6,7 +6,7 @@ import matplotlib
 import ttkbootstrap as ttk
 
 from lib.components.form import NavigationButton
-from lib.components.shapes import Circle, DivideAxis, Line, VerticalLine
+from lib.components.shapes import Circle, DivideAxis, Line
 from lib.utils import real_size, rreal_size
 from lib.windows.window import Window
 
@@ -28,23 +28,22 @@ class DiagramWindow(Window):
         should contain "x", "y", "annotations", "title", "legend",
          "captions", "geom" keys
         """
-        super().__init__(**kwargs, geometry=f"{rreal_size(900)}x{rreal_size(700)}")
+        super().__init__(**kwargs, geometry=f"{rreal_size(1000)}x{rreal_size(750)}")
         self.title(title)
+        self.tk.call("tk", "scaling", 1.4)
+        # Process DPI Unaware
+        # from ctypes import windll
+        # windll.shcore.SetProcessDpiAwareness(0)  # 0 = Process DPI Unaware
+        self.resizable(True, True)
         # self.iconbitmap(get_resource("icon.ico"))
         # sets the geometry of toplevel
         self.graph_data_lst = graph_data_lst
         self.index = 0
-        # self.tk.call("tk", "scaling", 1.5)
-
         # init
-        # Create main container with padding
-        self.container = ttk.Frame(self, padding=rreal_size(10))
-        self.container.pack(fill=tk.BOTH, expand=True)
-
-        self.main_frame = ttk.Frame(self.container)
-        self.main_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-        self.create_menu()
         self.create_bottom_panel()
+        self.create_menu()
+        self.main_frame = ttk.Frame(self)
+        self.main_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         self.load_page(self.index)
         # Bind key presses to the respective methods
         self.bind("<Return>", lambda x: self.next_graph())
@@ -52,9 +51,10 @@ class DiagramWindow(Window):
         self.bind("<BackSpace>", lambda x: self.previous_graph())
         self.bind("<Left>", lambda x: self.previous_graph())
         self.bind("<Escape>", lambda x: self.exit())
-        self.resizable(True, True)
-        # set default to maximize
-        self.state("zoomed")
+
+        # Make sure to center the window after all elements are in place
+        self.update_idletasks()  # Ensure all elements are rendered before centering
+        self.center_window()
 
     def create_menu(self):
         # create a file menu with save figure command to save the current graph
@@ -72,7 +72,7 @@ class DiagramWindow(Window):
 
     def get_default_fig_file_name(self):
         label = self.graph_data_lst[self.index]["title"]
-        clean_label = label.replace(" ", "_").replace(":", "_").replace("\n", "_")
+        clean_label = label.replace(" ", "_").replace("\n", "")
         default_name = f"{clean_label}.png"
         return default_name
 
@@ -94,14 +94,13 @@ class DiagramWindow(Window):
             # I don't use the self.get_name because it would cause that
             # some figures would not be saved
             path = os.path.join(dir, "figure_" + str(i + 1) + ".png")
-            self.figure.set_size_inches(real_size(5), real_size(5))
+            self.figure.set_size_inches(5, 5)
             self.figure.savefig(path, dpi=DPI_SAVE)
             self.next_graph()
         self.index = current_page
         self.load_page(current_page)
 
     def init_scrollable_legend(self):
-        # Create canvas with grid instead of pack
         self.legend_canvas = tk.Canvas(
             self.main_frame,
             borderwidth=BORDER_WIDTH,
@@ -109,25 +108,20 @@ class DiagramWindow(Window):
             width=rreal_size(175),
         )
         self.diagram_labels_frame = ttk.Frame(
-            self.legend_canvas, borderwidth=BORDER_WIDTH, relief="solid"
+            self.legend_canvas,
+            borderwidth=BORDER_WIDTH,
+            relief="solid",
         )
-
-        # Create scrollbar and use grid
+        # Adjust the width as needed
         self.vsb = ttk.Scrollbar(
             self.main_frame, orient="vertical", command=self.legend_canvas.yview
         )
         self.legend_canvas.configure(yscrollcommand=self.vsb.set)
-
-        # Use grid for both canvas and scrollbar
-        self.legend_canvas.grid(row=0, column=1, sticky="nsew")
-        self.vsb.grid(row=0, column=2, sticky="ns")
-
-        # Create the window for the canvas content
+        self.vsb.pack(side="right", fill="y")
+        self.legend_canvas.pack(side="right", fill="both", expand=False)
         self.canvas_frame = self.legend_canvas.create_window(
             (0, 0), window=self.diagram_labels_frame, anchor="nw"
         )
-
-        # Keep the existing bindings
         self.diagram_labels_frame.bind("<Configure>", self.onFrameConfigure)
         self.legend_canvas.bind("<Configure>", self.FrameWidth)
 
@@ -141,10 +135,6 @@ class DiagramWindow(Window):
         self.legend_canvas.itemconfig(self.canvas_frame, width=canvas_width)
 
     def navigate_control(self):
-        """
-        This function is now Obsolete because we have circular paging
-        :return:
-        """
         if self.index < len(self.graph_data_lst) - 1:
             self.button_next.state(["!disabled"])
         else:
@@ -157,16 +147,12 @@ class DiagramWindow(Window):
     def next_graph(self):
         if self.index < len(self.graph_data_lst) - 1:
             self.index += 1
-        else:
-            self.index = 0  # Loop back to the first graph
-        self.load_page(self.index)
+            self.load_page(self.index)
 
     def previous_graph(self):
         if self.index > 0:
             self.index -= 1
-        else:
-            self.index = len(self.graph_data_lst) - 1  # Loop to the last graph
-        self.load_page(self.index)
+            self.load_page(self.index)
 
     def exit(self):
         self.destroy()
@@ -174,62 +160,48 @@ class DiagramWindow(Window):
     def load_page(self, i):
         for widget in self.main_frame.winfo_children():
             widget.destroy()
-
-        # Configure grid weights to control space allocation
-        self.main_frame.grid_columnconfigure(0, weight=3)  # Graph gets 3/4 of width
-        self.main_frame.grid_columnconfigure(1, weight=1)  # Legend gets 1/4 of width
-        self.main_frame.grid_rowconfigure(0, weight=1)  # Row expands to fill height
-
-        # Create frames using grid instead of pack
+        self.navigate_control()
+        #
         self.diagram_frame = ttk.Frame(self.main_frame)
-        self.diagram_frame.grid(row=0, column=0, sticky="nsew")
-
-        if len(self.graph_data_lst[i]["legend"]) > 20:
+        self.diagram_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.plot_scatter(self.graph_data_lst[i])
+        if len(self.graph_data_lst[i]["legend"]) > 30:
             self.init_scrollable_legend()
-            self.vsb.grid(row=0, column=2, sticky="ns")
         else:
             self.diagram_labels_frame = ttk.Frame(self.main_frame)
-            self.diagram_labels_frame.grid(
-                row=0, column=1, sticky="nsew", padx=real_size((0, 10))
+            self.diagram_labels_frame.pack(
+                side=tk.RIGHT, expand=False, fill="y", padx=rreal_size((0, 65))
             )
-            self.diagram_labels_frame.config(width=rreal_size(40))
-
-        self.plot_scatter(self.graph_data_lst[i])
+        self.diagram_labels_frame.config(width=rreal_size(30))
         self.plot_legend(self.graph_data_lst[i])
 
     def plot_legend(self, graph_data):
-        # Create a container frame for all legend content
-        legend_container = ttk.Frame(self.diagram_labels_frame)
-        legend_container.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-
-        # Title frame at the top of the container
-        diagram_title_frame = ttk.Frame(legend_container, borderwidth=BORDER_WIDTH)
-        diagram_title_frame.pack(side=tk.TOP, fill=tk.X, pady=real_size((10, 5)))
-
+        diagram_title_frame = ttk.Frame(
+            self.diagram_labels_frame, borderwidth=BORDER_WIDTH
+        )
+        diagram_title_frame.pack(
+            side=tk.TOP, fill=tk.X, expand=False, pady=real_size((0, 0))
+        )
         diagram_label = ttk.Label(
-            diagram_title_frame,
-            text=graph_data["title"],
-            font=f"Helvetica {rreal_size(11)} bold",
-            wraplength=rreal_size(200),
-        )  # Add wraplength to handle long titles
-        diagram_label.pack(side=tk.TOP, fill="x")
-
-        # Legend items frame directly below the title
-        legend_items_frame = ttk.Frame(legend_container)
-        legend_items_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-
+            diagram_title_frame, text=graph_data["title"], font="Helvetica 11 bold"
+        )
+        diagram_label.pack(side=tk.TOP, expand=True, fill="x")
+        # now create labels for all the variables and their labels, this will
+        # be done in a loop and serve like a legend for the diagram
+        legend_items_frame = ttk.Frame(
+            self.diagram_labels_frame,
+        )
+        legend_items_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True, pady=(5, 0))
         for item in graph_data["legend"]:
             space = "     " if item["index"] < 10 else "   "
-            item_frame = ttk.Frame(legend_items_frame)
-            item_frame.pack(side=tk.TOP, fill=tk.X, pady=real_size(1))
-
             label = ttk.Label(
-                item_frame,
+                legend_items_frame,
                 text=f"{item['index']}{space}{item['value']}",
                 borderwidth=BORDER_WIDTH,
-                font=f"Helvetica {rreal_size(11)}",
+                font="Helvetica 11",
+                relief="solid",
             )
-            label.pack(side=tk.LEFT, fill=tk.X, expand=True)
+            label.pack(side=tk.TOP, fill=tk.BOTH)
 
     def plot_scatter(self, graph_data):
         def add_geoms(x, axes, graph_data):
@@ -264,8 +236,6 @@ class DiagramWindow(Window):
                     add_circle(axes, geom)
                 elif isinstance(geom, DivideAxis):
                     add_divide_axis(axes, geom)
-                elif isinstance(geom, VerticalLine):
-                    add_line(x, axes, geom)
                 else:
                     raise ValueError(f"Unknown geometry type: {type(geom)}")
 
@@ -273,11 +243,9 @@ class DiagramWindow(Window):
         y = graph_data["y"]
         z = graph_data["annotations"]
         # create a figure and axis
-        self.figure = Figure(figsize=real_size((4, 4)), dpi=100)
+        self.figure = Figure(figsize=rreal_size((6, 6)), dpi=100)
         figure_canvas = FigureCanvasTkAgg(self.figure, self.diagram_frame)
         axes = self.figure.add_subplot()
-        # Force square aspect ratio
-        axes.set_aspect("equal", adjustable="box")
         # plot the data
         axes.scatter(x, y, alpha=0)
         # set the title
@@ -286,21 +254,16 @@ class DiagramWindow(Window):
             caption = graph_data["caption"]
         # set the title text to be smaller
         axes.text(
-            0,
-            -0.1,
-            caption,
-            ha="left",
-            va="top",
-            transform=axes.transAxes,
-            fontsize=rreal_size(8),
+            0, -0.1, caption, ha="left", va="top", transform=axes.transAxes, fontsize=8
         )
-        self.figure.subplots_adjust(left=0.12, right=0.88, top=0.95, bottom=0.12)
+        self.figure.subplots_adjust(left=0.1, right=0.95, top=0.95, bottom=0.15)
+        # Force square aspect ratio
+        axes.set_aspect("equal", adjustable="box")
+
         # create annotations
         annot_offset = (max(y) - min(y)) / 100
         for i, txt in enumerate(z):
-            axes.annotate(
-                txt, (x[i], y[i] - annot_offset), ha="center", fontsize=rreal_size(9)
-            )
+            axes.annotate(txt, (x[i], y[i] - annot_offset), ha="center", fontsize=9)
         # add geom
         add_geoms(x, axes, graph_data)
         # Adjust the plot limits to make sure it fits
@@ -312,15 +275,11 @@ class DiagramWindow(Window):
         )
         axes.set_xlim([start_x - x_offset, end_x + x_offset])
         axes.set_ylim([start_y - y_offset, end_y + y_offset])
-        figure_canvas.get_tk_widget().grid(row=0, column=0, sticky="nsew")
-
-        # Configure the diagram_frame grid weights
-        self.diagram_frame.grid_columnconfigure(0, weight=1)
-        self.diagram_frame.grid_rowconfigure(0, weight=1)
+        figure_canvas.get_tk_widget().pack(side=tk.TOP)
 
     def create_bottom_panel(self):
-        # Navigation Buttons Frame
-        frame_navigation = ttk.Frame(self.container)
+        # Bottom Buttons Frame
+        frame_navigation = ttk.Frame(self)
         # pack the navigation at the bottom of the screen but above the help
         # bar
         frame_navigation.pack(

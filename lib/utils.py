@@ -1,7 +1,7 @@
 import os
+
 from lib import config
 from lib.version import __version__
-
 
 WINDOW_HEIGHT = 570
 # WINDOW_HEIGHT = 800
@@ -35,6 +35,8 @@ def real_size(args, _round=False):
     dpi_ratio = float(os.environ.get('DPI_RATIO', 0))
     if not dpi_ratio:
         if _round:
+            if isinstance(args, tuple):
+                return tuple([round(arg) for arg in args])
             return round(args)
         return args
     elif isinstance(args, tuple):

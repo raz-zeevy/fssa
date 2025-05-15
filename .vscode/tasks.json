@@ -53,9 +53,12 @@
         {
             "label": "Send Update Email (Production)",
             "type": "shell",
-            "command": "python",
+            "command": "${workspaceFolder}/venv37/Scripts/python.exe",
+            "options": {
+                "cwd": "${workspaceFolder}/scripts/email"
+            },
             "args": [
-                "scripts/email/send_update_email.py"
+                "send_update_email.py"
             ],
             "group": "build",
             "presentation": {
@@ -67,15 +70,85 @@
         {
             "label": "Send Update Email (Debug)",
             "type": "shell",
-            "command": "python",
+            "command": "${workspaceFolder}/venv37/Scripts/python.exe",
+            "options": {
+                "cwd": "${workspaceFolder}/scripts/email"
+            },
             "args": [
-                "scripts/email/send_update_email.py",
+                "send_update_email.py",
                 "--debug"
             ],
             "group": "build",
             "presentation": {
                 "reveal": "always",
                 "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Open Installer",
+            "type": "shell",
+            "command": "${workspaceFolder}/releases/FssaSetup.exe",
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Bump Revision (Build Number)",
+            "type": "shell",
+            "command": "${workspaceFolder}/venv37/Scripts/python.exe",
+            "args": [
+                "${workspaceFolder}/scripts/bump_version.py",
+                "revision"
+            ],
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Bump Patch",
+            "type": "shell",
+            "command": "${workspaceFolder}/venv37/Scripts/python.exe",
+            "args": [
+                "${workspaceFolder}/scripts/bump_version.py",
+                "patch"
+            ],
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Bump Revision and Build",
+            "dependsOn": [
+                "Bump Revision (Build Number)",
+                "Full Build Process"
+            ],
+            "dependsOrder": "sequence",
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Bump Patch and Build",
+            "dependsOn": [
+                "Bump Patch",
+                "Full Build Process"
+            ],
+            "dependsOrder": "sequence",
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
             },
             "problemMatcher": []
         }
