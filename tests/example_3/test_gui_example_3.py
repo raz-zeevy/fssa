@@ -1,12 +1,15 @@
+from const import *
+
 from lib.controller.controller import *
 from lib.controller.controller import Controller
 from lib.fss.fss_input_parser import *
-from const import *
 
 # SET_MODE_TEST()
 SET_MODE_PRODUCTION()
-SAVE_PATH = r"C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\tests\example_3" \
-            r"\save.mms"
+SAVE_PATH = (
+    r"C:\Users\raz3z\Projects\Shmuel\fssaDist\fssa\tests\example_3"
+    r"\save.mms"
+)
 
 ###
 test_facets = [
@@ -77,9 +80,10 @@ class example_3_gui(Controller):
                == \
                 hypo_data.facets_dim
         try:
-            self.output_path = \
-                r"C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\output" \
+            self.output_path = (
+                r"C:\Users\raz3z\Projects\Shmuel\fssaDist\fssa\output"
                 r"\test_3_gui.fss"
+            )
             self.run_fss(self._run_fss)
             self.enable_view_results()
         except Exception as e:
@@ -97,9 +101,10 @@ class example_3_gui(Controller):
         self.next_page()
         self.next_page()
         try:
-            self.output_path = \
-                r"C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\output" \
+            self.output_path = (
+                r"C:\Users\raz3z\Projects\Shmuel\fssaDist\fssa\output"
                 r"\test_3_gui.fss"
+            )
             self.run_fss(self._run_fss)
             self.enable_view_results()
         except Exception as e:
@@ -110,7 +115,7 @@ def test():
     a = example_3_gui()
     try:
         a.run_process()
-    except Exception as e:
+    except Exception:
         return False
     return True
 

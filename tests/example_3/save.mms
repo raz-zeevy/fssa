@@ -11692,7 +11692,7 @@
       "attrs": {}
     }
   },
-  "data_file_path": "C:\\Users\\Raz_Z\\Projects\\Shmuel\\fssaDist\\fssa\\tests\\example_3\\example_3.prn",
+  "data_file_path": "C:\\Users\\raz3z\\Projects\\Shmuel\\fssaDist\\fssa\\tests\\example_3\\example_3.prn",
   "save_path": null,
   "data_file_extension": null,
   "var_labels": [
@@ -12338,7 +12338,7 @@
   "matrix_input": false,
   "are_missing_values": true,
   "lines_per_var": 4,
-  "output_path": "C:\\Users\\Raz_Z\\Projects\\Shmuel\\fssaDist\\fssa\\output\\test_3_gui.fss",
+  "output_path": "C:\\Users\\raz3z\\Projects\\Shmuel\\fssaDist\\fssa\\output\\test_3_gui.fss",
   "facets_num": 4,
   "max_dim": 3,
   "min_dim": 2,

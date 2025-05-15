@@ -1,3 +1,6 @@
+import os
+
+
 def diff_lines_num(pred_path : str, true_path: str):
     """
     return the number of lines that are different between the two files
@@ -14,3 +17,11 @@ def diff_lines_num(pred_path : str, true_path: str):
             if line_p != line_tr:
                 diff += 1
         return diff
+
+
+def get_project_root_dir_path():
+    return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+def get_abs_path(rel_path: str):
+    return os.path.join(get_project_root_dir_path(), rel_path)

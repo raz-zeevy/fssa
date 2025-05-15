@@ -1,16 +1,18 @@
-from tkinter import filedialog, Menu
-from loguru import logger
-import ttkbootstrap as ttk
+import tkinter as tk
 from typing import List
+
+import ttkbootstrap as ttk
+from loguru import logger
+from ttkbootstrap import Canvas, Frame, Label, Scrollbar
+
 from lib.components.form import *
 from lib.utils import *
-import tkinter as tk
-from ttkbootstrap import Canvas, Frame, Scrollbar, Label
 
 # Constants for the layout
 TABLE_PADX = 20
 ENTRIES_PADX = 40
 WIDTH_FACET_COMBO = 40
+
 
 class FacetVarPage(ttk.Frame):
     def __init__(self, parent):
@@ -20,6 +22,7 @@ class FacetVarPage(ttk.Frame):
         self.parent = parent
         self.create_entries()
         self.selected_var_i = []
+
     def create_entries(self):
         frame_correlation_combo = ttk.Frame(self)
         frame_correlation_combo.pack(fill='x', padx=ENTRIES_PADX, pady=(20,

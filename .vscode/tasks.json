@@ -51,16 +51,28 @@
             "dependsOrder": "sequence"
         },
         {
-            "label": "Send Update Email",
+            "label": "Send Update Email (Production)",
             "type": "shell",
             "command": "python",
             "args": [
                 "scripts/email/send_update_email.py"
             ],
-            "group": {
-                "kind": "build",
-                "isDefault": false
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
             },
+            "problemMatcher": []
+        },
+        {
+            "label": "Send Update Email (Debug)",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "scripts/email/send_update_email.py",
+                "--debug"
+            ],
+            "group": "build",
             "presentation": {
                 "reveal": "always",
                 "panel": "new"

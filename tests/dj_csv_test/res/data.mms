@@ -1711,8 +1711,8 @@
       "attrs": {}
     }
   },
-  "data_file_path": "C:\\Users\\Raz_Z\\Projects\\Shmuel\\fssaDist\\fssa\\tests\\dj_csv_test\\data.csv",
-  "save_path": "C:/Users/Raz_Z/Projects/Shmuel/fssaDist/fssa/tests/dj_csv_test/res/data.mms",
+  "data_file_path": "C:\\Users\\raz3z\\Projects\\Shmuel\\fssaDist\\fssa\\tests\\dj_csv_test\\data.csv",
+  "save_path": "C:/Users/raz3z/Projects/Shmuel/fssaDist/fssa/tests/dj_csv_test/res/data.mms",
   "data_file_extension": ".csv",
   "var_labels": [
     "Utility-L setA",
@@ -1837,7 +1837,7 @@
   "matrix_input": false,
   "are_missing_values": false,
   "lines_per_var": 0,
-  "output_path": "C:\\Users\\Raz_Z\\Projects\\Shmuel\\fssaDist\\fssa\\tests\\dj_csv_test\\res\\data.fss",
+  "output_path": "C:\\Users\\raz3z\\Projects\\Shmuel\\fssaDist\\fssa\\tests\\dj_csv_test\\res\\data.fss",
   "facets_num": 2,
   "max_dim": 2,
   "min_dim": 2,

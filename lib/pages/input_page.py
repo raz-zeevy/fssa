@@ -1,8 +1,10 @@
-from tkinter import filedialog, Menu
+from tkinter import filedialog
+
 import ttkbootstrap as ttk
+from tktooltip import ToolTip
+
 from lib.components.form import *
 from lib.utils import *
-from tktooltip import ToolTip
 
 FIXED_WIDTH_OPTIONS = ["No", DELIMITER_1_D, DELIMITER_2_D]
 AUTO_PARSING_DELIMITER_OPTIONS = ["None", "Tab", "Comma", "Space"]

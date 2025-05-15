@@ -1,7 +1,9 @@
+from const import *
+
 from lib.controller.controller import *
 from lib.controller.controller import Controller
-from const import *
 from lib.utils import *
+
 SET_MODE_TEST()
 
 ###
@@ -48,12 +50,13 @@ class simple_example_gui(Controller):
         self.next_page()
         self.next_page()
         try:
-            self.output_path = \
-                r"C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\output" \
+            self.output_path = (
+                r"C:\Users\raz3z\Projects\Shmuel\fssaDist\fssa\output"
                 r"\test_recording_simple.fss"
+            )
             self.run_fss(self._run_fss)
             self.enable_view_results()
-        except Exception as e:
+        except Exception:
             # print(e)
             assert False
         assert os.path.isfile(self.output_path)

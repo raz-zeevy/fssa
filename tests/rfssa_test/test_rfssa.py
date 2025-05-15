@@ -12,16 +12,19 @@ class testRFSSA(Controller):
     def test_mms(self):
         # get the absoult path of the data file
         # load the mms file
-        session_path = r'C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\tests\rfssa_test\rFssa.mms'
+        session_path = (
+            r"C:\Users\raz3z\Projects\Shmuel\fssaDist\fssa\tests\rfssa_test\rFssa.mms"
+        )
         self.load_session(session_path)
         self.next_page()
         self.next_page()
         self.next_page()
         self.gui.pages[DIMENSIONS_PAGE_NAME].set_correlation_type(PEARSON)
         try:
-            self.output_path = \
-                r"C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\output" \
+            self.output_path = (
+                r"C:\Users\raz3z\Projects\Shmuel\fssaDist\fssa\output"
                 r"\test_simple.fss"
+            )
             self.run_fss(self._run_fss)
             self.enable_view_results()
         except Exception as e:
@@ -73,9 +76,10 @@ class testRFSSA(Controller):
         self.next_page()
         self.next_page()
         try:
-            self.output_path = \
-                r"C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\output" \
+            self.output_path = (
+                r"C:\Users\raz3z\Projects\Shmuel\fssaDist\fssa\output"
                 r"\test_simple.fss"
+            )
             self.run_fss(self._run_fss)
             self.enable_view_results()
         except Exception as e:

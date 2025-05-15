@@ -46,7 +46,7 @@
       "remove": false
     }
   ],
-  "save_path": "C:/Users/Raz_Z/Desktop/rFssa.mms",
+  "save_path": "C:/Users/raz3z/Desktop/rFssa.mms",
   "delimiter": null,
   "data": [],
   "org_data": {
@@ -579,7 +579,7 @@
       "attrs": {}
     }
   },
-  "data_file_path": "C:/Users/Raz_Z/Downloads/rFssa.txt",
+  "data_file_path": "C:/Users/raz3z/Downloads/rFssa.txt",
   "data_file_extension": null,
   "var_labels": [
     "var1",
@@ -625,7 +625,7 @@
   "matrix_input": false,
   "are_missing_values": false,
   "lines_per_var": 1,
-  "output_path": "C:/Users/Raz_Z/Downloads\\rFssa.fss",
+  "output_path": "C:/Users/raz3z/Downloads\\rFssa.fss",
   "facets_num": 1,
   "max_dim": 2,
   "min_dim": 2,

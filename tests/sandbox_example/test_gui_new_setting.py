@@ -45,7 +45,7 @@ class simple_example_gui(Controller):
         #                 self.gui.pages[FACET_VAR_PAGE_NAME].combo_by_var)
         # try:
         #     self.output_path = \
-        #         r"C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\output" \
+        #         r"C:\Users\raz3z\Projects\Shmuel\fssaDist\fssa\output" \
         #         r"\_sqol_pakam_students.fss"
         #     self.run_fss()
         #     self.enable_view_results()
@@ -56,6 +56,7 @@ class simple_example_gui(Controller):
         # true_file_path = os.path.join(test_dir_path, "FSSAINP.DRV")
         # assert diff_lines_num(run_file_path, true_file_path) == 1
         # assert os.path.isfile(self.output_path)
+
 
 if __name__ == '__main__':
     a = simple_example_gui()

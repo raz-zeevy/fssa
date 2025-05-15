@@ -16,10 +16,10 @@ def exclude_files(dir_path):
     return result
 
 a = Analysis(['app.py'],
-             pathex=['C:\\Users\\Raz_Z\\Projects\\Shmuel\\fssaDist\fssa'],
+             pathex=['C:\\Users\\raz3z\\Projects\\Shmuel\\fssaDist\fssa'],
              binaries=[],
              datas=[
-                 ('lib/assets', 'lib/assets'), 
+                 ('lib/assets', 'lib/assets'),
                  ('lib/assets/toolbar', 'lib/assets/toolbar'),
                  # Use function to exclude .SCR files while preserving path
                  *exclude_files('lib/scripts/fssa-21'),

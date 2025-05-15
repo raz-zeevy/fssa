@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['options', 'app.spec'],
-             pathex=['C:\\Users\\Raz_Z\\Projects\\Shmuel\\fssa'],
+             pathex=['C:\\Users\\raz3z\\Projects\\Shmuel\\fssa'],
              binaries=[],
              datas=[],
              hiddenimports=[],

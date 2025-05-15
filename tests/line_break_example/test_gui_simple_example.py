@@ -1,6 +1,7 @@
+from const import *
+
 from lib.controller.controller import *
 from lib.controller.controller import Controller
-from const import *
 from lib.fss.fss_input_parser import simulate_facets_var_data
 
 # SET_MODE_PRODUCTION()
@@ -59,9 +60,10 @@ class simple_example_gui(Controller):
                                 self.gui.pages[
                                     FACET_VAR_PAGE_NAME].combo_by_var)
         try:
-            self.output_path = \
-                r"C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\output" \
+            self.output_path = (
+                r"C:\Users\raz3z\Projects\Shmuel\fssaDist\fssa\output"
                 r"\test_simple.fss"
+            )
             self.run_fss(self._run_fss)
             self.enable_view_results()
         except Exception as e:
@@ -118,9 +120,10 @@ class simple_example_gui(Controller):
         self.next_page()
         self.next_page()
         try:
-            self.output_path = \
-                r"C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\output" \
+            self.output_path = (
+                r"C:\Users\raz3z\Projects\Shmuel\fssaDist\fssa\output"
                 r"\test_simple.fss"
+            )
             self.run_fss(self._run_fss)
             self.enable_view_results()
         except Exception as e:

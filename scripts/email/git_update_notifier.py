@@ -135,13 +135,14 @@ class GitUpdateNotifier:
 
     def send_update_notification(self, recipients: List[str]) -> bool:
         """
-        Send update notification email to recipients
+        Send update notification email to recipients using BCC
         """
         subject, body = self.create_update_email_content()
         return self.email_sender.send_email(
-            recipients=recipients,
             subject=subject,
             body=body,
+            to_display_name="FSSA Users",
+            bcc=recipients,
             sender_name="FSSA Updates",
-            is_html=True  # Set this to True for HTML email
+            is_html=True
         ) 

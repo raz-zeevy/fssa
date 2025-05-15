@@ -41,15 +41,13 @@ class simple_example_gui(Controller):
         self.gui.show_recode_history_window()
         # close the recoding history window
         self.gui.recode_history_window.destroy()
-    
+
     def test_simple_example(self):
         self.gui.pages[START_PAGE_NAME].button_recorded_data.invoke()
         # get the absoult path of the data file
         test_dir_path = os.path.dirname(os.path.abspath(__file__))
-        data_file_path = os.path.join(test_dir_path,
-                                      DATA_PATH)
-        self.gui.pages[INPUT_PAGE_NAME].set_data_file_path(
-            data_file_path)
+        data_file_path = os.path.join(test_dir_path, DATA_PATH)
+        self.gui.pages[INPUT_PAGE_NAME].set_data_file_path(data_file_path)
         self.set_header(True)
         self.data_file_extension = ".csv"
         self.load_csv_init()
@@ -63,14 +61,15 @@ class simple_example_gui(Controller):
         self.next_page()
         self.next_page()
         try:
-            self.output_path = \
-                r"C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\output" \
+            self.output_path = (
+                r"C:\Users\raz3z\Projects\Shmuel\fssaDist\fssa\output"
                 r"\real_csv.fss"
+            )
             self.run_fss(self._run_fss)
             self.enable_view_results()
         except Exception as e:
             print(e)
-            raise(e)
+            raise (e)
         # # run_file_path = p_FSS_DRV
         # # true_file_path = os.path.join(test_dir_path, "FSSAINP.DRV")
         # # assert diff_lines_num(run_file_path, true_file_path) == 1
@@ -79,8 +78,8 @@ class simple_example_gui(Controller):
         self.gui.pages[FACET_PAGE_NAME].set_facets_num(1)
         self.on_facet_num_change(None)
         self.next_page()
-        self.gui.pages[FACET_VAR_PAGE_NAME].set_facets_vars([[1],[2]])
-        mms_path = r"C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\tests\real_csv_test\mms\facet_1.mms"
+        self.gui.pages[FACET_VAR_PAGE_NAME].set_facets_vars([[1], [2]])
+        mms_path = r"C:\Users\raz3z\Projects\Shmuel\fssaDist\fssa\tests\real_csv_test\mms\facet_1.mms"
         self.save_session(mms_path)
         self.load_session(mms_path)
         self.next_page()
@@ -95,7 +94,8 @@ class simple_example_gui(Controller):
         assert not self.facet_var_details, "facet_var_details should be empty"
         assert not self.facet_dim_details, "facet_dim_details should be empty"
         assert not self.facet_details, "facet_details should be empty"
-        
+
+
 if __name__ == '__main__':
     a = simple_example_gui()
     a.test_simple_example()

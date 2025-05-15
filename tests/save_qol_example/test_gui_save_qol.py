@@ -1,13 +1,16 @@
+from const import *
+
 from lib.controller.controller import *
 from lib.controller.controller import Controller
 from lib.fss.fss_input_parser import *
-from const import *
 
 DATA_PATH = 'qolstu20.dat'
 SET_MODE_TEST()
 VARS_LABELS = [f"v{i}" for i in range(1,17)]
-SAVE_PATH = r'C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\tests' \
-            '\save_qol_example\sessions.mms'
+SAVE_PATH = (
+    r"C:\Users\raz3z\Projects\Shmuel\fssaDist\fssa\tests"
+    "\save_qol_example\sessions.mms"
+)
 ###
 test_facets = [
                 ["figural", "verbal", "numeral", "social"],
@@ -45,9 +48,10 @@ class simple_example_gui(Controller):
         simulate_facets_var_data(FACET_VAR_DATA,
                         self.gui.pages[FACET_VAR_PAGE_NAME].combo_by_var)
         try:
-            self.output_path = \
-                r"C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\output" \
+            self.output_path = (
+                r"C:\Users\raz3z\Projects\Shmuel\fssaDist\fssa\output"
                 r"\_sqol_pakam_students.fss"
+            )
             self.run_fss(self._run_fss)
             self.enable_view_results()
         except Exception as e:
@@ -59,8 +63,10 @@ class simple_example_gui(Controller):
 
     def test_load(self):
         self.load_session(SAVE_PATH)
-        assert self.gui.pages[INPUT_PAGE_NAME].get_data_file_path() == \
-               r"C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\tests\save_qol_example\qolstu20.dat"
+        assert (
+            self.gui.pages[INPUT_PAGE_NAME].get_data_file_path()
+            == r"C:\Users\raz3z\Projects\Shmuel\fssaDist\fssa\tests\save_qol_example\qolstu20.dat"
+        )
         assert self.gui.pages[INPUT_PAGE_NAME].get_lines_per_var() == 1
         assert self.gui.pages[MANUAL_FORMAT_PAGE_NAME].get_labels() == VARS_LABELS
         assert self.gui.pages[FACET_PAGE_NAME].get_facets_num() == 2

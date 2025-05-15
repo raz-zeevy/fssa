@@ -1,7 +1,8 @@
+from const import *
+
 from lib.controller.controller import *
 from lib.controller.controller import Controller
 from lib.fss.fss_input_parser import *
-from const import *
 
 DATA_PATH = 'qolstu20.dat'
 SET_MODE_TEST()
@@ -47,9 +48,10 @@ class simple_example_gui(Controller):
         simulate_facets_var_data(FACET_VAR_DATA,
                         self.gui.pages[FACET_VAR_PAGE_NAME].combo_by_var)
         try:
-            self.output_path = \
-                r"C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\output" \
+            self.output_path = (
+                r"C:\Users\raz3z\Projects\Shmuel\fssaDist\fssa\output"
                 r"\_sqol_pakam_students.fss"
+            )
             self.run_fss(self._run_fss)
             self.enable_view_results()
         except Exception as e:

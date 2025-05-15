@@ -1,15 +1,12 @@
+import argparse
 from dotenv import load_dotenv
 from email_sender import EmailSender
 from git_update_notifier import GitUpdateNotifier
 import os
 from typing import List
+from scripts.email.config.email_recipients import RECIPIENTS, DEBUG_RECIPIENTS
 
-def load_recipients(file_path: str) -> List[str]:
-    """Load email recipients from a file"""
-    with open(file_path, 'r') as f:
-        return [line.strip() for line in f if line.strip()]
-
-def main():
+def send_mail(recipients: List[str]):
     # Load environment variables
     gmail_user = os.environ.get('GMAIL_USER')
     gmail_password = os.environ.get('GMAIL_APP_PASSWORD')
@@ -23,12 +20,23 @@ def main():
     email_sender = EmailSender(gmail_user, gmail_password)
     notifier = GitUpdateNotifier(email_sender)
     
-    # Load recipients
-    recipients = load_recipients(os.path.join(os.path.dirname(__file__), 'config/email_recipients.txt'))
-    
     # Send the notification
     notifier.send_update_notification(recipients)
 
+def send_prod_mail():
+    recipients = RECIPIENTS
+    send_mail(recipients)
+
+def send_debug_mail():
+    recipients = DEBUG_RECIPIENTS
+    send_mail(recipients)
+
 if __name__ == "__main__":
     load_dotenv()
-    main() 
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--debug", action="store_true")
+    args = parser.parse_args()
+    if args.debug:
+        send_debug_mail()
+    else:
+        send_prod_mail()

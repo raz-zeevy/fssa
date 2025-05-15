@@ -10,7 +10,7 @@
 #define MyAppAssocName MyAppName + " File"
 #define MyAppAssocExt ".fss"
 #define MyAppAssocKey StringChange(MyAppAssocName, " ", "") + MyAppAssocExt
-#define SessionIcon "C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\lib\assets\session_icon.ico"
+#define SessionIcon "C:\Users\raz3z\Projects\Shmuel\fssaDist\fssa\lib\assets\session_icon.ico"
 
 [Setup]
 AppId={{A5033936-6373-4BCB-AE0E-231D3E51F328}
@@ -39,8 +39,8 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}";
 
 [Files]
-Source: "C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\dist\fssa\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\dist\fssa\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\raz3z\Projects\Shmuel\fssaDist\fssa\dist\fssa\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\raz3z\Projects\Shmuel\fssaDist\fssa\dist\fssa\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]

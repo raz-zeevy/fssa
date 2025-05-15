@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['app.py'],
-             pathex=['C:\\Users\\Raz_Z\\Projects\\Shmuel\\fssaDist\fssa'],
+             pathex=['C:\\Users\\raz3z\\Projects\\Shmuel\\fssaDist\fssa'],
              binaries=[],
              datas=[('lib/assets','.'), ('lib/scripts/fssa-21/*','lib/scripts/fssa-21/'),
 			 ('README.txt', '.'),

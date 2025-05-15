@@ -1,33 +1,33 @@
-import ctypes
 import os.path
-import sys
 import tkinter as tk
+from tkinter import Menu, filedialog
+from tkinter import font as tkFont
 from typing import Tuple
-from lib.windows.help.help_window import HelpWindow
-from tkinter import filedialog, Menu
+
 import ttkbootstrap as ttk
+from tktooltip import ToolTip
+from ttkbootstrap.dialogs.dialogs import Messagebox
+
 from lib.components.form import NavigationButton
+from lib.const import p_ICON
 from lib.pages.data_page import DataPage
-from lib.windows.diagram_window import DiagramWindow
-from lib.windows.loading_window import LoadingWindow
-from lib.windows.recoding_window import RecodeWindow
 from lib.pages.dimensions_page import DimensionsPage
 from lib.pages.facet_dim_page import FacetDimPage
 from lib.pages.facet_page import FacetPage
 from lib.pages.facet_var_page import FacetVarPage
 from lib.pages.hypothesis_page import HypothesisPage
-from lib.pages.manual_format_page import ManualFormatPage
 from lib.pages.input_page import InputPage
+from lib.pages.manual_format_page import ManualFormatPage
 from lib.pages.matrix_input_page import MatrixInputPage
 from lib.pages.start_page import StartPage
 from lib.utils import *
-from ttkbootstrap.dialogs.dialogs import Messagebox
-from lib.windows.technical_options_window import TOWindow
-from tktooltip import ToolTip
-from tkinter import font as tkFont
-from lib.const import p_ICON
-from lib.windows.run_window import RunWindow
+from lib.windows.diagram_window import DiagramWindow
+from lib.windows.help.help_window import HelpWindow
+from lib.windows.loading_window import LoadingWindow
 from lib.windows.recode_history_window import RecodeHistoryWindow
+from lib.windows.recoding_window import RecodeWindow
+from lib.windows.run_window import RunWindow
+from lib.windows.technical_options_window import TOWindow
 
 THEME_NAME = 'sandstone'
 
@@ -150,9 +150,9 @@ class GUI():
                     self.image_references[file] = ImageTk.PhotoImage(image)
 
         def add_button(image: str, **kwargs):
-            if not "width" in kwargs:
+            if "width" not in kwargs:
                 kwargs["width"] = real_size(25)
-            if not "height" in kwargs:
+            if "height" not in kwargs:
                 kwargs["height"] = real_size(25)
             button = tk.Button(icon_menu_frame,
                                autostyle=False,
@@ -418,14 +418,15 @@ class GUI():
         self.recode_window._apply_recoding_func = lambda : recode_func(
             self.recode_window)
         self.recode_window.bind("<F1>", lambda x: self.show_help_windw("recoding_variables_screen"))
-    
+
     @gui_only
     def show_recode_msg(self):
-        """ show a msgbox asking the user if he wants to recode another
+        """show a msgbox asking the user if he wants to recode another
         variables if so call show_recode_window otherwise do nothing"""
-        self.show_msg("Recoding applied successfully. Would you like to "
-                      "recode more variables?",
-                      yes_command=self.show_recode_window)
+        self.show_msg(
+            "Recoding applied successfully. Would you like to recode more variables?",
+            yes_command=self.show_recode_window,
+        )
 
     def show_technical_options_window(self, locality_list: list):
         self.technical_options = TOWindow(self, locality_list)
@@ -447,13 +448,20 @@ class GUI():
             self.root.title(f"{ROOT_TITLE} - {save_path}")
         else:
             self.root.title(ROOT_TITLE)
+
     @gui_only
-    def show_msg(self, msg, title=None, yes_command=None,
-                 no_command=None,
-                 buttons=['Yes:primary', 'No:secondary']):
+    def show_msg(
+        self,
+        msg,
+        title=None,
+        yes_command=None,
+        no_command=None,
+        buttons=["Yes:primary", "No:secondary"],
+    ):
         if yes_command:
-            clicked_yes = Messagebox.show_question(msg, title, buttons=[
-                buttons[0], buttons[1]])
+            clicked_yes = Messagebox.show_question(
+                msg, title, buttons=[buttons[0], buttons[1]]
+            )
             if clicked_yes == buttons[0].split(":")[0]:
                 yes_command()
             elif no_command and clicked_yes == buttons[1].split(":")[0]:
@@ -461,13 +469,21 @@ class GUI():
             return clicked_yes
         else:
             Messagebox.show_info(msg, title)
-    def save_file_diaglogue(self, file_types=None, default_extension=None,
-                            initial_file_name=None, title=None):
-        file_name = filedialog.asksaveasfilename(filetypes=file_types,
-                                                 defaultextension=default_extension,
-                                                 title=title,
-                                                 confirmoverwrite=True,
-                                                 initialfile=initial_file_name)
+
+    def save_file_diaglogue(
+        self,
+        file_types=None,
+        default_extension=None,
+        initial_file_name=None,
+        title=None,
+    ):
+        file_name = filedialog.asksaveasfilename(
+            filetypes=file_types,
+            defaultextension=default_extension,
+            title=title,
+            confirmoverwrite=True,
+            initialfile=initial_file_name,
+        )
         return file_name
 
     def get_input_file_name(self) -> str:
@@ -482,12 +498,14 @@ class GUI():
         input_file_path = self.pages[INPUT_PAGE_NAME].get_data_file_path()
         input_file_name = os.path.basename(input_file_path)
         input_file_dir = os.path.dirname(input_file_path)
-        
+
         # Create default output filename in same directory
         default_output_name = os.path.splitext(input_file_name)[0] + ".fss"
         default_output_file = os.path.join(input_file_dir, default_output_name)
-        
-        result = RunWindow.show_dialog(self.root, default_output_file=default_output_file)
+
+        result = RunWindow.show_dialog(
+            self.root, default_output_file=default_output_file
+        )
         if result:
             job_name, output_file_path = result
             self.job_name = job_name
@@ -495,29 +513,33 @@ class GUI():
         return None
 
     def save_session_dialogue(self, data_file_name=""):
-        file_name = filedialog.asksaveasfilename(filetypes=[('FSSA Memory '
-                                                             'File',
-                                                             f'*{SAVE_EXTENSION}')],
-                                                 defaultextension=SAVE_EXTENSION,
-                                                 title="Save FSSA Session",
-                                                 initialfile=data_file_name,
-                                                 confirmoverwrite=True)
+        file_name = filedialog.asksaveasfilename(
+            filetypes=[("FSSA Memory File", f"*{SAVE_EXTENSION}")],
+            defaultextension=SAVE_EXTENSION,
+            title="Save FSSA Session",
+            initialfile=data_file_name,
+            confirmoverwrite=True,
+        )
         return file_name
 
     def open_session_dialogue(self):
-        file_name = filedialog.askopenfilename(filetypes=[('FSSA Memory '
-                                                             'File', f'*{SAVE_EXTENSION}')],
-                                               title="Open FSSA Session")
+        file_name = filedialog.askopenfilename(
+            filetypes=[("FSSA Memory File", f"*{SAVE_EXTENSION}")],
+            title="Open FSSA Session",
+        )
         return file_name
 
     def show_recode_history_window(self):
         """Show window displaying history of recoding operations"""
         self.recode_history_window = RecodeHistoryWindow(self.root)
-        self.recode_history_window.bind("<F1>", lambda x: self.show_help_windw("recoding_variables_screen"))    
-    
+        self.recode_history_window.bind(
+            "<F1>", lambda x: self.show_help_windw("recoding_variables_screen")
+        )
+
     def reset(self):
         self.pages[FACET_PAGE_NAME].reset()
-    
+
+
 if __name__ == '__main__':
     gui = GUI()
     # gui.show_technical_options_window()

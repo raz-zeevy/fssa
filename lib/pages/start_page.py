@@ -1,9 +1,9 @@
+import ttkbootstrap as ttk
 from customtkinter import *
 from PIL import Image
-from lib.utils import *
-import ttkbootstrap as ttk
-from lib.components.form import HelpButton
 from tktooltip import ToolTip
+
+from lib.utils import *
 
 MAIN_BTN_FOREGROUND = "#325d88"
 MAIN_BTN_FOCUSED = "#325d88"
@@ -17,6 +17,8 @@ class StartPage(ttk.Frame):
         self.colors = parent.root.style.colors
         self.create_widgets()
         self.root.update()
+        # windll.shcore.SetProcessDpiAwareness(0)  # 0 = Process DPI Unaware
+        # self.root.call("tk", "scaling", 1)
 
     def create_widgets(self):
         side_img_data = Image.open(get_resource("side-img5.png"))

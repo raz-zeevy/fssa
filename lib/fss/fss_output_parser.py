@@ -1,11 +1,10 @@
 import inspect
 import json
-import re
-import pprint
 import warnings
 
-from lib.utils import *
 import numpy as np
+
+from lib.utils import *
 
 END_BLOCK = '\x0c'
 BUFFER = "."
@@ -195,7 +194,7 @@ def parse_output(file_path):
 
 
 if __name__ == '__main__':
-    output_path = r"C:\Users\Raz_Z\Projects\Shmuel\fssa\output\test_3_gui.fss"
-    # output_path = r"C:\Users\Raz_Z\Projects\Shmuel\fssa\output\test_simple.fss"
+    output_path = r"C:\Users\raz3z\Projects\Shmuel\fssa\output\test_3_gui.fss"
+    # output_path = r"C:\Users\raz3z\Projects\Shmuel\fssa\output\test_simple.fss"
     print(json.dumps(parse_output(output_path),
                      sort_keys=True, indent=4))

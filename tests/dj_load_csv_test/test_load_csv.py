@@ -6,17 +6,17 @@ contains:
 - numerical variables that need recoding
 """
 
+from const import *
+
 from lib.controller.controller import *
 from lib.controller.controller import Controller
 from lib.fss.fss_input_parser import *
 from lib.utils import *
-from const import *
-
 
 DATA_PATH = 'data.csv'
 SET_MODE_TEST()
 # SET_MODE_PRODUCTION()
-save_path= r"C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\tests\dj_csv_test\test_dj_csv_test.mms"
+save_path = r"C:\Users\raz3z\Projects\Shmuel\fssaDist\fssa\tests\dj_csv_test\test_dj_csv_test.mms"
 facets_var_indices = {2: [1, 2], 3: [1, 1], 4: [1, 2], 5: [1, 1], 6: [1, 2], 7: [1, 1], 8: [1, 2], 9: [1, 1], 10: [1, 2], 11: [2, 1], 12: [1, 2], 13: [1, 1], 14: [2, 2], 15: [1, 1], 16: [1, 2], 17: [2, 1], 18: [1, 2], 19: [1, 1], 20: [2, 2]}
 
 class simple_example_gui(Controller):
@@ -33,8 +33,7 @@ class simple_example_gui(Controller):
         print(manual_page.get_labels())
         self.next_page()
         try:
-            self.output_path = \
-                r"C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\tests\dj_csv_test\output\jd_test.fss"
+            self.output_path = r"C:\Users\raz3z\Projects\Shmuel\fssaDist\fssa\tests\dj_csv_test\output\jd_test.fss"
             self.run_fss()
             self.enable_view_results()
         except Exception as e:

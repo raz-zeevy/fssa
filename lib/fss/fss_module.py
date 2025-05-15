@@ -1,10 +1,13 @@
 # Python code to run the specified command using subprocess
 
+import os
 import subprocess
+from contextlib import contextmanager
 from typing import List
+
 import numpy as np
 import pandas as pd
-from contextlib import contextmanager
+
 from lib.fss.fss_corr_input_writer import CorrelationInputWriter
 from lib.fss.fss_input_writer import FssInputWriter
 from lib.utils import *
@@ -207,7 +210,9 @@ def parse_fortran_output(result: subprocess.CompletedProcess):
                 exception = result.stderr.split('\n')[2]
                 raise Exception(exception)
             elif "Segmentation fault - invalid memory reference" in result.stderr:
-                raise Exception(f"FSSA script failed : Memory error. Please check the input file, variables and the missing values (if not specified, set to '0')")
+                raise Exception(
+                    "FSSA script failed : Memory error. Please check the input file, variables and the missing values (if not specified, set to '0')"
+                )
             else:
                 raise Exception(f"FSSA script failed : {result.stderr} {edited_output}")
         else:
@@ -234,7 +239,8 @@ def run_matrix_fortran(output_path: str, debug=False):
     data_file = p_DATA_FILE
     fssa_input_drv_file = p_FSS_DRV
     output_results_file = output_path
-
+    # create the output_results_file directory if it doesn't exist
+    os.makedirs(os.path.dirname(output_results_file), exist_ok=True)
     # Define the command and arguments
     arguments = [
         get_path(fssa_input_drv_file),  # A file in a specific format (see
@@ -250,7 +256,7 @@ def run_matrix_fortran(output_path: str, debug=False):
         # data file. You can change it to your own directory, and simplify
         # filename. For example  c:\tstfssa\tstdata.fss
     ]
-    # command = r"C:\Users\Raz_Z\Desktop\shmuel-project\fssa-21\FASSA.BAT"
+    # command = r"C:\Users\raz3z\Desktop\shmuel-project\fssa-21\FASSA.BAT"
     command = "FASSA.BAT"
 
     # Combine the command and arguments into a single list
@@ -268,7 +274,7 @@ def run_matrix_fortran(output_path: str, debug=False):
         # Print the output and error, if any
         parse_fortran_output(result)
 
-        
+
 def run_fortran(corr_type,
                 output_path,
                 create_simplified_matrix_file="NUL", debug=False):
@@ -285,7 +291,8 @@ def run_fortran(corr_type,
     matrix_file_name = OUTPUT_MONO_MAT_FILE if corr_type == MONO else \
         OUTPUT_PEARSON_MAT_FILE
     output_results_file = output_path
-    #
+    # create the output_results_file directory if it doesn't exist
+    os.makedirs(os.path.dirname(output_results_file), exist_ok=True)
     output_matrix_file = os.path.join(os.path.dirname(p_DATA_FILE)
                                         , matrix_file_name)
     script_corr_type = SCRIPT_MONO if corr_type == MONO else SCRIPT_PEARSON
@@ -295,19 +302,19 @@ def run_fortran(corr_type,
     # p_output = script_path(OUTPUT_DIR)
     # corr_type = "MONO"
     # corr_input_drv_file = "MONOINP.DRV"
-    # data_file = "C:\\Users\\Raz_Z\\Desktop\\shmuel-project\\fssa-21\\GRAND.PRN"
+    # data_file = "C:\\Users\\raz3z\\Desktop\\shmuel-project\\fssa-21\\GRAND.PRN"
     # create_simplified_matrix_file = 'NUL'
     # output_matrix_file = os.path.join(p_output,"MONOASC.MAT")
     # fssa_input_drv_file = "FSSAINP.DRV"
     # output_results_file = os.path.join(p_output, "DJK21.FSS")
-    # corr_input_drv_file = r"C:\Users\Raz_Z\Desktop\shmuel-project\shared\simaple_example\MONOINP.DRV"
-    # data_file = r"C:\Users\Raz_Z\Desktop\shmuel-project\shared" \
+    # corr_input_drv_file = r"C:\Users\raz3z\Desktop\shmuel-project\shared\simaple_example\MONOINP.DRV"
+    # data_file = r"C:\Users\raz3z\Desktop\shmuel-project\shared" \
     #             r"\simaple_example\diamond6.txt"
     # create_simplified_matrix_file = 'NUL'
-    # fssa_input_drv_file = r"C:\Users\Raz_Z\Desktop\shmuel-project\shared\simaple_example\FSSAINP.DRV"
-    # output_matrix_file = r'C:\Users\Raz_Z\Desktop\shmuel-project\shared' \
+    # fssa_input_drv_file = r"C:\Users\raz3z\Desktop\shmuel-project\shared\simaple_example\FSSAINP.DRV"
+    # output_matrix_file = r'C:\Users\raz3z\Desktop\shmuel-project\shared' \
     #                       r'\simaple_example\MONOASC.MAT'
-    # output_results_file = r'C:\Users\Raz_Z\Desktop\shmuel-project\shared' \
+    # output_results_file = r'C:\Users\raz3z\Desktop\shmuel-project\shared' \
     #                       r'\simaple_example\DJK21.FSS'
 
     # Define the command and arguments
@@ -345,7 +352,7 @@ def run_fortran(corr_type,
         # data file. You can change it to your own directory, and simplify
         # filename. For example  c:\tstfssa\tstdata.fss
     ]
-    # command = r"C:\Users\Raz_Z\Desktop\shmuel-project\fssa-21\FASSA.BAT"
+    # command = r"C:\Users\raz3z\Desktop\shmuel-project\fssa-21\FASSA.BAT"
     command = "FASSA.BAT"
     # Combine the command and arguments into a single list
     full_command = [command] + arguments
@@ -532,14 +539,17 @@ if __name__ == '__main__':
     # Example usage
     # Example usage
     from lib.fss.convert_to_doc import output_to_word
-    output_path = r"C:\Users\Raz_Z\Desktop\shmuel-project\shared\example_3" \
-                  r"\BABY3D84.FSS"  # Path to your text file
+
+    output_path = (
+        r"C:\Users\raz3z\Desktop\shmuel-project\shared\example_3"
+        r"\BABY3D84.FSS"
+    )  # Path to your text file
     output_to_word(output_path)
-    # load_data_file("C:\\Users\\Raz_Z\\Desktop\\shmuel-project\\fssa-21\\GRAND.PRN")
+    # load_data_file("C:\\Users\\raz3z\\Desktop\\shmuel-project\\fssa-21\\GRAND.PRN")
     # load_data_file("scripts/simaple_example/diamond6.txt")
     # run_fortran()
     # a = get_random_data()
-    # a = load_data_file(r"C:\Users\Raz_Z\Desktop\shmuel-project\shared"
+    # a = load_data_file(r"C:\Users\raz3z\Desktop\shmuel-project\shared"
     #                    r"\simaple_example\diamond6.txt")
     # print(a)
     # variables_details = [
@@ -557,7 +567,7 @@ if __name__ == '__main__':
     # create_fssa_data_file(data)
     # corr_type = "Monotonicity"
     # run_fortran(corr_type=corr_type)
-    # path = r"C:\\Users\\Raz_Z\\Desktop\\shmuel-project\\fssa-21\\GRAND.PRN"
-    # path = r"C:\Users\Raz_Z\Desktop\shmuel-project\shared\example_3\babystu4.prn"
-    # path = r"C:\Users\Raz_Z\Desktop\shmuel-project\shared\simaple_example\diamond6.txt"
+    # path = r"C:\\Users\\raz3z\\Desktop\\shmuel-project\\fssa-21\\GRAND.PRN"
+    # path = r"C:\Users\raz3z\Desktop\shmuel-project\shared\example_3\babystu4.prn"
+    # path = r"C:\Users\raz3z\Desktop\shmuel-project\shared\simaple_example\diamond6.txt"
     # load_data_file(path, delimiter=",", lines_per_var=2)

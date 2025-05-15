@@ -49,9 +49,10 @@ class simple_example_gui(Controller):
         self.next_page()
         self.next_page()
         try:
-            self.output_path = \
-                r"C:\Users\Raz_Z\Projects\Shmuel\fssaDist\fssa\output" \
+            self.output_path = (
+                r"C:\Users\raz3z\Projects\Shmuel\fssaDist\fssa\output"
                 r"\test_kedar.fss"
+            )
             self.run_fss(self._run_fss)
             self.enable_view_results()
         except Exception as e:
@@ -81,7 +82,7 @@ def test():
     a = simple_example_gui()
     try:
         a.test_fixed_data()
-    except Exception as e:
+    except Exception:
         return False
     return True
 
