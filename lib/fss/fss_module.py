@@ -270,7 +270,7 @@ def run_matrix_fortran(output_path: str, debug=False):
         input("Press Enter to continue...")
     with cwd(fss_dir):
         result = subprocess.run(full_command, shell=True, stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE, text=True)
+                                stderr=subprocess.PIPE, text=True, errors="ignore")
         # Print the output and error, if any
         parse_fortran_output(result)
 
@@ -366,7 +366,7 @@ def run_fortran(corr_type,
         input("Press Enter to continue...")
     with cwd(fss_dir):
         result = subprocess.run(full_command, shell=True, stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE, text=True)
+                                stderr=subprocess.PIPE, text=True, errors="ignore")
         # Print the output and error, if any
         parse_fortran_output(result)
 
