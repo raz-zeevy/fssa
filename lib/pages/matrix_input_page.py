@@ -99,6 +99,7 @@ class MatrixInputPage(ttk.Frame):
     def set_data_file_path(self, path):
         self.entry_data_file.delete(0, ttk.END)
         self.entry_data_file.insert(0, path)
+
     @validate_conversion
     def get_entries_num_in_row(self):
         return int(self.entry_entries_num_in_row.get())
@@ -135,8 +136,9 @@ class MatrixInputPage(ttk.Frame):
     def get_missing_ranges(self):
         ranges = []
         for i in range(MISSING_RANGES_NUM):
-            ranges.append((float(self.from_entries[i].get()),
-                           float(self.to_entries[i].get())))
+            from_entry = self.from_entries[i].get().strip() or 0
+            to_entry = self.to_entries[i].get().strip() or 0
+            ranges.append((float(from_entry), float(to_entry)))
         return ranges
 
     def set_missing_ranges(self, missing_ranges: List[List[float]]):
@@ -196,9 +198,12 @@ class MatrixInputPage(ttk.Frame):
     ####################
 
     def browse_file(self):
-        filename = filedialog.askopenfilename()
-        self.entry_data_file.delete(0, ttk.END)
-        self.entry_data_file.insert(0, filename)
+        # set the default extension to .txt, .MAT and .CSV
+        filename = filedialog.askopenfilename(filetypes=[("Matrix files (.TXT, .MAT, .CSV)",
+                                                           ["*.txt", "*.MAT", "*.csv"])])
+        if filename:
+            self.entry_data_file.delete(0, ttk.END)
+            self.entry_data_file.insert(0, filename)
 
     def set_data_file_path(self, path):
         self.entry_data_file.delete(0, ttk.END)

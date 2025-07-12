@@ -31,6 +31,7 @@ class Session:
     def _attributes_from_save(self, path):
         with open(path, 'r') as file:
             attributes = jsonpickle.decode(file.read())
+        attributes["save_path"] = path
         return attributes
 
     def save(self, path):

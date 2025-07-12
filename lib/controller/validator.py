@@ -14,12 +14,12 @@ def invalid_fields(data):
                 # this used to tolerate
                 # if entry.strip() != "":
                 # this is used for null values
-                if entry:
+                if entry.strip():
                     if int(entry) != eval(entry):
                         res['passed'] = True
                         res['row_num'] = i+1
                         return res
-            except ValueError:
+            except ValueError as e:
                 # This is the case when the entry can't be converted to int
                 res['passed'] = False
                 res['row_num'] = i+1

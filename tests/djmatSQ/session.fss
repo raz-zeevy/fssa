@@ -1,0 +1,674 @@
+{
+  "active_variables_details": [
+    {
+      "label": "var1",
+      "index": 0,
+      "facets": [],
+      "show": true,
+      "remove": false
+    },
+    {
+      "label": "var2",
+      "index": 1,
+      "facets": [],
+      "show": true,
+      "remove": false
+    },
+    {
+      "label": "var3",
+      "index": 2,
+      "facets": [],
+      "show": true,
+      "remove": false
+    },
+    {
+      "label": "var4",
+      "index": 3,
+      "facets": [],
+      "show": true,
+      "remove": false
+    },
+    {
+      "label": "var5",
+      "index": 4,
+      "facets": [],
+      "show": true,
+      "remove": false
+    },
+    {
+      "label": "var6",
+      "index": 5,
+      "facets": [],
+      "show": true,
+      "remove": false
+    },
+    {
+      "label": "var7",
+      "index": 6,
+      "facets": [],
+      "show": true,
+      "remove": false
+    },
+    {
+      "label": "var8",
+      "index": 7,
+      "facets": [],
+      "show": true,
+      "remove": false
+    },
+    {
+      "label": "var9",
+      "index": 8,
+      "facets": [],
+      "show": true,
+      "remove": false
+    },
+    {
+      "label": "var10",
+      "index": 9,
+      "facets": [],
+      "show": true,
+      "remove": false
+    },
+    {
+      "label": "var11",
+      "index": 10,
+      "facets": [],
+      "show": true,
+      "remove": false
+    },
+    {
+      "label": "var12",
+      "index": 11,
+      "facets": [],
+      "show": true,
+      "remove": false
+    },
+    {
+      "label": "var13",
+      "index": 12,
+      "facets": [],
+      "show": true,
+      "remove": false
+    },
+    {
+      "label": "var14",
+      "index": 13,
+      "facets": [],
+      "show": true,
+      "remove": false
+    },
+    {
+      "label": "var15",
+      "index": 14,
+      "facets": [],
+      "show": true,
+      "remove": false
+    },
+    {
+      "label": "var16",
+      "index": 15,
+      "facets": [],
+      "show": true,
+      "remove": false
+    },
+    {
+      "label": "var17",
+      "index": 16,
+      "facets": [],
+      "show": true,
+      "remove": false
+    },
+    {
+      "label": "var18",
+      "index": 17,
+      "facets": [],
+      "show": true,
+      "remove": false
+    },
+    {
+      "label": "var19",
+      "index": 18,
+      "facets": [],
+      "show": true,
+      "remove": false
+    },
+    {
+      "label": "var20",
+      "index": 19,
+      "facets": [],
+      "show": true,
+      "remove": false
+    },
+    {
+      "label": "var21",
+      "index": 20,
+      "facets": [],
+      "show": true,
+      "remove": false
+    }
+  ],
+  "save_path": null,
+  "delimiter": null,
+  "data_file_path": "c:\\Users\\raz3z\\Projects\\Shmuel\\fssaDist\\fssa\\tests\\djmatSQ\\djmatSQ.txt",
+  "data_file_extension": null,
+  "var_labels": [
+    "var1",
+    "var2",
+    "var3",
+    "var4",
+    "var5",
+    "var6",
+    "var7",
+    "var8",
+    "var9",
+    "var10",
+    "var11",
+    "var12",
+    "var13",
+    "var14",
+    "var15",
+    "var16",
+    "var17",
+    "var18",
+    "var19",
+    "var20",
+    "var21"
+  ],
+  "has_header": false,
+  "locality_weight": [
+    2
+  ],
+  "formfeed_char": [
+    ""
+  ],
+  "diagram_chars": [
+    ""
+  ],
+  "trimmed_ascii": [
+    "No"
+  ],
+  "facet_var_details": [],
+  "facet_details": [],
+  "facet_dim_details": {},
+  "manual_input": true,
+  "matrix_input": true,
+  "are_missing_values": false,
+  "lines_per_var": 0,
+  "output_path": "c:\\Users\\raz3z\\Projects\\Shmuel\\fssaDist\\fssa\\tests\\djmatSQ\\djmatSQ.fss",
+  "facets_num": 0,
+  "max_dim": 5,
+  "min_dim": 2,
+  "job_name": "",
+  "additional_options": true,
+  "fixed_width": "No",
+  "correlation_type": "Similarity",
+  "iweigh": 2,
+  "default_form_feed": 0,
+  "diagram_frame_chars": "",
+  "trimmed_ascii_output": false,
+  "hypotheses_details": [
+    [
+      0,
+      1,
+      2,
+      3
+    ]
+  ],
+  "manual_format_details": [
+    {
+      "line": 1,
+      "col": 1,
+      "width": 1,
+      "valid_low": 1,
+      "valid_high": 9,
+      "label": "a"
+    },
+    {
+      "line": 1,
+      "col": 3,
+      "width": 1,
+      "valid_low": 1,
+      "valid_high": 9,
+      "label": "c"
+    },
+    {
+      "line": 1,
+      "col": 5,
+      "width": 1,
+      "valid_low": 1,
+      "valid_high": 9,
+      "label": "e"
+    }
+  ],
+  "fss_data": [],
+  "valid_values_range": [
+    {
+      "py/tuple": [
+        1,
+        9
+      ]
+    },
+    {
+      "py/tuple": [
+        1,
+        9
+      ]
+    },
+    {
+      "py/tuple": [
+        1,
+        9
+      ]
+    }
+  ],
+  "fss_labels": [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  ],
+  "fss_var_labels": [
+    {
+      "index": 1,
+      "label": ""
+    },
+    {
+      "index": 2,
+      "label": ""
+    },
+    {
+      "index": 3,
+      "label": ""
+    },
+    {
+      "index": 4,
+      "label": ""
+    },
+    {
+      "index": 5,
+      "label": ""
+    },
+    {
+      "index": 6,
+      "label": ""
+    },
+    {
+      "index": 7,
+      "label": ""
+    },
+    {
+      "index": 8,
+      "label": ""
+    },
+    {
+      "index": 9,
+      "label": ""
+    },
+    {
+      "index": 10,
+      "label": ""
+    },
+    {
+      "index": 11,
+      "label": ""
+    },
+    {
+      "index": 12,
+      "label": ""
+    },
+    {
+      "index": 13,
+      "label": ""
+    },
+    {
+      "index": 14,
+      "label": ""
+    },
+    {
+      "index": 15,
+      "label": ""
+    },
+    {
+      "index": 16,
+      "label": ""
+    },
+    {
+      "index": 17,
+      "label": ""
+    },
+    {
+      "index": 18,
+      "label": ""
+    },
+    {
+      "index": 19,
+      "label": ""
+    },
+    {
+      "index": 20,
+      "label": ""
+    },
+    {
+      "index": 21,
+      "label": ""
+    }
+  ],
+  "matrix": {
+    "py/object": "pandas.core.frame.DataFrame",
+    "py/state": {
+      "_mgr": {
+        "py/object": "pandas.core.internals.managers.BlockManager",
+        "py/state": {
+          "py/tuple": [
+            [
+              {
+                "py/object": "pandas.core.indexes.numeric.Int64Index",
+                "_data": {
+                  "py/reduce": [
+                    {
+                      "py/function": "numpy.core.multiarray._reconstruct"
+                    },
+                    {
+                      "py/tuple": [
+                        {
+                          "py/type": "numpy.ndarray"
+                        },
+                        {
+                          "py/tuple": [
+                            0
+                          ]
+                        },
+                        {
+                          "py/b64": "Yg=="
+                        }
+                      ]
+                    },
+                    {
+                      "py/tuple": [
+                        1,
+                        {
+                          "py/tuple": [
+                            21
+                          ]
+                        },
+                        {
+                          "py/reduce": [
+                            {
+                              "py/type": "numpy.dtype"
+                            },
+                            {
+                              "py/tuple": [
+                                "i8",
+                                false,
+                                true
+                              ]
+                            },
+                            {
+                              "py/tuple": [
+                                3,
+                                "<",
+                                null,
+                                null,
+                                null,
+                                -1,
+                                -1,
+                                0
+                              ]
+                            }
+                          ]
+                        },
+                        false,
+                        {
+                          "py/b64": "AQAAAAAAAAACAAAAAAAAAAMAAAAAAAAABAAAAAAAAAAFAAAAAAAAAAYAAAAAAAAABwAAAAAAAAAIAAAAAAAAAAkAAAAAAAAACgAAAAAAAAALAAAAAAAAAAwAAAAAAAAADQAAAAAAAAAOAAAAAAAAAA8AAAAAAAAAEAAAAAAAAAARAAAAAAAAABIAAAAAAAAAEwAAAAAAAAAUAAAAAAAAABUAAAAAAAAA"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "_index_data": {
+                  "py/id": 88
+                },
+                "_name": null,
+                "_cache": {
+                  "dtype": {
+                    "py/id": 89
+                  }
+                },
+                "_id": {
+                  "py/object": "builtins.object"
+                }
+              },
+              {
+                "py/object": "pandas.core.indexes.range.RangeIndex",
+                "_range": {
+                  "py/reduce": [
+                    {
+                      "py/type": "builtins.range"
+                    },
+                    {
+                      "py/tuple": [
+                        0,
+                        21,
+                        1
+                      ]
+                    }
+                  ]
+                },
+                "_name": null,
+                "_cache": {},
+                "_id": {
+                  "py/object": "builtins.object"
+                }
+              }
+            ],
+            [
+              {
+                "py/reduce": [
+                  {
+                    "py/function": "numpy.core.multiarray._reconstruct"
+                  },
+                  {
+                    "py/tuple": [
+                      {
+                        "py/type": "numpy.ndarray"
+                      },
+                      {
+                        "py/tuple": [
+                          0
+                        ]
+                      },
+                      {
+                        "py/b64": "Yg=="
+                      }
+                    ]
+                  },
+                  {
+                    "py/tuple": [
+                      1,
+                      {
+                        "py/tuple": [
+                          21,
+                          21
+                        ]
+                      },
+                      {
+                        "py/reduce": [
+                          {
+                            "py/type": "numpy.dtype"
+                          },
+                          {
+                            "py/tuple": [
+                              "f8",
+                              false,
+                              true
+                            ]
+                          },
+                          {
+                            "py/tuple": [
+                              3,
+                              "<",
+                              null,
+                              null,
+                              null,
+                              -1,
+                              -1,
+                              0
+                            ]
+                          }
+                        ]
+                      },
+                      true,
+                      {
+                        "py/b64": "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"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            [
+              {
+                "py/object": "pandas.core.indexes.numeric.Int64Index",
+                "_data": {
+                  "py/reduce": [
+                    {
+                      "py/function": "numpy.core.multiarray._reconstruct"
+                    },
+                    {
+                      "py/tuple": [
+                        {
+                          "py/type": "numpy.ndarray"
+                        },
+                        {
+                          "py/tuple": [
+                            0
+                          ]
+                        },
+                        {
+                          "py/b64": "Yg=="
+                        }
+                      ]
+                    },
+                    {
+                      "py/tuple": [
+                        1,
+                        {
+                          "py/tuple": [
+                            21
+                          ]
+                        },
+                        {
+                          "py/id": 89
+                        },
+                        false,
+                        {
+                          "py/b64": "AQAAAAAAAAACAAAAAAAAAAMAAAAAAAAABAAAAAAAAAAFAAAAAAAAAAYAAAAAAAAABwAAAAAAAAAIAAAAAAAAAAkAAAAAAAAACgAAAAAAAAALAAAAAAAAAAwAAAAAAAAADQAAAAAAAAAOAAAAAAAAAA8AAAAAAAAAEAAAAAAAAAARAAAAAAAAABIAAAAAAAAAEwAAAAAAAAAUAAAAAAAAABUAAAAAAAAA"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "_index_data": {
+                  "py/id": 101
+                },
+                "_name": null,
+                "_cache": {},
+                "_id": {
+                  "py/object": "builtins.object"
+                }
+              }
+            ],
+            {
+              "0.14.1": {
+                "axes": {
+                  "py/id": 86
+                },
+                "blocks": [
+                  {
+                    "values": {
+                      "py/id": 97
+                    },
+                    "mgr_locs": {
+                      "py/reduce": [
+                        {
+                          "py/type": "builtins.slice"
+                        },
+                        {
+                          "py/tuple": [
+                            0,
+                            21,
+                            1
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "_typ": "dataframe",
+      "_metadata": [],
+      "attrs": {}
+    }
+  },
+  "matrix_details": {
+    "var_num": 21,
+    "entries_num_in_row": 21,
+    "field_width": 4,
+    "decimal_places": 0,
+    "missing_ranges": [
+      {
+        "py/tuple": [
+          99.0,
+          99.0
+        ]
+      },
+      {
+        "py/tuple": [
+          99.0,
+          99.0
+        ]
+      },
+      {
+        "py/tuple": [
+          99.0,
+          99.0
+        ]
+      },
+      {
+        "py/tuple": [
+          99.0,
+          99.0
+        ]
+      },
+      {
+        "py/tuple": [
+          99.0,
+          99.0
+        ]
+      }
+    ]
+  },
+  "data": []
+}

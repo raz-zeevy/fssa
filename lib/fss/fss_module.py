@@ -213,6 +213,12 @@ def parse_fortran_output(result: subprocess.CompletedProcess):
                 raise Exception(
                     "FSSA script failed : Memory error. Please check the input file, variables and the missing values (if not specified, set to '0')"
                 )
+            elif "Cannot write to file opened for READ" in result.stderr:
+                raise Exception(
+                    "Permission denied in writing to output file. You may change the output file name to a different one,"
+                    " or alternatively make sure the file is not open in another program, or the "
+                    "path is valid and accessible."
+                )
             else:
                 raise Exception(f"FSSA script failed : {result.stderr} {edited_output}")
         else:

@@ -34,7 +34,7 @@ class Controller:
         ###
         self.init_controller_attributes()
         self.active_variables_details = []
-        self.manual_input = False
+        self.manual_input = True
         self.matrix_input = False
         self.are_missing_values = None
         self.lines_per_var = None
@@ -51,13 +51,17 @@ class Controller:
         if IS_PRODUCTION():
             warnings.showwarning = self.custom_show_warning
         self.job_name = None
-        
+
 
     def on_close(self):
         # Prompt the user with a message box
+        # if there is a saved session, add it to the prompt to notify the user
+        prompt = "Do you want to save the current session before exiting?"
+        if self.save_path:
+            prompt += f"\nSave changes to {self.save_path}"
         if IS_PRODUCTION():
             result = self.gui.show_msg(
-                "Do you want to save the current session before exiting?",
+                prompt,
                 title="Exit",
                 yes_command=self.save_session_click,
                 buttons=["Yes:primary", "No:secondary", "Cancel:secondary"]
@@ -91,6 +95,9 @@ class Controller:
         self.var_labels = None
         self.has_header = False
         self.locality_weight = [2]
+        self.formfeed_char = [""]
+        self.diagram_chars = [""]
+        self.trimmed_ascii = ["No"]
         self.facet_var_details = []
         self.facet_details = []
         self.facet_dim_details = {}
@@ -145,7 +152,7 @@ class Controller:
     #############
     # User Flow #
     #############
-    
+
     def reset_session(self, matrix):
         while self.navigator.get_prev():
             self.previous_page()
@@ -171,10 +178,10 @@ class Controller:
     def open_session(self):
         self.reset_session()
 
-    def save_session(self, path):
+    def save_session(self, path : str):
         session = Session(self)
-        self.history.add(path)
-        session.save(path)
+        self.history.add(str(path))
+        session.save(str(path))
 
     @error_handler
     def load_session(self, path):
@@ -288,7 +295,10 @@ class Controller:
         self.gui.FSSA_menu.entryconfig("Technical Options",
                                        command=lambda:
                                        self.gui.show_technical_options_window(
-                                           self.locality_weight))
+                                           self.locality_weight,
+                                           self.formfeed_char,
+                                           self.diagram_chars,
+                                           self.trimmed_ascii))
         self.gui.facet_menu.entryconfig("Element Labels",
                                         command=lambda: self.slide_to_page(
                                             FACET_PAGE_NAME))
@@ -658,9 +668,29 @@ class Controller:
             facet_values)
 
     def run_button_click(self):
-        result = self.gui.run_button_dialogue()
+        # Determine the input file path based on input mode
+        if self.matrix_input:
+            # For matrix input, get the file path from the matrix input page
+            input_file_path = self.gui.pages[MATRIX_INPUT_PAGE_NAME].get_data_file_path()
+        else:
+            # For recorded data, get the file path from the input page
+            input_file_path = self.gui.pages[INPUT_PAGE_NAME].get_data_file_path()
+
+        # Extract the file stem (name without extension) for the default job name
+        default_job_name = None
+        if input_file_path:
+            import os
+            default_job_name = os.path.splitext(os.path.basename(input_file_path))[0]
+
+        # Open the run dialogue with the default job name
+        result = self.gui.run_button_dialogue(
+            input_file_path=input_file_path,
+            default_job_name=default_job_name
+        )
         if result:
-            self.output_path, self.job_name = result
+            output_file_path, job_name = result
+            self.output_path = output_file_path
+            self.job_name = job_name
             if self.matrix_input:
                 self.run_fss(self._run_matrix_fss)
             else:
@@ -726,7 +756,7 @@ class Controller:
             # add to manual format with the real-index "var_i = i"
             self.gui.pages[MANUAL_FORMAT_PAGE_NAME].add_variable(
                 label=var, var_i=i)
-            
+
     def load_fixed_width(self):
         """
         Called on manual input when clicking "next" on "Manual Page"
@@ -782,11 +812,11 @@ class Controller:
                 label_i += 1
         # Remove toggled off columns only on csv
         if not self.gui.pages[INPUT_PAGE_NAME].is_manual_input():
-            # in cases where session is loaded from mms file and not changes in 
+            # in cases where session is loaded from mms file and not changes in
             # input data file were made, no loading, the load_csv is not called
             if self.org_data is None:
                 self.load_csv()
-            try:  
+            try:
                 self.data = self.org_data.iloc[:, [i for i in selected_vars_i]]
             except Exception:
                 raise DataLoadingException("Error loading data."
@@ -873,6 +903,10 @@ class Controller:
         self.correlation_type = self.gui.pages[
             DIMENSIONS_PAGE_NAME].get_correlation_type()
         self.iweigh = self.locality_weight[0]
+        # Technical Options
+        self.default_form_feed = ord(self.formfeed_char[0]) if self.formfeed_char[0] else 0
+        self.diagram_frame_chars = self.diagram_chars[0]
+        self.trimmed_ascii_output = self.trimmed_ascii[0] == "Yes"
         self.hypotheses_details = self.gui.pages[
             HYPOTHESIS_PAGE_NAME].get_hypotheses()
         # Facets Pages
@@ -887,7 +921,7 @@ class Controller:
             self.facet_var_details = []
             self.facet_dim_details = {}
         # Manual Format Page
-        if self.manual_input:
+        if self.manual_input and not self.matrix_input:
             self.manual_format_details = self.gui.pages[
                 MANUAL_FORMAT_PAGE_NAME].get_data_format()
         # Matrix Input Page
@@ -936,7 +970,8 @@ class Controller:
             facet_details=self.facet_details,
             facet_var_details=self.facet_var_details,
             hypotheses_details=self.hypotheses_details,
-            facet_dim_details=self.facet_dim_details)
+            facet_dim_details=self.facet_dim_details,
+            default_form_feed=self.default_form_feed)
         run_matrix_fortran(self.output_path, debug=debug)
 
     def _run_fss(self, debug=False):
@@ -953,7 +988,8 @@ class Controller:
             facet_var_details=self.facet_var_details,
             hypotheses_details=self.hypotheses_details,
             facet_dim_details=self.facet_dim_details,
-            valid_values_range=self.valid_values_range
+            valid_values_range=self.valid_values_range,
+            default_form_feed=self.default_form_feed
         )
         run_fortran(self.correlation_type, self.output_path, debug=debug)
 
@@ -993,7 +1029,7 @@ class Controller:
                 # If the queue is empty, check again after 100 milliseconds
                 self.gui.root.after(100, process_queue)
                 return
-    
+
             # Handle the result from the queue
             if result["status"] == "success":
                 self.enable_view_results()
@@ -1020,7 +1056,7 @@ class Controller:
 
             # Continue checking the queue after handling the current message
             self.gui.root.after(100, process_queue)
-            
+
         # Show loading window on the main thread
         # self.gui.root.after(0, self.gui.loading_window.show)
         self.gui.loading_window.show()
@@ -1047,7 +1083,7 @@ class Controller:
             self.init_controller_attributes()
             self.data_file_path = data_file_path
         self.enable_view_input()
-        
+
     def _suggest_parsing(self, interactive=True):
         path = self.gui.pages[
             INPUT_PAGE_NAME].get_data_file_path()
@@ -1071,7 +1107,7 @@ class Controller:
             self.gui.pages[INPUT_PAGE_NAME].enable_additional_options()
             self.gui.pages[INPUT_PAGE_NAME].automatic_parsable = False
         self.enable_view_input()
-        
+
     @error_handler
     def load_recorded_data_file(self):
         data_file_path = self.gui.pages[INPUT_PAGE_NAME].browse_file()
@@ -1132,7 +1168,7 @@ class Controller:
         else:
             title = "FSSA Solution Diagrams"
         self.gui.show_diagram_window(graph_data_list, title)
-        self.gui.diagram_window.bind("<F1>", 
+        self.gui.diagram_window.bind("<F1>",
             lambda e: controller.show_help("facet_diagrams_screen"))
 
 

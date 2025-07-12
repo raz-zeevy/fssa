@@ -152,6 +152,7 @@ FACET_DIM_PAGE_NAME = "FacetDimPage"
 help_pages_dict = {
     START_PAGE_NAME: "start_screen",
     INPUT_PAGE_NAME: "recorded_data_screen",
+    MATRIX_INPUT_PAGE_NAME: "matrix_input_screen",
     DATA_PAGE_NAME: "data_screen",
     DIMENSIONS_PAGE_NAME: "dimensions_and_coefficients_screen",
     FACET_PAGE_NAME: "facets_definition_screen",

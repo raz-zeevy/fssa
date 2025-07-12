@@ -109,7 +109,7 @@ class HelpWindow(Window):
         should contain "x", "y", "annotations", "title", "legend",
          "captions", "geom" keys
         """
-        super().__init__(**kwargs, geometry="1240x900")
+        super().__init__(**kwargs, geometry="650x750")
         self.title(f"FSSA For Windows ({VERSION}) Help")
         self.iconbitmap(get_resource("help.ico"))
         # sets the geometry of toplevel

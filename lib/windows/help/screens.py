@@ -319,6 +319,17 @@ class ScreensGenerator():
         self.master.add_txt(RECORDED_DATA_SCREEN_p2)
         self.master.add_paragraph(RECORDED_DATA_SCREEN_p3)
 
+    def section_matrix_input_screen(self):
+        self.master.add_heading("Coefficient Matrix file definition screen")
+        self.master.add_line_break()
+        self.master.add_paragraph("In this file you are required to fill in the properties of your input file, in case it is a matrix of coefficients. You can define the variable labels in the Variable Definitions Screen.")
+        self.master.add_paragraph("1. Specify path of data file. You can use the Browse button to open a file selection box to help finding the right path. If the specified data file cannot be read, you will be notified upon finishing the screen (After the FSSA run has been successfully completed, the output file will be directed, by default, to the directory where the data file is).")
+        self.master.add_paragraph("2. The number of objects (variables, for example) to be mapped. This number must equal the number of logical rows of the matrix. The number of physical rows may be larger - and the number of physical columns correspondingly smaller - if matrix rows are wrapped around; for example, so as to fit into the screen. There should be no spaces between rows; that is, no empty rows.")
+        self.master.add_paragraph("3. The number of entries (or fields) that are actually written in each of the file's rows. This number may be smaller than the number of objects (which is the number of entries in each logical row).")
+        self.master.add_paragraph("4. Matrix cell (i.e., field) width. All cells must be of equal size. Width specification should include spaces, if there are any, between matrix entries.")
+        self.master.add_paragraph("5. Precision, i.e., number of decimal digits used in writing each coefficient (after the decimal point).")
+        self.master.add_paragraph("6. Missing value ranges: specify here in pairs the lower & upper bounds of the ranges of entries (coefficients) that are to be considered as missing values. Delete the default option if it does represent a valid value. Any number of field-pairs may be empty.")
+
     def section_facets_menu(self):
         self.master.add_heading("Facets menu commands")
         self.master.add_line_break()
@@ -624,34 +635,34 @@ class ScreensGenerator():
         """Description of the Recode function"""
         self.master.add_heading("Recoding Variables", H1)
         self.master.add_line_break()
-        
+
         # Main description
         self.master.add_paragraph(RECODING_DESCRIPTION)
-        
+
         # Example 1
         self.master.add_heading("Example 1: Grouping Values", H2)
         self.master.add_paragraph(RECODING_EXAMPLE_1)
-        
+
         # Example 2
         self.master.add_heading("Example 2: Reversing Values", H2)
         self.master.add_paragraph(RECODING_EXAMPLE_2)
-        
+
         # Example 3
         self.master.add_heading("Example 3: Grouping and Reversing Values", H2)
         self.master.add_paragraph(RECODING_EXAMPLE_3)
-        
+
         # Steps
         self.master.add_heading("Steps to Recode a Variable", H2)
         self.master.add_paragraph(RECODING_STEPS)
-        
+
         # Example table
         self.master.add_heading("Example:", H2)
         for old_val, new_val in RECODING_EXAMPLE_TABLE:
             self.master.add_row(old_val, right=new_val)
-        
+
         # Example note
         self.master.add_paragraph(RECODING_EXAMPLE_NOTE)
-        
+
         # Reference
         self.master.add_heading("Reference", H2)
         self.master.add_paragraph(RECODING_REFERENCE, TEXT_SMALL)
@@ -659,7 +670,7 @@ class ScreensGenerator():
 if __name__ == '__main__':
     from lib.windows.help.help_window import HelpWindow
     import tkinter as tk
-    
+
     root = tk.Tk()
     help_window = HelpWindow(root, "recoding_variables_screen")
     root.mainloop()

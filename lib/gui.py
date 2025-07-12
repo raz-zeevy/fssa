@@ -243,7 +243,7 @@ class GUI():
                                              value=2)
         self.input_data_menu.add_separator()
         self.input_data_menu.add_command(label="Variables")
-        self.menu_bar.add_cascade(label="Active Data",
+        self.menu_bar.add_cascade(label="Input Data",
                                   menu=self.input_data_menu)
         # SSA Menu
         self.FSSA_menu = Menu(self.menu_bar, tearoff=0)
@@ -428,8 +428,8 @@ class GUI():
             yes_command=self.show_recode_window,
         )
 
-    def show_technical_options_window(self, locality_list: list):
-        self.technical_options = TOWindow(self, locality_list)
+    def show_technical_options_window(self, locality_list: list, formfeed_list: list, diagram_chars_list: list, trimmed_ascii_list: list):
+        self.technical_options = TOWindow(self, locality_list, formfeed_list, diagram_chars_list, trimmed_ascii_list)
 
     def show_error(self, title, msg):
         # Handle the error if your data contains non-ASCII characters
@@ -494,17 +494,21 @@ class GUI():
         """
         pass
 
-    def run_button_dialogue(self) -> Tuple[str, str]:
-        input_file_path = self.pages[INPUT_PAGE_NAME].get_data_file_path()
-        input_file_name = os.path.basename(input_file_path)
-        input_file_dir = os.path.dirname(input_file_path)
-
-        # Create default output filename in same directory
-        default_output_name = os.path.splitext(input_file_name)[0] + ".fss"
-        default_output_file = os.path.join(input_file_dir, default_output_name)
+    def run_button_dialogue(self, input_file_path, default_job_name=None) -> Tuple[str, str]:
+        # Create default output file with same path but .fss extension
+        if input_file_path:
+            input_file_dir = os.path.dirname(input_file_path)
+            input_file_name = os.path.basename(input_file_path)
+            default_output_name = os.path.splitext(input_file_name)[0] + ".fss"
+            default_output_file = os.path.join(input_file_dir, default_output_name)
+        else:
+            # Fallback if no input file is set
+            default_output_file = ""
 
         result = RunWindow.show_dialog(
-            self.root, default_output_file=default_output_file
+            self.root,
+            default_output_file=default_output_file,
+            default_job_name=default_job_name
         )
         if result:
             job_name, output_file_path = result

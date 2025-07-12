@@ -1,0 +1,59 @@
+
+
+
+
+
+
+
+
+
+
+
+
+                                ===================================================================
+                                D A T A   P R O C E S S I N G   &   R E S E A R C H   M E T H O D S
+                                ===================================================================
+
+
+
+
+                                                              F S S A 1
+                                                              ---------
+                                                   Faceted Smallest Space Analysis
+
+                                                           Version 2.0 1986
+
+
+
+
+ NAME OF THE JOB ........................                                                                                
+ NUMBER OF VARIABLES ....................   3
+ MINIMAL DIMENSIONALITY .................   2
+ MAXIMAL DIMENSIONALITY .................   5
+ SIMILARITY DATA  (CORRELATIONS)
+ VALUES REPRESENTING MISSING CELLS.......(99.0    ,99.0    )  ,  
+ TIED VALUES WITH A TOLERANCE OF ........   0.000
+ WEIGHTING PARAMETER FOR LOCALITY .......   2
+
+
+                            I N P U T   M A T R I X *
+
+
+
+
+
+
+                              1   2   3
+                          ษออออออออออออ
+                          บ
+          a             1 บ 100  33 -33
+                          บ
+          c             2 บ  33 100  20
+                          บ
+          e             3 บ -33  20 100
+
+
+
+                        * THE ORIGINAL COEFFICIENTS WERE MULTIPLIED BY  100 AND ROUNDED INTO INTEGER NUMBERS
+
+ NUMBER OF TIED CLASSES .................   0

@@ -233,8 +233,9 @@ class EditableTreeView(ttk.Treeview):
         self._entry_popup.bind("<Escape>",
                                lambda e: self._entry_popup.destroy())
         self._entry_popup.bind("<FocusOut>",
-                               lambda e: self._entry_popup.destroy(
-                               ))  # Destroy the popup when focus is lost
+                               lambda e: self._on_return(item_id,
+                                                        column_id,
+                                                        self._entry_popup))  # Save the edit when focus is lost
         x, y, width, height = self.bbox(item_id, column_id)
         self._entry_popup.place(x=x, y=y, anchor="nw", width=width)
 
