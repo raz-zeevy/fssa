@@ -227,6 +227,8 @@ class InputPage(ttk.Frame):
                       self.fixed_width_label]:
             label.config(foreground="black")
         self.additiona_options_frame.config(bootstyle="primary")
+        self.entry_lines.delete(0, ttk.END)
+        self.entry_lines.insert(0, "1")
         self.additional_options = True
 
     def enable_entry_lines(self):

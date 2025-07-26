@@ -34,7 +34,8 @@ class FacetVarPage(ttk.Frame):
         correlation_label.pack(side="left")
 
     def create_facet_variable_table(self, var_details,
-                                    facet_details):
+                                    facet_details,
+                                    saved_assignments=None):
         """
         Create the table layout for the facet variables page
         :param var_details: eg. ["first", "", "third_label]
@@ -140,7 +141,20 @@ class FacetVarPage(ttk.Frame):
                                         state="readonly")
                 var_combos.append(combobox)
                 combobox.grid(row=row - 1, column=col, sticky='ew', padx=1, pady=1, ipady=0)
-                combobox.set(values[0])  # Set the first option
+
+                # Restore saved assignment if available
+                var_global_index = self.selected_var_i[row - 1]
+                if (saved_assignments and
+                    var_global_index in saved_assignments and
+                    col - 1 < len(saved_assignments[var_global_index])):
+                    saved_index = saved_assignments[var_global_index][col - 1]
+                    if saved_index < len(values):
+                        combobox.current(saved_index)
+                    else:
+                        combobox.set(values[0])  # Default to "Undefined"
+                else:
+                    combobox.set(values[0])  # Set the first option
+
                 combobox.unbind_class("TCombobox", "<MouseWheel>")
             self.combo_by_var.append(var_combos)
 

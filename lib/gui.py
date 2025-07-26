@@ -270,7 +270,7 @@ class GUI():
         self.view_menu.add_command(label="Output File",
                                    state="disabled")
         self.diagram_2d_menu = Menu(self.view_menu, tearoff=0)
-        self.diagram_2d_menu.add_command(label="FSSA Solution")
+        self.diagram_2d_menu.add_command(label="SSA Solution")
         self.diagram_2d_menu.add_command(label="Facet A",
                                          state="disabled")
         self.diagram_2d_menu.add_command(label="Facet B",
@@ -283,7 +283,7 @@ class GUI():
                                    menu=self.diagram_2d_menu,
                                    state="disabled")
         self.diagram_3d_menu = Menu(self.view_menu, tearoff=0)
-        self.diagram_3d_menu.add_command(label="FSSA Solution")
+        self.diagram_3d_menu.add_command(label="SSA Solution")
         self.diagram_3d_menu.add_command(label="Facet A",
                                          state="disabled")
         self.diagram_3d_menu.add_command(label="Facet B",

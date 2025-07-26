@@ -1,5 +1,6 @@
 import inspect
 import json
+import os
 import warnings
 
 import numpy as np
@@ -11,16 +12,37 @@ BUFFER = "."
 
 
 class OutputParser:
-    def __init__(self, file):
+    _cache = {}
+
+    def __init__(self, file_path):
         self.index = 0
-        self.rows = file.readlines()
-        self.current_row = self.rows[0]
-        self.current_dim = None
-        #
-        self.metadata = None
-        self.dim_data = {}
-        self.models = []
-        self.extract_data()
+        self.current_row = None # Initialize to None
+        self.rows = None # Initialize to None
+
+        current_mtime = os.path.getmtime(file_path)
+
+        if file_path in OutputParser._cache:
+            cached_mtime, cached_data = OutputParser._cache[file_path]
+            if current_mtime == cached_mtime:
+                self.metadata = cached_data["metadata"]
+                self.dim_data = cached_data["dimensions"]
+                self.models = cached_data["models"]
+                return
+
+        with open(file_path, 'r', encoding='latin-1') as file:
+            self.rows = file.readlines()
+            self.current_row = self.rows[0]
+
+            #
+            self.metadata = None
+            self.dim_data = {}
+            self.models = []
+            self.extract_data()
+
+            # Cache the parsed data
+            OutputParser._cache[file_path] = (
+                current_mtime, self.get_output()
+            )
 
     def next_row(self, called_function=None):
         # get the name of the function that called next_row
@@ -188,8 +210,7 @@ class OutputParser:
         }
 
 def parse_output(file_path):
-    with open(file_path, 'r', encoding='latin-1') as file:
-        output_parser = OutputParser(file)
+    output_parser = OutputParser(file_path)
     return output_parser.get_output()
 
 

@@ -28,7 +28,7 @@ class DiagramWindow(Window):
         should contain "x", "y", "annotations", "title", "legend",
          "captions", "geom" keys
         """
-        super().__init__(**kwargs, geometry=f"{rreal_size(1000)}x{rreal_size(750)}")
+        super().__init__(**kwargs, geometry=f"{rreal_size(900)}x{rreal_size(650)}")
         self.title(title)
         self.tk.call("tk", "scaling", 1.4)
         # Process DPI Unaware
@@ -85,6 +85,8 @@ class DiagramWindow(Window):
         )
         if file:
             self.figure.savefig(file, dpi=DPI_SAVE)
+            # Set focus back to the diagram window after saving
+            self.focus_set()
 
     def save_all_figures(self):
         dir = filedialog.askdirectory()
@@ -135,24 +137,22 @@ class DiagramWindow(Window):
         self.legend_canvas.itemconfig(self.canvas_frame, width=canvas_width)
 
     def navigate_control(self):
-        if self.index < len(self.graph_data_lst) - 1:
-            self.button_next.state(["!disabled"])
-        else:
+        if len(self.graph_data_lst) == 1:
             self.button_next.state(["disabled"])
-        if self.index > 0:
-            self.button_previous.state(["!disabled"])
-        else:
             self.button_previous.state(["disabled"])
+        else:
+            self.button_next.state(["!disabled"])
+            self.button_previous.state(["!disabled"])
 
     def next_graph(self):
-        if self.index < len(self.graph_data_lst) - 1:
-            self.index += 1
-            self.load_page(self.index)
+        self.index = (self.index + 1) % len(self.graph_data_lst)
+        self.load_page(self.index)
 
     def previous_graph(self):
-        if self.index > 0:
-            self.index -= 1
-            self.load_page(self.index)
+        self.index = (self.index - 1 + len(self.graph_data_lst)) % len(
+            self.graph_data_lst
+        )
+        self.load_page(self.index)
 
     def exit(self):
         self.destroy()

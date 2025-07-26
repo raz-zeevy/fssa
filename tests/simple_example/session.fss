@@ -12,8 +12,10 @@
     {
       "label": "b",
       "index": 1,
-      "facets": [],
-      "show": false,
+      "facets": [
+        1
+      ],
+      "show": true,
       "remove": false
     },
     {
@@ -45,9 +47,11 @@
   "save_path": null,
   "delimiter": null,
   "data_file_path": "c:\\Users\\raz3z\\Projects\\Shmuel\\fssaDist\\fssa\\tests\\simple_example\\diamond6.txt",
+  "job_name": "diamond6",
   "data_file_extension": null,
   "var_labels": [
     "a",
+    "b",
     "c",
     "e"
   ],
@@ -65,6 +69,9 @@
     "No"
   ],
   "facet_var_details": [
+    [
+      1
+    ],
     [
       1
     ],
@@ -90,10 +97,13 @@
     ],
     "4": [
       1
-    ],
-    "5": [
-      1
     ]
+  },
+  "facet_var_assignments": {
+    "0": [],
+    "1": [],
+    "2": [],
+    "4": []
   },
   "manual_input": true,
   "matrix_input": false,
@@ -101,9 +111,8 @@
   "lines_per_var": 1,
   "output_path": "c:\\Users\\raz3z\\Projects\\Shmuel\\fssaDist\\fssa\\tests\\simple_example\\test_simple.fss",
   "facets_num": 1,
-  "max_dim": 5,
+  "max_dim": 4,
   "min_dim": 2,
-  "job_name": "",
   "additional_options": true,
   "fixed_width": "No",
   "correlation_type": "Monotonicity",
@@ -127,6 +136,14 @@
       "valid_low": 1,
       "valid_high": 9,
       "label": "a"
+    },
+    {
+      "line": 1,
+      "col": 2,
+      "width": 1,
+      "valid_low": 1,
+      "valid_high": 9,
+      "label": "b"
     },
     {
       "line": 1,
@@ -164,10 +181,17 @@
         1,
         9
       ]
+    },
+    {
+      "py/tuple": [
+        1,
+        9
+      ]
     }
   ],
   "fss_labels": [
     "a",
+    "b",
     "c",
     "e"
   ],
@@ -178,10 +202,14 @@
     },
     {
       "index": 2,
-      "label": "c"
+      "label": "b"
     },
     {
       "index": 3,
+      "label": "c"
+    },
+    {
+      "index": 4,
       "label": "e"
     }
   ],

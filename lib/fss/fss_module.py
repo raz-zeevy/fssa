@@ -202,25 +202,22 @@ def parse_fortran_output(result: subprocess.CompletedProcess):
     if result.stderr not in [RESULTS_SUCCESS_STDERR,
                                 RESULTS_SUCCESS_STDERR2,
                                 RESULTS_SUCCESS_STDERR3]:
-        if "Fortran runtime error:" in result.stderr:
-            raise Exception(f"FSSA script failed : {result.stderr}")
-        if len(result.stderr.split("\n")) >= 3:
-            if result.stderr.split("\n")[2] == 'Fortran runtime error: ' \
-                                                'Cannot write to file opened for READ':
-                exception = result.stderr.split('\n')[2]
-                raise Exception(exception)
-            elif "Segmentation fault - invalid memory reference" in result.stderr:
-                raise Exception(
-                    "FSSA script failed : Memory error. Please check the input file, variables and the missing values (if not specified, set to '0')"
-                )
-            elif "Cannot write to file opened for READ" in result.stderr:
-                raise Exception(
-                    "Permission denied in writing to output file. You may change the output file name to a different one,"
-                    " or alternatively make sure the file is not open in another program, or the "
-                    "path is valid and accessible."
-                )
-            else:
-                raise Exception(f"FSSA script failed : {result.stderr} {edited_output}")
+        if "Segmentation fault - invalid memory reference" in result.stderr:
+            raise Exception(
+                "FSSA script failed : Memory error. Please check the input file, variables and the missing values (if not specified, set to '0')"
+            )
+        elif "Permission denied" in result.stderr:
+            raise Exception(
+                "Permission denied in writing to output file. You may change the output file name to a different one,"
+                " or alternatively make sure the file is not open in another program, or the "
+                "path is valid and accessible."
+            )
+        elif "Cannot write to file opened for READ" in result.stderr:
+            raise Exception(
+                "Permission denied in writing to output file. You may change the output file name to a different one,"
+                " or alternatively make sure the file is not open in another program, or the "
+                "path is valid and accessible."
+            )
         else:
             raise Exception(f"FSSA script failed : {result.stderr} {edited_output}")
     print("Output:", result.stdout)

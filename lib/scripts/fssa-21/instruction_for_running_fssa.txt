@@ -1,0 +1,200 @@
+To run Faceted SSA, press: FSSACMD.BAT . the content of FSSACMD.BAT is:
+FASSA.BAT MONO MONOINP.DRV C:\DJPKM2~1\GRANDF~1.PRN NUL MONOASC.MAT FSSAINP.DRV MONOASC.MAT C:\DJPKM2~1\djpkm14v.FSS
+FASSA.BAT is a Fortran batch file that controls the running of the program (see separate file).
+FASSA.BAT requires 8 parameters:
+MONO  Tells Fortran to run monotonicity coefficients on the data. Replace by PEARSON if you want SSA to use Pearson correlation coefficients instead.
+MONOINP.DRV   A file in a specific format (see monoinp.drv instructions file) that tells the program how to read data file for computing the monotonicity coefficients. Replace by PEARINP.DRV if you want SSA to use Pearson correlation coefficients.
+C:\DJPKM2~1\GRANDF~1.PRN  an example of Path and filename of the input data file in ASCII (simple txt file). You can change it to fit with your own directory, and you can simplify filename. For example, c:\tstfssa\tstdata.dat
+NUL Indicates that you don’t want the program to produce a file with a simplified version of the coefficient matrix. IF you do want such a file replace NUL by a filename of your choice.
+MONOASC.MAT is the name of the coefficient-matrix-file produce by the program
+FSSAINP.DRV A file in a specific format (see fssainp.drv instructions file) that tells the program how to read data file and what you want done.
+MONOASC.MAT is the name of the coefficient-matrix-file produced by the program to be used by FSSA. It must be re-written here; I don't know why.
+C:\DJPKM2~1\djpkm14v.FSS  Path and filename of the output data file. You can change it to your own directory, and simplify filename. For example  c:\tstfssa\tstdata.fss
+***    ***    ***
+Programs EXE files:
+NEWMONMS.EXE  computes monotonicity coefficient matrix
+PEACORMS.EXE computes monotonicity coefficient matrix
+FWSSA.EXE  The SSA program
+Graphic/screes management? Files (probably for older operating systems)
+COURB.FON
+TMSRB.FON
+FSSAWIN.GID unnecessary file produced by old OS. May be deleted.
+
+
+Instructions for creating Directives file MONOINP.DRV   for running monotonicity program NEWMONMS.EXE
+(taken from file newmon.bat)
+
+ECHO DIRECTIVES FILE
+ECHO ---------------
+ECHO 1. TITLE LINE - UP TO 255 CHARACTERS
+ECHO 2. PARAMETERS LINE (IN FREE FORMAT):
+ECHO      NV :       NUMBER OF VARIABLES
+ECHO      NMISSING : NO. OF VARIABLES FOR WHICH 0 IS NOT THE MISSING VALUE
+ECHO      NLAB :     NO. OF VARIABLES FOR WHICH THERE ARE LABELS
+ECHO      IPRFREQ :  0 (BLANK) = NO. CASES PRINTED SEPARATELY FROM COEFFICIENTS
+ECHO              :  1 = NO. CASES PRINTED UNDER COEFFICIENTS IN ONE MATRIX
+ECHO      IINTERA :  0 (BLANK) = WIDE PRINTING - 132 CHARACTERS PER LINE
+ECHO              :  1 = NARROW PRINTING - 80 CHARACTERS PER LINE
+ECHO 3. INPUT FORMAT LINE - 'I' FORMAT INCLUDING PARENTHESIS E.G.: TO READ
+ECHO    5 VARIABLES IN COLUMNS 4, 8, 12, 16, 20 WRITE THE FOLLOWING FORMAT:
+ECHO         (5I4)
+ECHO 4. MISSING VALUES LINES IN THE FOLLOWING FORMAT:
+ECHO   [variable no.] [no. of intervals] [low value] [high value]..[low] [high]
+ECHO 5. VARIABLE LABELS LINES IN THE FOLLOWING FORMAT:
+ECHO   [variable no.] [label upto 20 characters long]
+:END
+
+
+C                          PROCEDURE CARD
+C                          --------------
+C
+C        1.  TITLE CARD ( COLUMNS 1 TO 80 )
+C
+C
+C        2.  PARAMETER CARD  14 4-COLUMNS FIELDS CONTAINING
+C            THE FOLLOWING INFORMATION :
+C
+C             A)  NV      NUMBER OF VARIABLES
+C
+C             B)  MIND    MINIMAL DIMENSION
+C
+C             C)  MAXD    MAXIMAL DIMENSION
+C
+C             D)  ISIM
+C                     IF ISIM=0 OR BLANK  DISSIMILARITY DATA
+C                     IF ISIM.NE.0           SIMILARITY DATA
+C
+C             E)  EPS    ( REAL NUMBER )
+C                     IF EPS.LT.0 NO TIED VALUES
+C                     IF EPS.GT.0    TIED VALUES WITH A TOLERANCE OF EPS
+C
+C             F)  NOCELL   MISSING CELLS
+C                     IF NOCELL=0 OR BLANK NO MISSING CELLS
+C                     IF NOCELL.NE.0  THERE IS MISSING CELLS (SEE 3.)
+C
+C             G)  IWEIGH  WEIGHTING PARAMETER
+C                     IF IWEIGH.LT.0  MORE GLOBALITY
+C                     IF IWEIGH.GT.0  MORE  LOCALITY
+C
+C             H)  LAB    NUMBER OF VARIABLE LABELS
+C                     IF LAB=0 OR BLANK  NO LABELS
+C                     IF LAB.NE.0   GIVE LAB VARIABLE LABELS (SEE 5.)
+C
+C             I)  NFACET  NUMBER OF FACETS PER VARIABLE
+C                     IF NFACET=0 OR BLANK NO FACETS
+C                     IF NFACET.NE.0 VARIABLE FACETS ARE GIVEN (SEE 8.)
+C
+C             J)  NTFACE  ( SIGNIFICANT ONLY IF NFACET.NE.0 )
+C                     IF NTFACE=0 OR BLANK FACETS ARE ON INPUT
+C                     IF NTFACE.NE.0 FACETS ARE ON TAPE20 IN C.D.C OR
+C                        ON UNIT NTFACE IN ANOTHER COMPUTER
+C
+C             K)  LABFAC  ( SIGNIFICANT ONLY IF NFACET.NE.0 )
+C                     IF LABFAC=0 OR BLANK, THERE ARE NO FACET ELEMENT LABELS
+C                     IF LABFAC=1 FACET ELEMENT LABELS ARE TO BE READ AS IN
+C                        LINES 9 AND 10 BELOW.
+C                     IF LABFAC>=2 FACET ELEMENT LABELS ARE TO BE READ TOGETHER
+C                        WITH FACET ELEMENT TYPE INDICATORS,
+C                        AS IN LINES 9 AND 10 BELOW.
+C
+C             L)  IWRTFLS -
+C                     IF IWRTFLS = 0 OR BLANK, PLOTTED COORDINATES ARE
+C                         NOT STORED ON A FILE.
+C                     IF IWRTFLS .NE. 0, PLOTTED COORDINATES ARE STORED
+C                         ON A FILE SOLUTION.FSS (IN THE SAME DIRECTORY
+C                         AS THE RESULTS FILE.
+C
+C             M)  IBOXSTRNG -
+C                     IF IBOXSTRNG=0 OR BLANK USE DEFAULT GRAPHICS CHARACTERS
+C                     IF IBOXSTRNG.NE.0 SUPPLY USER GRAPHICS CHARACTERS
+C                        (SEE LINE 6. BELOW)
+C             N)  IFF -
+C                     IF IFF=0 OR BLANK USE DEFAULT FORM-FEED CHARACTER
+C                         CHAR(12)
+C                     IF IFF.NE.0 SUPPLY OTHER FORM-FEED CHARACTER
+C                        (SEE LINE 7. BELOW)
+C
+C
+C        3.  VALUES REPRESENTING MISSING CELLS  (REQUIRED ONLY IF NOCELL.NE.0)
+C            GIVE INFORMATION AS FOLLOWS :
+C            NUMBER OF INTERVALS , INTERVAL1 , INTERVAL2 , ...
+C            IN FREE FORMAT.
+C            EACH INTERVAL IS COMPOSED BY TWO NUMBERS . A SINGLE
+C            VALUE CAN BE DEFINED BY TWO EQUAL NUMBERS .
+C            THE NUMBER OF INTERVALS IS LIMITED TO 10.
+C
+C
+C        4.  INPUT FORMAT FOR THE SYMMETRIC MATRIX IN F-NOTATION
+C
+C
+C        5.  VARIABLE LABELS  (REQUIRED ONLY IF LAB.NE.0 )
+C             GIVE LAB RECORDS .
+C             ON EACH RECORD MUST APPEAR IN FORMAT (I4,2X,3A4) :
+C               VARIABLE INDEX , VARIABLE LABEL (UP TO 12 CHARACTERS)
+C
+C
+C        6.  (REQUIRED ONLY IF IBOXSTRNG.NE.0)
+C            HERE INSERT ONE LINE OF 8 CHARACTERS FOR PRINTING DIAGRAMS' FRAMES
+C            IN THE FOLLOWING ORDER :TOP,BOTTOM,LEFT,RIGHT
+C                         TOPLEFT,TOPRIGHT,BOTTOMLEFT,BOTTOMRIGHT
+C
+C        7.  (REQUIRED ONLY IF IFF.NE.0)
+C            HERE INSERT ONE LINE OF ONE CHARACTER WHICH WILL SUBSTITUTE ALL
+C            DEFAULT FORM-FEED CHARACTERS (CHAR(12)) IN OUTPUT PRODUCED
+C            BY PROGRAM.
+C
+C        8.  FACETS  (REQUIRED ONLY IF NFACET.NE.O AND NTFACE=0 )
+C            IN FREE FORMAT.  GIVE FOR EACH VARIABLE NFACET
+C            FACETS IN THE SERIAL ORDER OF THE VARIABLES.
+C            N.B : IF NTFACE.NE.0 FACETS MUST BE ON UNIT NTFACE ,IN C.D.C
+C                  ON TAPE20
+C
+C        9.  FACET ELEMENT LABEL HEADER. (REQUIRED ONLY IF NFACET.NE.0 AND
+C                                         LABFAC .NE.0)
+C            GIVE A LINE OF NFACET NUMBERS, EACH NUMBER BEING THE NUMBER
+C            OF LABELS (UP TO A MAXIMUM OF 10) FOR THE CORRESPONDING
+C            FACET.
+C
+C        10. FACET ELEMENT LABELS.  (REQUIRED ONLY IF NFACET.NE.0 AND
+C                                    LABFAC .NE.0)
+C            GIVE THE FACET LABELS, ONE TO A LINE, IN ORDER, IN FORMAT
+C            (A8).
+C            IF LABFAC >= 2, EACH LABEL IS FOLLOWED BY A NUMBER 1 TO 9,
+C            ACCORDING TO THE FACET ELEMENT TYPE,  IN FORMAT (A8,4X,I2)
+C
+C        11. INFORMATION ON FACET DIAGRAMS DESIRED (REQUIRED ONLY IF
+C                                                   NFACET.NE.0 )
+C            FOR EACH FACET DIAGRAM GIVE IN FORMAT 5I4 :
+C            DIMENSION,FACET,AXIS1,AXIS2,MODEL
+C            WHERE :
+C            'DIMENSION' IS THE DIMENSION IT IS TALKEN ABOUT . OF COURSE
+C            IT SHOULD BE GREATER (OR EQUAL) THAN 'MIND' AND LESS
+C            (OR EQUAL) THAN 'MAXD' (SEE 2.)
+C            'FACET' IS A FACET AMONG THE NFACET FACETS
+C            (AXIS1,AXIS2) IS THE PROJECTION IN CONSIDERATION . 'AXIS1'
+C             AND 'AXIS2' SHOULD BE LESS (OR EQUAL) THAN 'DIMENSION'
+C            'MODEL' (USED ONLY IF DIMENSION IS 2) IS THE MODEL TO BE
+C             USED FOR THE FACET DIAGRAM SEPARATION PATTERN.
+C             MODEL = 0 FOR NO SEPARATION ANALYSIS
+C             MODEL = 9 FOR UNCONSTRAINED STRAIGHT LINE DIVIDERS
+C             MODEL = 1 FOR PARALLEL STRAIGHT LINE DIVIDERS
+C             MODEL = 2 FOR DIVISION INTO ANGULAR SECTORS
+C             MODEL = 3 FOR DIVISION INTO RADIAL RINGS
+C
+C
+C        12. END OF FILE
+C
+C***********************************************************************
+C
+C        5.  DATA
+C            GIVE ONLY THE UPPER-HALF OF THE SQUARE-SYMMETRIC MATRIX
+C            WITHOUT THE DIAGONAL ELEMENTS . A NEW ROW HAS TO START
+C            ON A NEW RECORD . IN TOTAL YOU SHOULD GIVE (NV-1) SETS
+C            OF RECORDS AS FOLLOWS ,ACCORDING TO FORMAT 3. :
+C              (NV-1) ELEMENTS IN THE FIRST  SET FOR THE FIRST  ROW
+C              (NV-2) ELEMENTS IN THE SECOND SET FOR THE SECOND ROW
+C                  ............
+C                  1  ELEMENT  IN THE LAST  SET FOR THE NV-1'ST ROW.
+C
+C
+C***********************************************************************

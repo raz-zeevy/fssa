@@ -151,6 +151,7 @@
   "save_path": null,
   "delimiter": null,
   "data_file_path": "c:\\Users\\raz3z\\Projects\\Shmuel\\fssaDist\\fssa\\tests\\djmatSQ\\djmatSQ.txt",
+  "job_name": "djmatSQ",
   "data_file_extension": null,
   "var_labels": [
     "var1",
@@ -191,16 +192,71 @@
   "facet_var_details": [],
   "facet_details": [],
   "facet_dim_details": {},
-  "manual_input": true,
+  "facet_var_assignments": {
+    "2": [
+      1
+    ],
+    "3": [
+      2
+    ],
+    "4": [
+      1
+    ],
+    "5": [
+      2
+    ],
+    "6": [
+      1
+    ],
+    "7": [
+      2
+    ],
+    "8": [
+      1
+    ],
+    "9": [
+      2
+    ],
+    "10": [
+      1
+    ],
+    "11": [
+      2
+    ],
+    "12": [
+      1
+    ],
+    "13": [
+      2
+    ],
+    "14": [
+      1
+    ],
+    "15": [
+      2
+    ],
+    "16": [
+      1
+    ],
+    "17": [
+      2
+    ],
+    "18": [
+      1
+    ],
+    "19": [
+      2
+    ]
+  },
+  "manual_input": false,
   "matrix_input": true,
   "are_missing_values": false,
   "lines_per_var": 0,
   "output_path": "c:\\Users\\raz3z\\Projects\\Shmuel\\fssaDist\\fssa\\tests\\djmatSQ\\djmatSQ.fss",
   "facets_num": 0,
-  "max_dim": 5,
+  "max_dim": 3,
   "min_dim": 2,
-  "job_name": "",
-  "additional_options": true,
+  "additional_options": false,
   "fixed_width": "No",
   "correlation_type": "Similarity",
   "iweigh": 2,
@@ -226,6 +282,14 @@
     },
     {
       "line": 1,
+      "col": 2,
+      "width": 1,
+      "valid_low": 1,
+      "valid_high": 9,
+      "label": "b"
+    },
+    {
+      "line": 1,
       "col": 3,
       "width": 1,
       "valid_low": 1,
@@ -243,6 +307,96 @@
   ],
   "fss_data": [],
   "valid_values_range": [
+    {
+      "py/tuple": [
+        1,
+        9
+      ]
+    },
+    {
+      "py/tuple": [
+        1,
+        9
+      ]
+    },
+    {
+      "py/tuple": [
+        1,
+        9
+      ]
+    },
+    {
+      "py/tuple": [
+        1,
+        9
+      ]
+    },
+    {
+      "py/tuple": [
+        1,
+        9
+      ]
+    },
+    {
+      "py/tuple": [
+        1,
+        9
+      ]
+    },
+    {
+      "py/tuple": [
+        1,
+        9
+      ]
+    },
+    {
+      "py/tuple": [
+        1,
+        9
+      ]
+    },
+    {
+      "py/tuple": [
+        1,
+        9
+      ]
+    },
+    {
+      "py/tuple": [
+        1,
+        9
+      ]
+    },
+    {
+      "py/tuple": [
+        1,
+        9
+      ]
+    },
+    {
+      "py/tuple": [
+        1,
+        9
+      ]
+    },
+    {
+      "py/tuple": [
+        1,
+        9
+      ]
+    },
+    {
+      "py/tuple": [
+        1,
+        9
+      ]
+    },
+    {
+      "py/tuple": [
+        1,
+        9
+      ]
+    },
     {
       "py/tuple": [
         1,
@@ -444,12 +598,12 @@
                   ]
                 },
                 "_index_data": {
-                  "py/id": 88
+                  "py/id": 108
                 },
                 "_name": null,
                 "_cache": {
                   "dtype": {
-                    "py/id": 89
+                    "py/id": 109
                   }
                 },
                 "_id": {
@@ -576,7 +730,7 @@
                           ]
                         },
                         {
-                          "py/id": 89
+                          "py/id": 109
                         },
                         false,
                         {
@@ -587,7 +741,7 @@
                   ]
                 },
                 "_index_data": {
-                  "py/id": 101
+                  "py/id": 121
                 },
                 "_name": null,
                 "_cache": {},
@@ -599,12 +753,12 @@
             {
               "0.14.1": {
                 "axes": {
-                  "py/id": 86
+                  "py/id": 106
                 },
                 "blocks": [
                   {
                     "values": {
-                      "py/id": 97
+                      "py/id": 117
                     },
                     "mgr_locs": {
                       "py/reduce": [

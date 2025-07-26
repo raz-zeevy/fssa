@@ -17,6 +17,8 @@ class EditableTreeView(ttk.Treeview):
     def __init__(self, master=None, add_check_box=False,
                  auto_index=True, index=True, index_col_name="Index",
                  sub_index_col=1,
+                 on_row_removed=None,  # New callback
+                 enable_keyboard_shortcuts=True,  # New parameter
                  **kw):
         super().__init__(master, **kw)
         if not index:
@@ -30,6 +32,10 @@ class EditableTreeView(ttk.Treeview):
         self._cur_focus_col = None
         self._entry_popup = None
         self._init_scrollbars(master)
+
+        # Add callback for row removal
+        self._on_row_removed_callback = on_row_removed
+
         #
         self.bind("<Button-3>",
                   self._on_right_click)  # Button-3 is the right-click button
@@ -40,6 +46,11 @@ class EditableTreeView(ttk.Treeview):
         # Bindings
         self.bind("<Double-1>", self._on_double_click)
         self.bind("<Button-1>", self._on_click)
+
+        # Add keyboard shortcuts for row removal
+        if enable_keyboard_shortcuts:
+            self.bind("<Delete>", self._on_delete_key)
+            self.bind("<BackSpace>", self._on_delete_key)
 
     ############
     # Built-in #
@@ -244,6 +255,12 @@ class EditableTreeView(ttk.Treeview):
         entry_widget.destroy()
         self._entry_popup = None
 
+    def _on_delete_key(self, event):
+        """Handle Delete/Backspace key presses to remove selected rows."""
+        if self.has_selection():
+            self.remove_selected_row()
+            return "break"  # Prevent default behavior
+
     def _on_right_click(self, event):
         # Select row under mouse
         iid = self.identify_row(event.y)
@@ -295,9 +312,12 @@ class EditableTreeView(ttk.Treeview):
             self.insert_row(int(self.index(selected_item) + 1))
 
     def _on_delete_row(self):
-        selected_item = self.selection()
-        if selected_item:
-            self.remove_row(self.index(selected_item))
+        """Enhanced delete row with better error handling."""
+        if not self.has_selection():
+            # Could show a tooltip or status message
+            return
+
+        self.remove_selected_row()
 
     #####################
     # Getters & Setters #
@@ -402,19 +422,95 @@ class EditableTreeView(ttk.Treeview):
         """ get the rows id from the row_index and remove it from the
         treeview """
         row_id = self.get_children()[row_index]
+        removed_data = self.item(row_id)  # Get data before removal
         self.delete(row_id)
         if self._auto_index:
             self._reindex()
+        if self._on_row_removed_callback:
+            self._on_row_removed_callback(row_index, removed_data)
+        return removed_data
+
+    def remove_selected_row(self):
+        """Remove the currently selected row. Returns True if successful, False if no row is selected."""
+        selected_items = self.selection()
+        if not selected_items:
+            return False
+
+        selected_item = selected_items[0]  # Get the first selected item
+        row_index = self.index(selected_item)
+        self.remove_row(row_index)
+        return True
+
+    def remove_selected_rows(self):
+        """Remove all currently selected rows. Returns the number of rows removed."""
+        selected_items = self.selection()
+        if not selected_items:
+            return 0
+
+        # Get indices of selected rows (in reverse order to avoid index shifting)
+        row_indices = [self.index(item) for item in selected_items]
+        row_indices.sort(reverse=True)
+
+        self.remove_rows(row_indices)
+        return len(row_indices)
+
+    def get_selected_row_index(self):
+        """Get the index of the currently selected row. Returns None if no row is selected."""
+        selected_items = self.selection()
+        if not selected_items:
+            return None
+        return self.index(selected_items[0])
+
+    def get_selected_row_indices(self):
+        """Get indices of all currently selected rows."""
+        selected_items = self.selection()
+        return [self.index(item) for item in selected_items]
+
+    def has_selection(self):
+        """Check if any row is currently selected."""
+        return len(self.selection()) > 0
+
+    def remove_selected_row_with_confirmation(self, confirmation_callback=None):
+        """Remove selected row with optional confirmation."""
+        if not self.has_selection():
+            return False
+
+        if confirmation_callback:
+            row_index = self.get_selected_row_index()
+            row_data = self.get_row(row_index)
+            if not confirmation_callback(row_index, row_data):
+                return False
+
+        return self.remove_selected_row()
+
+    def remove_selected_rows_with_confirmation(self, confirmation_callback=None):
+        """Remove all selected rows with optional confirmation."""
+        if not self.has_selection():
+            return 0
+
+        if confirmation_callback:
+            row_indices = self.get_selected_row_indices()
+            row_data = [self.get_row(idx) for idx in row_indices]
+            if not confirmation_callback(row_indices, row_data):
+                return 0
+
+        return self.remove_selected_rows()
 
     def remove_rows(self, row_indexes):
         """ get the rows id from the row_index and remove it from the
         treeview """
+        removed_data_list = []
         row_indexes.sort(reverse=True)
         for row_index in row_indexes:
             row_id = self.get_children()[row_index]
+            removed_data = self.item(row_id)  # Get data before removal
+            removed_data_list.append((row_index, removed_data))
             self.delete(row_id)
         if self._auto_index:
             self._reindex()
+        if self._on_row_removed_callback:
+            for row_index, removed_data in removed_data_list:
+                self._on_row_removed_callback(row_index, removed_data)
 
     def insert_row(self, index, values=[]):
         """ add a row to the treeview """
@@ -484,20 +580,59 @@ if __name__ == '__main__':
                             displaycolumns="#all",
                             selectmode="browse")
 
-    for i in range(1, 1):
-        iid = tree.add_row(values=(f"v{i}", i, 1, 0, f"Label {i}"))  # Set the
-        # initial checkbox image
+    num_of_rows = 5
+    for i in range(1, num_of_rows + 1):
+        iid = tree.add_row(values=[f"v{i}", i, 1, 0, f"Label {i}"])
 
-    def callback():
+    def callback_add_row():
         tree.add_row(["v1", "TEST", "TEST", "TEST", "TEST","123","123"])
 
+    def callback_remove_selected_row():
+        if tree.has_selection():
+            tree.remove_selected_row()
+        else:
+            # You could show a messagebox here
+            print("No row selected")
+
+    def callback_remove_selected_with_confirmation():
+        def confirm_removal(row_index, row_data):
+            # In a real app, you'd use messagebox.askyesno here
+            print(f"Confirm removal of row {row_index + 1}? (y/n): ", end="")
+            return input().lower().startswith('y')
+
+        tree.remove_selected_row_with_confirmation(confirm_removal)
+
     tree.pack(side="left", fill="both", expand=False)
-    action_button = tk.Button(root, text="Remove Row", pady=10,
+    button_add_row = tk.Button(root, text="Add Row", pady=10,
                               background="white",
-                              command=callback)
-    action_button.pack()
+                              command=callback_add_row)
+
+    button_add_row.pack()
+    button_remove_row = tk.Button(root, text="Remove Selected Row", pady=10,
+                              background="white",
+                              command=callback_remove_selected_row)
+    button_remove_row.pack()
+
+    button_remove_with_confirm = tk.Button(root, text="Remove Selected (Confirm)", pady=10,
+                              background="white",
+                              command=callback_remove_selected_with_confirmation)
+    button_remove_with_confirm.pack()
+
+    # Example of using the callback
+    def on_row_removed(row_index, removed_data):
+        print(f"Row {row_index} was removed with data: {removed_data}")
+
+    # You can also create the tree with callbacks:
+    # tree = EditableTreeView(main_frame,
+    #                         add_check_box=True,
+    #                         index=True,
+    #                         index_col_name="Var_No",
+    #                         columns=cols,
+    #                         displaycolumns="#all",
+    #                         selectmode="browse",
+    #                         on_row_removed=on_row_removed,
+    #                         enable_keyboard_shortcuts=True)
     # print(tree.loc(3))
     # tree.remove_row(0)
     print(len(tree))
     root.mainloop()
-""

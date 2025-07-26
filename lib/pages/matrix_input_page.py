@@ -198,9 +198,9 @@ class MatrixInputPage(ttk.Frame):
     ####################
 
     def browse_file(self):
-        # set the default extension to .txt, .MAT and .CSV
-        filename = filedialog.askopenfilename(filetypes=[("Matrix files (.TXT, .MAT, .CSV)",
-                                                           ["*.txt", "*.MAT", "*.csv"])])
+        # set the default extension to .txt, .MAT and .PRN
+        filename = filedialog.askopenfilename(filetypes=[("Matrix files (.TXT, .MAT, .PRN)",
+                                                           ["*.txt", "*.MAT", "*.prn"])])
         if filename:
             self.entry_data_file.delete(0, ttk.END)
             self.entry_data_file.insert(0, filename)

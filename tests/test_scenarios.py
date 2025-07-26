@@ -4,7 +4,7 @@ from pathlib import Path
 from tkinter import ttk
 
 import pytest
-
+from lib.utils import p_FSS_DRV
 from lib.controller.controller import Controller
 from lib.utils import SET_MODE_TEST, SET_MODE_PRODUCTION, MATRIX_INPUT_PAGE_NAME
 
@@ -23,6 +23,7 @@ class TestScenarios:
         """Create a single controller instance for all tests"""
         cls.controller = Controller()
         SET_MODE_TEST()  # Add this to prevent GUI issues during tests
+        cls.controller.start_fss(matrix=False)
 
     @classmethod
     def teardown_class(cls):
@@ -40,11 +41,15 @@ class TestScenarios:
             self.controller.init_controller_attributes()
             # Reset GUI state
             self.controller.gui.reset()
-            self.controller.start_fss(matrix=False)
         else:
             # In visual mode, just do minimal reset to avoid button_run issues
             self.controller.init_controller_attributes()
         yield
+
+    def get_drv_lines(self):
+        # get from p_FSS_DRV
+        with open(p_FSS_DRV, "r") as file:
+            return file.readlines()
 
     def _setup_visual_test(self):
         """Setup visual testing environment with Done button and instructions"""
@@ -162,7 +167,7 @@ class TestScenarios:
 
         # Set facet variables
         facet_var_page = self.controller.gui.pages["FacetVarPage"]
-        facet_var_page.set_facets_vars([[1], [2]])
+        facet_var_page.set_facets_vars([[1], [2], [1], [2], [1], [2], [1], [2], [1], [2], [1], [2], [1], [2], [1], [2], [1], [2], [1], [2]])
 
         # Test session save/load functionality
         session_file = real_csv_dir / "mms" / "facet_1.mms"
@@ -175,9 +180,12 @@ class TestScenarios:
         self.controller.on_facet_num_change(None)
 
         # Verify facet details are cleared
+        self.controller.init_fss_attributes()
         assert not self.controller.facet_var_details, "facet_var_details should be empty"
         assert not self.controller.facet_dim_details, "facet_dim_details should be empty"
         assert not self.controller.facet_details, "facet_details should be empty"
+        drv_lines = self.get_drv_lines()
+        assert drv_lines[0].strip() == "Data", "Job name should be 'Data'"
 
         # Save final session
         self._save_session(real_csv_dir)
@@ -237,7 +245,7 @@ class TestScenarios:
         for _ in range(5):
             manual_page.add_variable()
         manual_page.set_labels(["a", "b", "c", "d", "e"])
-        manual_page.select_variables([0, 2, 4])  # Select variables a, c, e
+        manual_page.select_variables([0, 1, 2, 4])  # Select variables a, c, e
 
         # Move to data page
         self.controller.next_page()
@@ -245,11 +253,11 @@ class TestScenarios:
         # Move to dimensions page
         self.controller.next_page()
 
-        # Set up dimensions (2-5)
+        # Set up dimensions (2-4)
         dims_page = self.controller.gui.pages["DimensionsPage"]
         dims_page.dimension_combo.current(1)
         dims_page.dimension_combo_selected(None)
-        dims_page.set_dims(2, 5)
+        dims_page.set_dims(2, 4)
 
         # Move to facets page
         self.controller.next_page()
@@ -265,7 +273,7 @@ class TestScenarios:
         # Set up facet variables data
         from lib.fss.fss_input_parser import simulate_facets_var_data
         simulate_facets_var_data(
-            " 1\n 2\n 1", self.controller.gui.pages["FacetVarPage"].combo_by_var
+            " 1\n 1\n 2\n 1", self.controller.gui.pages["FacetVarPage"].combo_by_var
         )
 
         # Set output path and run
@@ -284,16 +292,16 @@ class TestScenarios:
     # test cases #
     ##############
 
-    def test_real_csv_test_scenario(self, visual_mode):
-        """Test the real CSV test scenario with recoding and facets"""
-        self.run_real_csv_test_scenario()
+    def test_simple_example_scenario(self, visual_mode):
+        """Test the simple example scenario"""
+        self.run_simple_example_scenario()
 
         if visual_mode:
             self._setup_visual_test()
 
-    def test_simple_example_scenario(self, visual_mode):
-        """Test the simple example scenario"""
-        self.run_simple_example_scenario()
+    def test_real_csv_test_scenario(self, visual_mode):
+        """Test the real CSV test scenario with recoding and facets"""
+        self.run_real_csv_test_scenario()
 
         if visual_mode:
             self._setup_visual_test()

@@ -322,10 +322,10 @@ class ManualFormatPage(ttk.Frame):
         else:
             self.data_table.hide_column(VALID_LOW)
             self.data_table.hide_column(VALID_HIGH)
-            
+
     def remove_variable(self):
         # removes the last row from the table
-        self.data_table.remove_row(-1)
+        self.data_table.remove_selected_row()
 
     def clear_all_vars(self):
         print("Clean all vars and vars_i")

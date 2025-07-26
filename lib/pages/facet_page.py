@@ -20,6 +20,8 @@ class FacetPage(ttk.Frame):
         self.width = WINDOW_WIDTH
         self.facets_entries = []
         self.facets_elements_combo = []
+        # Data storage for preserving facet data
+        self.saved_facet_data = {}  # {facet_index: {"elements": [], "element_count": int}}
         self.create_entries()
         # self.create_facet_container()
 
@@ -42,7 +44,7 @@ class FacetPage(ttk.Frame):
                                                  "4 Facets"])
         self.facets_combo.pack(side=ttk.RIGHT)
         self.facets_combo.current(0)
-        
+
     def create_facet_table(self, parent, facet_index):
         """
         create facet table
@@ -75,7 +77,15 @@ class FacetPage(ttk.Frame):
         # Table for the labels
         parent.table_container = ttk.Frame(parent)
         parent.table_container.pack(fill='both', expand=True)
-        self.update_table(parent, element_count_var.get(), facet_index)
+
+        # Check if we have saved data for this facet
+        if facet_index in self.saved_facet_data:
+            saved_data = self.saved_facet_data[facet_index]
+            element_count_var.set(str(saved_data["element_count"]))
+            element_count_combo.current(saved_data["element_count"] - MIN_FACET_NUM)
+            self.update_table(parent, str(saved_data["element_count"]), facet_index)
+        else:
+            self.update_table(parent, element_count_var.get(), facet_index)
 
     def update_table(self, parent, element_count, facet_index):
         """
@@ -85,10 +95,21 @@ class FacetPage(ttk.Frame):
         :param facet_index:
         :return:
         """
+        # Save current data before clearing
+        if facet_index <= len(self.facets_entries) and self.facets_entries[facet_index - 1]:
+            current_elements = []
+            for entry in self.facets_entries[facet_index - 1]:
+                current_elements.append(entry.get())
+            self.saved_facet_data[facet_index] = {
+                "elements": current_elements,
+                "element_count": len(current_elements)
+            }
+
         # Clear the current table
         for widget in parent.table_container.winfo_children():
             widget.destroy()
         self.facets_entries[facet_index - 1] = []
+
         # Create the table
         for i in range(int(element_count)):
             Label(parent.table_container, text=f"{i + 1}",
@@ -98,9 +119,23 @@ class FacetPage(ttk.Frame):
             entry = ttk.Entry(parent.table_container,
                               width=self.width_facet_element_label_entry)
             entry.grid(row=i, column=1, padx=(0,10))
-            entry.insert(0, f"{chr(65 + facet_index - 1)}{i + 1}")  # Default
+
+            # Check if we have saved data for this element
+            if (facet_index in self.saved_facet_data and
+                i < len(self.saved_facet_data[facet_index]["elements"])):
+                # Use saved data
+                entry.insert(0, self.saved_facet_data[facet_index]["elements"][i])
+            else:
+                # Use default value
+                entry.insert(0, f"{chr(65 + facet_index - 1)}{i + 1}")
+
             self.facets_entries[facet_index - 1].append(entry)
-            # label like A1, B2 etc.
+
+        # Update saved data
+        self.saved_facet_data[facet_index] = {
+            "elements": [entry.get() for entry in self.facets_entries[facet_index - 1]],
+            "element_count": int(element_count)
+        }
 
     def update_facet_count(self, event=None):
         """
@@ -108,15 +143,28 @@ class FacetPage(ttk.Frame):
         :param event:
         :return:
         """
+        # Save current data before clearing
+        for i, facet_entries in enumerate(self.facets_entries):
+            if facet_entries:
+                current_elements = []
+                for entry in facet_entries:
+                    current_elements.append(entry.get())
+                self.saved_facet_data[i + 1] = {
+                    "elements": current_elements,
+                    "element_count": len(current_elements)
+                }
+
         # Clear the existing facet frames
         for frame in self.facet_frames:
             frame.destroy()
         self.facet_frames = []
         self.facets_entries = []
         self.facets_elements_combo = []
+
         # Get the number of facets from the combobox
         facet_count = int(self.facets_combo.get().split()[
                               0]) if self.facets_combo.get() != "No facets" else 0
+
         # Create new facet frames
         for i in range(facet_count):
             facet_frame = ttk.LabelFrame(self,
@@ -171,6 +219,7 @@ class FacetPage(ttk.Frame):
 
     def reset(self):
         self.facets_combo.current(0)
+        self.saved_facet_data = {}  # Clear saved data on reset
         self.update_facet_count()
 
 

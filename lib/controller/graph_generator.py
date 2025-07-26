@@ -31,15 +31,22 @@ def generate_graphs(controller, dim, facet):
         labels = [controller.var_labels[i - 1] for i in index]
         legend = [dict(index=index[i], value=labels[i]) for i in range(len(
             index))]
+        if facet is None:
+            title = f"SSA Solution d={a + 1}X{b + 1}"
+        else:
+            title = f"Facet {chr(64 + facet)} d={a + 1}X{b + 1}\nNo Partition"
+            legend = [
+                dict(index=i + 1, value=controller.facet_details[facet - 1][i])
+                for i in range(len(controller.facet_details[facet - 1]))]
         graph = dict(
             x=x,
             y=y,
             annotations=index,
-            title=f"{NO_FACET_TITLE}\nSSA Solution d={a + 1}X{b + 1}",
+            title=title,
             legend=legend
         )
         graph_data_list.append(graph)
-        if facet is not None:
+        if facet is not None and dim == 2:
             # first change the first graph annotations to the facet var
             # details instead of the var index
             graph["annotations"] = [controller.facet_var_details[i - 1][

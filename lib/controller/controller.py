@@ -50,7 +50,7 @@ class Controller:
         # Override the default showwarning method with your custom one
         if IS_PRODUCTION():
             warnings.showwarning = self.custom_show_warning
-        self.job_name = None
+        self.job_name = ""
 
 
     def on_close(self):
@@ -90,6 +90,7 @@ class Controller:
         self.data = None
         self.org_data = None
         self.data_file_path = None
+        self.job_name = ""
         self.save_path = None
         self.data_file_extension = None
         self.var_labels = None
@@ -101,6 +102,7 @@ class Controller:
         self.facet_var_details = []
         self.facet_details = []
         self.facet_dim_details = {}
+        self.facet_var_assignments = {}
         #
         self.gui.pages[MANUAL_FORMAT_PAGE_NAME].create_data_table()
         self.gui.pages[MANUAL_FORMAT_PAGE_NAME].unset_limited_edit_mode()
@@ -174,6 +176,7 @@ class Controller:
             self.matrix_input = False
             self.navigator.show_page(DATA_PAGE_NAME)
             self.gui.set_menu_recorded_data()
+            self._enable_additional_options()
 
     def open_session(self):
         self.reset_session()
@@ -320,12 +323,11 @@ class Controller:
         self.gui.help_menu.entryconfig("Help on current screen",
                                        command=lambda: self.keyboard.press(
                                            pynput.keyboard.Key.f1))
-        self.gui.help_menu.entryconfig("Open Readme.txt", command=lambda:
-        os.startfile(os.path.join(get_path("readme.txt"))))
+        self.gui.help_menu.entryconfig("Open Readme.txt", command=self.open_readme_file)
         self.gui.help_menu.entryconfig("About", command=lambda:
         self.show_help("what_is_fssa"))
         #### Diamgrams Menu
-        self.gui.diagram_2d_menu.entryconfig("FSSA Solution", command=lambda:
+        self.gui.diagram_2d_menu.entryconfig("SSA Solution", command=lambda:
         self.show_diagram_window(2, None))
         self.gui.diagram_2d_menu.entryconfig("Facet A", command=lambda:
         self.show_diagram_window(2, 1))
@@ -335,7 +337,7 @@ class Controller:
         self.show_diagram_window(2, 3))
         self.gui.diagram_2d_menu.entryconfig("Facet D", command=lambda:
         self.show_diagram_window(2, 4))
-        self.gui.diagram_3d_menu.entryconfig("FSSA Solution", command=lambda:
+        self.gui.diagram_3d_menu.entryconfig("SSA Solution", command=lambda:
         self.show_diagram_window(3, None))
         self.gui.diagram_3d_menu.entryconfig("Facet A", command=lambda:
         self.show_diagram_window(3, 1))
@@ -362,20 +364,25 @@ class Controller:
     # Controls and Navigation #
     ###########################
 
+    def _save_facet_var_assignments(self):
+        if self.gui.pages[FACET_VAR_PAGE_NAME].combo_by_var:
+            current_assignments = self.gui.pages[
+                FACET_VAR_PAGE_NAME].get_all_var_facets_indices()
+            self.facet_var_assignments.update(current_assignments)
+
     def open_file(self, file, notepad=False, word=False):
         def open_file_in_notepad(file_path):
             if not os.path.exists(file_path):
                 raise FileNotFoundError(f"File {file_path} does not exist")
             try:
-                subprocess.run(['notepad', file_path], check=True)
-            except subprocess.CalledProcessError as e:
+                subprocess.Popen(['notepad', file_path])
+            except subprocess.SubprocessError as e:
                 print(f"Failed to open file {file_path}: {e}")
 
         def open_file_in_word(file_path):
             try:
-                subprocess.run(['start', 'winword', file_path], shell=True,
-                               check=True)
-            except subprocess.CalledProcessError as e:
+                subprocess.Popen(['start', 'winword', file_path], shell=True)
+            except subprocess.SubprocessError as e:
                 print(f"Failed to open file {file_path}: {e}")
         if not notepad and not word:
             raise UserWarning("Please specify a program to open the file with")
@@ -384,8 +391,8 @@ class Controller:
 
     def open_results(self):
         try:
-            subprocess.run(['notepad', self.output_path], check=True)
-        except subprocess.CalledProcessError as e:
+            subprocess.Popen(['notepad', self.output_path])
+        except subprocess.SubprocessError as e:
             print(f"Failed to open file {self.output_path}: {e}")
 
     def enable_view_results(self):
@@ -420,7 +427,10 @@ class Controller:
                 raise FileNotFoundError("No input file was loaded")
             if not os.path.exists(self.data_file_path):
                 raise FileNotFoundError(f"Can not find input file {self.data_file_path}")
-            os.startfile(self.data_file_path)
+            try:
+                os.startfile(self.data_file_path)
+            except OSError as e:
+                print(f"Failed to open file {self.data_file_path}: {e}")
 
         self.gui.view_menu.entryconfig("Input File", state="normal")
         self.gui.view_menu.entryconfig("Input File", command=view_input)
@@ -453,6 +463,10 @@ class Controller:
 
     def navigate_page(self, page_name: str):
         # switch page on gui
+        current_page = self.navigator.get_current()
+        if current_page == FACET_VAR_PAGE_NAME:
+            self._save_facet_var_assignments()
+
         self.gui.switch_page(page_name)
         self.navigator.set_page(page_name)
 
@@ -468,6 +482,9 @@ class Controller:
             self.gui.option_run_config(state="normal")
 
     def slide_to_page(self, page_name: str):
+        current_page = self.navigator.get_current()
+        if current_page == FACET_VAR_PAGE_NAME:
+            self._save_facet_var_assignments()
         while self.navigator.get_index(page_name) > self.navigator.get_index(
                 self.navigator.get_current()):
             if not self.next_page(): return
@@ -627,6 +644,7 @@ class Controller:
     #################
 
     def on_facet_num_change(self, event):
+        self._save_facet_var_assignments()
         facet_page = self.gui.pages[FACET_PAGE_NAME]
         facet_page.update_facet_count()
         self.facets_num = int(facet_page.facets_combo.get().split()[
@@ -642,6 +660,7 @@ class Controller:
         self.navigator.update_menu()
 
     def update_facets_var_selection(self, selected_vars : list=None):
+        self._save_facet_var_assignments()
         # todo: remove this: update selection
         if selected_vars:
             for var in self.active_variables_details:
@@ -660,12 +679,25 @@ class Controller:
         print("reloading facets")
         self.gui.pages[FACET_VAR_PAGE_NAME].create_facet_variable_table(
             var_details=self.active_variables_details,
-            facet_details=self.facet_details)
+            facet_details=self.facet_details,
+            saved_assignments=self.facet_var_assignments)
         # update with values
         facet_values = [var['facets'] for var in
                         self.active_variables_details if var['show']]
         self.gui.pages[FACET_VAR_PAGE_NAME].set_facets_vars(
             facet_values)
+
+    def get_default_job_name(self):
+        # Determine the input file path based on input mode
+        if self.matrix_input:
+            # For matrix input, get the file path from the matrix input page
+            input_file_path = self.gui.pages[MATRIX_INPUT_PAGE_NAME].get_data_file_path()
+        else:
+            # For recorded data, get the file path from the input page
+            input_file_path = self.gui.pages[INPUT_PAGE_NAME].get_data_file_path()
+        if input_file_path:
+            return os.path.splitext(os.path.basename(input_file_path))[0]
+        return ""
 
     def run_button_click(self):
         # Determine the input file path based on input mode
@@ -811,7 +843,7 @@ class Controller:
                 var['label'] = labels[label_i]
                 label_i += 1
         # Remove toggled off columns only on csv
-        if not self.gui.pages[INPUT_PAGE_NAME].is_manual_input():
+        if not self.gui.pages[INPUT_PAGE_NAME].is_manual_input() and not self.matrix_input:
             # in cases where session is loaded from mms file and not changes in
             # input data file were made, no loading, the load_csv is not called
             if self.org_data is None:
@@ -837,10 +869,12 @@ class Controller:
         self.update_facets_var_selection(selected_vars_i)
 
     def load_facet_var_page(self):
+        self._save_facet_var_assignments()
         facets_details = self.gui.pages[FACET_PAGE_NAME].get_facets_details()
         self.gui.pages[FACET_VAR_PAGE_NAME].create_facet_variable_table(
             var_details=self.active_variables_details,
-            facet_details=facets_details)
+            facet_details=facets_details,
+            saved_assignments=self.facet_var_assignments)
 
     def set_header(self, is_header):
         self.has_header = is_header
@@ -954,7 +988,7 @@ class Controller:
             self.active_variables_details[var]['facets'] = facets_var_info[
                 var]
         # output
-        self.job_name = ''
+        self.job_name = self.job_name or self.get_default_job_name()
 
     def _run_matrix_fss(self, debug=False):
         self.init_fss_attributes()
@@ -1101,12 +1135,18 @@ class Controller:
                 if not res:
                     raise UserWarning("User cancelled the operation")
             self.data_file_extension = file_extension
-            self.gui.pages[INPUT_PAGE_NAME].disable_additional_options()
-            self.gui.pages[INPUT_PAGE_NAME].automatic_parsable = True
+            self._disable_additional_options()
         else:
-            self.gui.pages[INPUT_PAGE_NAME].enable_additional_options()
-            self.gui.pages[INPUT_PAGE_NAME].automatic_parsable = False
+            self._enable_additional_options()
         self.enable_view_input()
+
+    def _enable_additional_options(self):
+        self.gui.pages[INPUT_PAGE_NAME].enable_additional_options()
+        self.gui.pages[INPUT_PAGE_NAME].automatic_parsable = False
+
+    def _disable_additional_options(self):
+        self.gui.pages[INPUT_PAGE_NAME].disable_additional_options()
+        self.gui.pages[INPUT_PAGE_NAME].automatic_parsable = True
 
     @error_handler
     def load_recorded_data_file(self):
@@ -1166,13 +1206,16 @@ class Controller:
         if facet:
             title = f"FSSA Diagrams for Facet {chr(64 + facet)}"
         else:
-            title = "FSSA Solution Diagrams"
+            title = "SSA Solution Diagrams"
         self.gui.show_diagram_window(graph_data_list, title)
         self.gui.diagram_window.bind("<F1>",
             lambda e: controller.show_help("facet_diagrams_screen"))
 
-
-
+    def open_readme_file(self):
+        try:
+            os.startfile(os.path.join(get_path("readme.txt")))
+        except FileNotFoundError:
+            self.gui.show_error("Error", "Readme.txt not found.")
 
 
 if __name__ == '__main__':
