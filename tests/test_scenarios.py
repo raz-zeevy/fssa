@@ -288,9 +288,49 @@ class TestScenarios:
         # Save session
         self._save_session(simple_example_dir)
 
+    def run_unified_load_recorded_data_file(self):
+        """Run the unified load recorded data file
+        1. load some data file (csv)
+        2. move to variables page
+        3. select some variables
+        4. move back to input page
+        5. load the same data file
+        6. check if the variables are the same (browsed only)
+        7. check if the data is the same
+        8. check if the output file is the same
+        9. check if the session is the same
+        10. check if the job name is the same
+        11. load a new data file with different name
+        12. check if variables are different (reloaded correctly)
+        13. check if data is different (reloaded correctly)
+        14. check if output file is different (reloaded correctly)
+        15. check if session is different (reloaded correctly)
+        16. check if job name is different (reloaded correctly)
+        17. load the same data file again
+        18. check if variables are the same
+        """
+        self.controller.reset_session(matrix=False)
+        data_file = Path(os.path.abspath("tests/real_csv_test/data.csv"))
+        assert data_file.exists(), "Real CSV test data not found"
+
+        input_page = self.controller.gui.pages["InputPage"]
+        input_page.set_data_file_path(str(data_file))
+        self.controller.set_header(True)
+        self.controller.data_file_extension = ".csv"
+        self.controller.load_csv_init()
+        input_page.disable_additional_options()
+
+
     ##############
     # test cases #
     ##############
+
+    def test_unified_load_recorded_data_file(self, visual_mode):
+        """Test the unified load recorded data file"""
+        self.run_unified_load_recorded_data_file()
+
+        if visual_mode:
+            self._setup_visual_test()
 
     def test_simple_example_scenario(self, visual_mode):
         """Test the simple example scenario"""
@@ -311,6 +351,7 @@ class TestScenarios:
         self.run_djmatsq_scenario()
         if visual_mode:
             self._setup_visual_test()
+
 
 
 if __name__ == "__main__":

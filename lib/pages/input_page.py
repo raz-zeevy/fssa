@@ -36,24 +36,12 @@ class InputPage(ttk.Frame):
                                          textvariable=data_file_path, )
         self.entry_data_file.pack(side=ttk.LEFT, fill='x', expand=True)
         self.button_load = ttk.Button(frame_data_file,
-                                        text="Browse &\nLoad")
-        self.button_load.pack(side=ttk.LEFT, padx=10)
+                                        text="Browse...")
+        self.button_load.pack(side=ttk.LEFT, padx=(10, 5))
         ToolTip(self.button_load,
-                msg="Click to select a data file and load it\n"
-                    "into the system. This program accepts .csv,\n"
-                    "excel or any file that contains only the\n"
-                    "digits 0-9 with or without separators (see\n"
-                    "below in 'Additional Data Options')",
-                delay=TOOL_TIP_DELAY)
-        self.button_browse = ttk.Button(frame_data_file,
-                                        width=rreal_size(7),
-                                        text="Browse\nOnly",
-                                        bootstyle="secondary",)
-        self.button_browse.pack(side=ttk.LEFT, padx=10)
-        ToolTip(self.button_browse,
-                msg="Click to select a data file without changing\nthe"
-                    " current state of the job. Used for loading\nsame job "
-                    "with a different data file path.",
+                msg="Browse for a data file.\n"
+                    "If a new file name is selected, a new session will start.\n"
+                    "If the same file name is selected, only the data will be reloaded.",
                 delay=TOOL_TIP_DELAY)
         # Missing Value Frame
         frame_missing_value = ttk.Frame(self)

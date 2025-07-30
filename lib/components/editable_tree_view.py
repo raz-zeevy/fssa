@@ -433,8 +433,10 @@ class EditableTreeView(ttk.Treeview):
     def remove_selected_row(self):
         """Remove the currently selected row. Returns True if successful, False if no row is selected."""
         selected_items = self.selection()
+        # if not select_items remove the last row
         if not selected_items:
-            return False
+            self.remove_row(-1)
+            return True
 
         selected_item = selected_items[0]  # Get the first selected item
         row_index = self.index(selected_item)

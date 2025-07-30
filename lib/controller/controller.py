@@ -233,11 +233,8 @@ class Controller:
                                lambda x: self.load_matrix_file())
         # input page
         self.gui.pages[INPUT_PAGE_NAME]. \
-            button_browse.bind("<Button-1>",
-                               lambda x: self.browse_recorded_data_file())
-        self.gui.pages[INPUT_PAGE_NAME]. \
             button_load.bind("<Button-1>",
-                               lambda x: self.load_recorded_data_file())
+                               lambda x: self.unified_load_recorded_data_file())
         # Manual Page:
         self.gui.pages[MANUAL_FORMAT_PAGE_NAME]. \
             update_variables = self.reload_variables
@@ -1149,8 +1146,23 @@ class Controller:
         self.gui.pages[INPUT_PAGE_NAME].automatic_parsable = True
 
     @error_handler
-    def load_recorded_data_file(self):
-        data_file_path = self.gui.pages[INPUT_PAGE_NAME].browse_file()
+    def unified_load_recorded_data_file(self):
+        old_path = self.data_file_path
+        new_path = self.gui.pages[INPUT_PAGE_NAME].browse_file()
+
+        if not new_path:
+            return
+
+        if not old_path or os.path.basename(old_path) != os.path.basename(new_path):
+            self.load_recorded_data_file(new_path)
+        else:
+            self.browse_recorded_data_file(new_path)
+
+    @error_handler
+    def load_recorded_data_file(self, data_file_path=None):
+        if data_file_path is None:
+            data_file_path = self.gui.pages[INPUT_PAGE_NAME].browse_file()
+        self.gui.pages[MANUAL_FORMAT_PAGE_NAME].unset_limited_edit_mode()
         if data_file_path:
             try:
                 self._suggest_parsing(interactive=True)
@@ -1163,8 +1175,9 @@ class Controller:
                 INPUT_PAGE_NAME].is_manual_input():
             self.load_csv_init()
 
-    def browse_recorded_data_file(self):
-        data_file_path = self.gui.pages[INPUT_PAGE_NAME].browse_file()
+    def browse_recorded_data_file(self, data_file_path=None):
+        if data_file_path is None:
+            data_file_path = self.gui.pages[INPUT_PAGE_NAME].browse_file()
         if data_file_path:
             self.enable_view_input()
         if not self.gui.pages[
